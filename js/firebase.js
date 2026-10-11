@@ -1,6 +1,7 @@
 // Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
+
+import {
   getAuth,
   GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -25,25 +26,30 @@ const firebaseConfig = {
 };
 
 
-// 初期化
+// Firebase初期化
 const app = initializeApp(firebaseConfig);
 
 
-// Firebase機能
+// Authentication
 const auth = getAuth(app);
 
-const db = getFirestore(app);
 
-const storage = getStorage(app);
-
+// Googleログイン
 const googleProvider = new GoogleAuthProvider();
 
 
-// 他ファイルで使用
+// Firestore
+const db = getFirestore(app);
+
+
+// Storage
+const storage = getStorage(app);
+
+
 export {
   app,
   auth,
+  googleProvider,
   db,
-  storage,
-  googleProvider
+  storage
 };
