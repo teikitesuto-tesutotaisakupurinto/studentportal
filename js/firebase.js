@@ -1,5 +1,3 @@
-// Firebase SDK
-
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -19,7 +17,6 @@ import {
 import {
   getStorage
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
 
 
 
@@ -48,28 +45,24 @@ const firebaseConfig = {
 
 
 
-
-// Firebase初期化
+// 初期化
 
 const app =
 initializeApp(firebaseConfig);
 
 
 
-
-// Authentication
+// 認証
 
 const auth =
 getAuth(app);
 
 
 
-
-// Googleログイン
+// Google認証
 
 const googleProvider =
 new GoogleAuthProvider();
-
 
 
 
@@ -80,7 +73,6 @@ getFirestore(app);
 
 
 
-
 // Storage
 
 const storage =
@@ -88,8 +80,7 @@ getStorage(app);
 
 
 
-
-// 他ファイルへ共有
+// export
 
 export {
 
