@@ -23,27 +23,36 @@ import {
 
 
 
-// ページ切替
+// ページ切替 修正版
 
 window.showAdminPage = function(page){
 
 
-document
-.querySelectorAll("main section")
-.forEach(section=>{
+  document
+  .querySelectorAll(".content section")
+  .forEach(section=>{
 
-section.classList.add("hidden");
+    section.classList.add("hidden");
 
-});
+  });
 
 
 
-document
-.getElementById(page)
-.classList.remove("hidden");
+  const target =
+  document.getElementById(page);
+
+
+
+  if(target){
+
+    target.classList.remove("hidden");
+
+  }
 
 
 };
+
+
 
 
 
@@ -106,7 +115,6 @@ location.href="student.html";
 
 return;
 
-
 }
 
 
@@ -128,7 +136,7 @@ loadUsers();
 
 
 
-// 送信対象変更
+// 送信範囲変更
 
 window.changeTarget = function(){
 
@@ -141,93 +149,62 @@ document.getElementById(
 
 
 document
-.getElementById(
-"blockArea"
-)
-.classList.add(
-"hidden"
-);
-
+.getElementById("blockArea")
+.classList.add("hidden");
 
 
 document
-.getElementById(
-"gradeArea"
-)
-.classList.add(
-"hidden"
-);
-
+.getElementById("gradeArea")
+.classList.add("hidden");
 
 
 document
-.getElementById(
-"userArea"
-)
-.classList.add(
-"hidden"
-);
+.getElementById("userArea")
+.classList.add("hidden");
 
 
 
 
 
-if(
-type === "block"
-){
-
-document
-.getElementById(
-"blockArea"
-)
-.classList.remove(
-"hidden"
-);
-
-}
-
-
-
-if(
-type === "block_grade"
-){
+if(type==="block"){
 
 
 document
-.getElementById(
-"blockArea"
-)
-.classList.remove(
-"hidden"
-);
-
-
-
-document
-.getElementById(
-"gradeArea"
-)
-.classList.remove(
-"hidden"
-);
+.getElementById("blockArea")
+.classList.remove("hidden");
 
 
 }
 
 
 
-if(
-type === "individual"
-){
+
+
+if(type==="block_grade"){
 
 
 document
-.getElementById(
-"userArea"
-)
-.classList.remove(
-"hidden"
-);
+.getElementById("blockArea")
+.classList.remove("hidden");
+
+
+document
+.getElementById("gradeArea")
+.classList.remove("hidden");
+
+
+}
+
+
+
+
+
+if(type==="individual"){
+
+
+document
+.getElementById("userArea")
+.classList.remove("hidden");
 
 
 }
@@ -246,6 +223,7 @@ document
 // お知らせ作成
 
 window.createNotice = async function(){
+
 
 
 const targetType =
@@ -303,9 +281,8 @@ serverTimestamp()
 
 
 if(
-targetType === "block"
-||
-targetType === "block_grade"
+targetType==="block" ||
+targetType==="block_grade"
 ){
 
 
@@ -320,9 +297,8 @@ document.getElementById(
 
 
 
-
 if(
-targetType === "block_grade"
+targetType==="block_grade"
 ){
 
 
@@ -337,8 +313,9 @@ document.getElementById(
 
 
 
+
 if(
-targetType === "individual"
+targetType==="individual"
 ){
 
 
@@ -354,11 +331,9 @@ document.getElementById(
 
 
 
+
 await addDoc(
-collection(
-db,
-"notices"
-),
+collection(db,"notices"),
 notice
 );
 
@@ -429,9 +404,11 @@ area.innerHTML += `
 ${data.senderName || ""}
 </p>
 
+
 <p>
 ${data.body}
 </p>
+
 
 </div>
 
@@ -604,6 +581,7 @@ ${data.subject}
 ：
 ${data.score}点
 </p>
+
 
 </div>
 
