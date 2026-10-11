@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>定期テスト対策ポータル</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+<div class="login-container">
+
+<h1>
+定期テスト対策ポータル
+</h1>
+
+
+<div class="login-box">
+
+
+<label>
+メールアドレス
+</label>
+
+<input 
+id="email"
+type="email"
+placeholder="メールアドレス">
+
+
+<label>
+パスワード
+</label>
+
+<input 
+id="password"
+type="password"
+placeholder="パスワード">
+
+
+<button onclick="login()">
+ログイン
+</button>
+
+
+<div class="or">
+または
+</div>
+
+
+<button 
+class="google-btn"
+onclick="googleLogin()">
+
+<img 
+src="assets/google-logo.svg"
+alt="Google">
+
+Googleでログイン
+
+</button>
+
+
+</div>
+
+</div>
+
+
+<script type="module" src="js/auth.js"></script>
+
+</body>
+
+</html>
