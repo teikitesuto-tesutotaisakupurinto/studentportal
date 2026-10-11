@@ -2,10 +2,13 @@
 <html lang="ja">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>生徒ポータル</title>
+<title>
+生徒ポータル
+</title>
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -19,7 +22,9 @@
 
 
 <!-- サイドメニュー -->
+
 <aside class="sidebar">
+
 
 <h2>
 定期テスト対策ポータル
@@ -27,6 +32,7 @@
 
 
 <nav>
+
 
 <button onclick="showPage('home')">
 ホーム
@@ -71,59 +77,94 @@
 
 
 
-<!-- メイン -->
+
+<!-- メイン画面 -->
+
 <main class="main">
 
 
+
 <section id="home" class="page">
+
 
 <h1>
 ホーム
 </h1>
 
+
+<div class="card">
+
 <h3>
 最新のお知らせ
 </h3>
 
+
 <div id="latestNotice">
+
 読み込み中...
+
 </div>
 
+
+</div>
+
+
 </section>
+
 
 
 
 
 <section id="notice" class="page hidden">
 
+
 <h1>
 お知らせ
 </h1>
 
+
 <div id="noticeList">
+
 </div>
 
+
 </section>
+
 
 
 
 
 <section id="message" class="page hidden">
 
+
 <h1>
 連絡
 </h1>
 
 
-<textarea 
+<textarea
 id="messageText"
-placeholder="運営への連絡内容">
+placeholder="運営への連絡内容を入力してください">
 </textarea>
 
 
-<button>
+
+<button onclick="sendMessage()">
+
 送信
+
 </button>
+
+
+
+<h3>
+送信履歴
+</h3>
+
+
+<div id="messageHistory">
+
+</div>
 
 
 </section>
@@ -132,7 +173,9 @@ placeholder="運営への連絡内容">
 
 
 
+
 <section id="documents" class="page hidden">
+
 
 <h1>
 配布文書
@@ -150,7 +193,9 @@ placeholder="運営への連絡内容">
 
 
 
+
 <section id="calendar" class="page hidden">
+
 
 <h1>
 カレンダー
@@ -168,29 +213,53 @@ placeholder="運営への連絡内容">
 
 
 
+
+
 <section id="scores" class="page hidden">
+
 
 <h1>
 テスト成績
 </h1>
 
 
-<input 
-placeholder="テスト名">
+<label>
+テスト名
+</label>
+
+<input
+id="testName"
+placeholder="例：1学期期末テスト">
 
 
-<input 
-placeholder="教科">
+
+<label>
+教科
+</label>
+
+<input
+id="subject"
+placeholder="例：数学">
 
 
-<input 
+
+<label>
+点数
+</label>
+
+<input
+id="score"
 type="number"
 placeholder="点数">
 
 
-<button>
+
+<button onclick="sendScore()">
+
 提出
+
 </button>
+
 
 
 </section>
@@ -199,16 +268,28 @@ placeholder="点数">
 
 
 
+
+
 <section id="settings" class="page hidden">
+
 
 <h1>
 各種設定
 </h1>
 
 
+<div class="card">
+
 <p>
-プロフィール設定
+プロフィール確認
 </p>
+
+<p id="profile">
+
+</p>
+
+
+</div>
 
 
 </section>
@@ -222,7 +303,10 @@ placeholder="点数">
 
 
 
-<script type="module" src="js/student.js"></script>
+<script
+type="module"
+src="js/student.js">
+</script>
 
 
 </body>
