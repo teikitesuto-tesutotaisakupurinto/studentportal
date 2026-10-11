@@ -22,8 +22,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-let currentUser;
-let userData;
+
+let currentUser = null;
+
+let userData = null;
+
+
+
 
 
 
@@ -31,31 +36,32 @@ let userData;
 
 window.showPage = function(page){
 
-  document
-  .querySelectorAll(
-    "main section"
-  )
-  .forEach(section=>{
 
-    section.classList.add(
-      "hidden"
-    );
+document
+.querySelectorAll("main section")
+.forEach(section=>{
 
-  });
+section.classList.add("hidden");
+
+});
 
 
-  document
-  .getElementById(page)
-  .classList.remove(
-    "hidden"
-  );
+
+document
+.getElementById(page)
+.classList.remove("hidden");
+
 
 };
 
 
 
 
-// 認証確認
+
+
+
+
+// ログイン確認
 
 onAuthStateChanged(
 auth,
@@ -71,7 +77,8 @@ return;
 }
 
 
-currentUser=user;
+
+currentUser = user;
 
 
 
@@ -97,6 +104,7 @@ return;
 }
 
 
+
 userData =
 snap.data();
 
@@ -108,10 +116,14 @@ loadNotices();
 
 loadDocuments();
 
-loadCalendar();
+loadMessages();
+
 
 
 });
+
+
+
 
 
 
@@ -129,15 +141,29 @@ document.getElementById(
 );
 
 
+
 if(area){
+
 
 area.innerHTML = `
 
-名前：${userData.name}<br>
+名前：
+${userData.name || ""}
 
-地方：${userData.block}<br>
+<br>
 
-学年：${userData.grade}
+メール：
+${currentUser.email}
+
+<br>
+
+地方：
+${userData.block || ""}
+
+<br>
+
+学年：
+${userData.grade || ""}
 
 `;
 
@@ -145,6 +171,8 @@ area.innerHTML = `
 
 
 }
+
+
 
 
 
@@ -189,8 +217,14 @@ document.getElementById(
 
 
 
+if(!list)return;
+
+
+
 list.innerHTML="";
+
 latest.innerHTML="";
+
 important.innerHTML="";
 
 
@@ -215,6 +249,7 @@ return;
 
 
 
+
 let tag="";
 
 
@@ -232,6 +267,7 @@ tag = `
 
 
 
+
 const html = `
 
 <div class="notice-card">
@@ -242,9 +278,11 @@ ${tag}
 ${data.title}
 </h3>
 
+
 <p>
 ${data.body}
 </p>
+
 
 </div>
 
@@ -259,15 +297,17 @@ list.innerHTML += html;
 if(
 data.importance==="important"
 &&
-count<3
+count < 3
 ){
 
 important.innerHTML += html;
 
 
-}else if(count<3){
+}else if(count < 3){
+
 
 latest.innerHTML += html;
+
 
 }
 
@@ -286,7 +326,9 @@ count++;
 
 
 
-// お知らせ表示判定
+
+
+// お知らせ表示条件
 
 function canDisplayNotice(notice){
 
@@ -296,43 +338,54 @@ new Date();
 
 
 
-const start =
-notice.startDate
-?
-new Date(notice.startDate)
-:
-null;
+if(notice.startDate){
 
+
+const start =
+new Date(
+notice.startDate
+);
+
+
+
+if(today < start){
+
+return false;
+
+}
+
+
+}
+
+
+
+
+if(notice.endDate){
 
 
 const end =
+new Date(
 notice.endDate
-?
-new Date(notice.endDate)
-:
-null;
+);
 
 
 
-if(start && today < start){
+if(today > end){
 
 return false;
 
 }
 
 
-
-if(end && today > end){
-
-return false;
-
 }
+
+
 
 
 
 
 if(
-notice.targetType==="all"
+notice.targetType === "all"
 ){
 
 return true;
@@ -341,8 +394,10 @@ return true;
 
 
 
+
+
 if(
-notice.targetType==="block"
+notice.targetType === "block"
 ){
 
 return (
@@ -353,8 +408,10 @@ notice.block === userData.block
 
 
 
+
+
 if(
-notice.targetType==="block_grade"
+notice.targetType === "block_grade"
 ){
 
 return (
@@ -371,8 +428,10 @@ notice.grade === userData.grade
 
 
 
+
+
 if(
-notice.targetType==="individual"
+notice.targetType === "individual"
 ){
 
 return (
@@ -380,6 +439,8 @@ notice.uid === currentUser.uid
 );
 
 }
+
+
 
 
 
@@ -394,15 +455,19 @@ return false;
 
 
 
+
+
 // 連絡送信
 
 window.sendMessage = async function(){
 
 
 const text =
-document.getElementById(
+document
+.getElementById(
 "messageText"
-).value;
+)
+.value;
 
 
 
@@ -418,9 +483,11 @@ return;
 
 
 
+
 await addDoc(
 collection(db,"messages"),
 {
+
 
 senderUid:
 currentUser.uid,
@@ -439,6 +506,7 @@ status:"unread",
 createdAt:
 serverTimestamp()
 
+
 }
 
 );
@@ -450,6 +518,14 @@ alert(
 );
 
 
+
+document
+.getElementById(
+"messageText"
+)
+.value="";
+
+
 };
 
 
@@ -459,132 +535,34 @@ alert(
 
 
 
-// 配布文書
 
-let documentPage = 1;
+// 連絡履歴
 
-
-const documentLimit = 10;
+async function loadMessages(){
 
 
+const area =
+document.getElementById(
+"messageHistory"
+);
 
-async function loadDocuments(){
+
+
+if(!area)return;
+
 
 
 const snap =
 await getDocs(
 query(
-collection(db,"documents"),
-orderBy(
-"createdAt",
-"desc"
+collection(db,"messages"),
+where(
+"senderUid",
+"==",
+currentUser.uid
 )
 )
 );
-
-
-
-const docs=[];
-
-
-snap.forEach(d=>{
-
-docs.push(d.data());
-
-});
-
-
-
-showDocuments(
-docs
-);
-
-
-}
-
-
-
-
-function showDocuments(list){
-
-
-const area =
-document.getElementById(
-"documentList"
-);
-
-
-if(!area)return;
-
-
-
-area.innerHTML="";
-
-
-
-const start =
-(documentPage-1)
-*
-documentLimit;
-
-
-
-const data =
-list.slice(
-start,
-start + documentLimit
-);
-
-
-
-data.forEach(item=>{
-
-
-area.innerHTML += `
-
-<p>
-
-<a href="${item.fileUrl}" target="_blank">
-
-${item.title}
-
-</a>
-
-</p>
-
-`;
-
-});
-
-
-}
-
-
-
-
-
-
-
-// カレンダー
-
-async function loadCalendar(){
-
-
-const snap =
-await getDocs(
-collection(db,"calendar")
-);
-
-
-
-const area =
-document.getElementById(
-"calendarArea"
-);
-
-
-
-if(!area)return;
 
 
 
@@ -602,15 +580,9 @@ item.data();
 
 area.innerHTML += `
 
-<div class="calendar-event">
+<div class="card">
 
-<strong>
-${data.date}
-</strong>
-
-<br>
-
-${data.title}
+${data.body}
 
 </div>
 
@@ -627,6 +599,78 @@ ${data.title}
 
 
 
+
+
+// 配布文書
+
+async function loadDocuments(){
+
+
+const area =
+document.getElementById(
+"documentList"
+);
+
+
+
+if(!area)return;
+
+
+
+const snap =
+await getDocs(
+query(
+collection(db,"documents"),
+orderBy(
+"createdAt",
+"desc"
+)
+)
+);
+
+
+
+area.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+area.innerHTML += `
+
+<div class="card">
+
+<a href="${data.fileUrl}" target="_blank">
+
+${data.title}
+
+</a>
+
+</div>
+
+`;
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
 // 成績送信
 
 window.sendScore = async function(){
@@ -635,6 +679,7 @@ window.sendScore = async function(){
 await addDoc(
 collection(db,"scores"),
 {
+
 
 uid:
 currentUser.uid,
@@ -645,27 +690,34 @@ userData.name,
 
 
 testName:
-document.getElementById(
+document
+.getElementById(
 "testName"
-).value,
+)
+.value,
 
 
 subject:
-document.getElementById(
+document
+.getElementById(
 "subject"
-).value,
+)
+.value,
 
 
 score:
 Number(
-document.getElementById(
+document
+.getElementById(
 "score"
-).value
+)
+.value
 ),
 
 
 createdAt:
 serverTimestamp()
+
 
 }
 
