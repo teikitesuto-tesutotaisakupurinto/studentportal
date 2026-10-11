@@ -14,14 +14,31 @@ import {
 
 let currentDate = new Date();
 
-let calendarEvents = [];
+let events = [];
 
 
 
 
+// =====================
 // 予定取得
+// =====================
 
 async function loadCalendar(){
+
+
+const area =
+document.getElementById(
+"calendarArea"
+);
+
+
+
+if(!area){
+
+return;
+
+}
+
 
 
 const snap =
@@ -34,14 +51,17 @@ orderBy("date")
 
 
 
-calendarEvents = [];
+events = [];
+
 
 
 snap.forEach(doc=>{
 
-calendarEvents.push(
+
+events.push(
 doc.data()
 );
+
 
 });
 
@@ -49,13 +69,19 @@ doc.data()
 
 renderCalendar();
 
+
 }
 
 
 
 
 
-// カレンダー生成
+
+
+
+// =====================
+// カレンダー描画
+// =====================
 
 function renderCalendar(){
 
@@ -85,7 +111,7 @@ currentDate.getMonth();
 
 
 
-const firstDay =
+const first =
 new Date(
 year,
 month,
@@ -94,13 +120,12 @@ month,
 
 
 
-const lastDate =
+const last =
 new Date(
 year,
 month + 1,
 0
-).getDate();
-
+);
 
 
 
@@ -111,7 +136,9 @@ let html = `
 
 
 <button onclick="prevMonth()">
+
 前月
+
 </button>
 
 
@@ -125,7 +152,9 @@ ${year}年${month + 1}月
 
 
 <button onclick="nextMonth()">
+
 次月
+
 </button>
 
 
@@ -156,11 +185,12 @@ ${year}年${month + 1}月
 
 
 
-// 月初の空白
+
+// 月初空白
 
 for(
-let i = 0;
-i < firstDay.getDay();
+let i=0;
+i<first.getDay();
 i++
 ){
 
@@ -170,17 +200,22 @@ html += "<td></td>";
 
 
 
+
+
+
 // 日付
 
 for(
-let day = 1;
-day <= lastDate;
+let day=1;
+day<=last.getDate();
 day++
 ){
 
 
 const date =
+
 `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
 
 
 
@@ -199,9 +234,9 @@ ${day}
 
 
 
-// 予定表示
 
-calendarEvents.forEach(event=>{
+
+events.forEach(event=>{
 
 
 if(event.date === date){
@@ -217,10 +252,7 @@ ${event.title}
 
 `;
 
-
-
 }
-
 
 
 });
@@ -232,8 +264,9 @@ html += "</td>";
 
 
 
+
 if(
-(firstDay.getDay() + day) % 7 === 0
+(first.getDay()+day)%7===0
 ){
 
 html += "</tr><tr>";
@@ -242,6 +275,7 @@ html += "</tr><tr>";
 
 
 }
+
 
 
 
@@ -264,13 +298,20 @@ area.innerHTML = html;
 
 
 
-// 前月
+
+
+
+
+// =====================
+// 月変更
+// =====================
+
 
 window.prevMonth = function(){
 
 
 currentDate.setMonth(
-currentDate.getMonth() - 1
+currentDate.getMonth()-1
 );
 
 
@@ -283,14 +324,11 @@ renderCalendar();
 
 
 
-
-// 次月
-
 window.nextMonth = function(){
 
 
 currentDate.setMonth(
-currentDate.getMonth() + 1
+currentDate.getMonth()+1
 );
 
 
