@@ -11,115 +11,210 @@ body {
   "Noto Sans JP",
   sans-serif;
 
-  background: #f5f6f8;
+  background: #f4f6f8;
 
   color: #333;
 
 }
 
 
-/* ログイン */
+/* レイアウト */
 
-.login-container {
-
-  min-height: 100vh;
+.layout {
 
   display: flex;
 
-  justify-content: center;
-
-  align-items: center;
-
-}
-
-
-.login-box {
-
-  width: 380px;
-
-  background: white;
-
-  padding: 35px;
-
-  border-radius: 12px;
-
-  box-shadow:
-  0 5px 20px rgba(0,0,0,0.1);
-
-}
-
-
-.login-box h1 {
-
-  text-align: center;
-
-  font-size: 24px;
+  min-height: 100vh;
 
 }
 
 
 
-label {
+/* サイドバー */
 
-  display: block;
+.sidebar {
 
-  margin-bottom: 5px;
+  width: 250px;
+
+  background: #fff;
+
+  border-right: 1px solid #ddd;
+
+  padding: 20px;
+
+  position: fixed;
+
+  height: 100vh;
+
+}
+
+
+
+.logo {
+
+  font-size: 18px;
 
   font-weight: bold;
 
+  margin-bottom: 30px;
+
 }
 
 
 
-input,
-textarea,
-select {
+.sidebar button {
 
   width: 100%;
 
+  background: transparent;
+
+  color: #333;
+
+  text-align: left;
+
+  border-radius: 8px;
+
   padding: 12px;
+
+  margin-bottom: 5px;
+
+}
+
+
+
+.sidebar button:hover {
+
+  background: #eef2ff;
+
+}
+
+
+
+
+
+/* メイン */
+
+.content {
+
+  margin-left: 250px;
+
+  padding: 30px;
+
+  width: calc(100% - 250px);
+
+}
+
+
+
+section {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 25px;
+
+  margin-bottom: 20px;
+
+}
+
+
+
+
+
+.hidden {
+
+  display: none;
+
+}
+
+
+
+
+/* カード */
+
+.card {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 20px;
+
+  box-shadow:
+
+  0 2px 8px rgba(0,0,0,0.05);
+
+  margin-bottom: 20px;
+
+}
+
+
+
+.notice-card {
+
+  padding: 18px;
+
+  border-radius: 10px;
+
+  border: 1px solid #eee;
 
   margin-bottom: 15px;
 
-  border:
+}
 
-  1px solid #ddd;
 
-  border-radius: 6px;
 
-  font-size: 14px;
+.notice-card h3 {
+
+  margin-top: 8px;
 
 }
 
 
 
-textarea {
 
-  min-height: 120px;
+
+/* 重要タグ */
+
+.important {
+
+  display: inline-block;
+
+  background: #dc2626;
+
+  color: white;
+
+  padding: 4px 10px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
 
 }
 
 
+
+
+
+/* ボタン */
 
 button {
 
-  width: 100%;
-
-  padding: 12px;
-
   border: none;
-
-  border-radius: 6px;
 
   background: #2563eb;
 
   color: white;
 
+  padding: 12px;
+
+  border-radius: 8px;
+
   cursor: pointer;
 
-  margin-bottom: 10px;
-
 }
+
 
 
 button:hover {
@@ -131,174 +226,20 @@ button:hover {
 
 
 
-.separator {
 
-  text-align: center;
+/* 入力 */
 
-  margin: 15px 0;
+input,
+textarea,
+select {
 
-  color: #777;
+  width:100%;
 
-}
-
-
-
-/* Googleログイン */
-
-.google-btn {
-
-  background: white;
-
-  color: #333;
-
-  border: 1px solid #ddd;
-
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-  gap:10px;
-
-}
-
-
-.google-btn img {
-
-  width:20px;
-
-}
-
-
-
-
-
-/* ポータル */
-
-.portal {
-
-  display:flex;
-
-  min-height:100vh;
-
-}
-
-
-
-/* サイドバー */
-
-.sidebar {
-
-  width:250px;
-
-  background:white;
-
-  border-right:1px solid #ddd;
-
-  padding:20px;
-
-}
-
-
-
-.sidebar h2 {
-
-  font-size:18px;
-
-  margin-bottom:25px;
-
-}
-
-
-
-.sidebar button {
-
-  background:white;
-
-  color:#333;
-
-  text-align:left;
-
-}
-
-
-
-.sidebar button:hover {
-
-  background:#f0f2f5;
-
-}
-
-
-
-
-
-
-/* メイン */
-
-.main {
-
-  flex:1;
-
-  padding:30px;
-
-}
-
-
-
-
-
-/* ページ */
-
-.page,
-.admin-page {
-
-  background:white;
-
-  padding:25px;
-
-  border-radius:10px;
-
-}
-
-
-
-
-.hidden {
-
-  display:none;
-
-}
-
-
-
-
-/* カード */
-
-.card {
-
-  background:white;
-
-  padding:20px;
-
-  border-radius:10px;
-
-  margin-bottom:20px;
-
-}
-
-
-
-.notice-card {
-
-  background:white;
+  padding:12px;
 
   border:
 
   1px solid #ddd;
-
-  padding:15px;
 
   border-radius:8px;
 
@@ -308,9 +249,61 @@ button:hover {
 
 
 
-.notice-card h3 {
+textarea {
 
-  margin-top:0;
+  min-height:120px;
+
+}
+
+
+
+
+/* Googleボタン */
+
+.google-btn {
+
+  background:white;
+
+  color:#333;
+
+  border:
+
+  1px solid #ddd;
+
+}
+
+
+
+.google-btn img {
+
+  width:20px;
+
+  vertical-align:middle;
+
+}
+
+
+
+
+/* 配布文書ページ */
+
+.pagination {
+
+  display:flex;
+
+  gap:8px;
+
+  margin-top:20px;
+
+}
+
+
+
+.pagination button {
+
+  width:auto;
+
+  padding:8px 15px;
 
 }
 
@@ -318,60 +311,140 @@ button:hover {
 
 
 
+/* カレンダー */
 
-/* リンク */
+.calendar-header {
 
-a {
+  display:flex;
 
-  color:#2563eb;
+  justify-content:space-between;
 
-  text-decoration:none;
-
-}
-
-
-
-a:hover {
-
-  text-decoration:underline;
+  align-items:center;
 
 }
 
 
 
+.calendar {
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  margin-top:20px;
+
+}
 
 
-/* スマホ対応 */
+
+.calendar th,
+.calendar td {
+
+  border:1px solid #ddd;
+
+  height:100px;
+
+  vertical-align:top;
+
+  padding:8px;
+
+}
+
+
+
+.day {
+
+  font-weight:bold;
+
+}
+
+
+
+.event {
+
+  background:#2563eb;
+
+  color:white;
+
+  padding:4px;
+
+  border-radius:5px;
+
+  font-size:12px;
+
+  margin-top:5px;
+
+}
+
+
+
+
+/* ログイン */
+
+.login-container {
+
+  min-height:100vh;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+}
+
+
+
+.login-box {
+
+  background:white;
+
+  width:380px;
+
+  padding:35px;
+
+  border-radius:15px;
+
+  box-shadow:
+
+  0 5px 20px rgba(0,0,0,.1);
+
+}
+
+
+
+
+
+/* スマホ */
 
 @media(max-width:768px){
 
 
-.portal{
+.sidebar {
 
-  flex-direction:column;
-
-}
-
-
-.sidebar{
+  position:relative;
 
   width:100%;
 
+  height:auto;
+
 }
 
 
+.layout {
 
-.main{
+  display:block;
+
+}
+
+
+.content {
+
+  margin-left:0;
+
+  width:100%;
 
   padding:15px;
-
-}
-
-
-
-.login-box{
-
-  width:90%;
 
 }
 
