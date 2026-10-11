@@ -2,135 +2,277 @@
 <html lang="ja">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>定期テスト対策ポータル</title>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+生徒ポータル
+</title>
+
 
 <link rel="stylesheet" href="css/style.css">
 
+
 </head>
+
 
 <body>
 
+
 <div class="layout">
+
+
+<!-- サイドメニュー -->
 
 <aside class="sidebar">
 
+
 <div class="logo">
+
 定期テスト対策ポータル
+
 </div>
 
 
+
 <nav>
+
 
 <button onclick="showPage('home')">
 ホーム
 </button>
 
+
 <button onclick="showPage('notice')">
 お知らせ
 </button>
+
 
 <button onclick="showPage('message')">
 連絡
 </button>
 
+
 <button onclick="showPage('documents')">
 配布文書
 </button>
+
 
 <button onclick="showPage('calendar')">
 カレンダー
 </button>
 
+
 <button onclick="showPage('scores')">
 テスト成績
 </button>
+
 
 <button onclick="showPage('settings')">
 各種設定
 </button>
 
+
 <hr>
+
 
 <button onclick="logout()">
 ログアウト
 </button>
 
+
 </nav>
+
 
 </aside>
 
 
 
+
+
+<!-- メイン -->
+
 <main class="content">
+
+
+
 
 
 <section id="home">
 
-<h1>ホーム</h1>
+
+<h1>
+ホーム
+</h1>
+
+
 
 <div class="card">
-<h3>重要なお知らせ</h3>
-<div id="importantNotice"></div>
+
+
+<h3>
+重要なお知らせ
+</h3>
+
+
+<div id="importantNotice">
+
+読み込み中...
+
 </div>
 
 
-<div class="card">
-<h3>最新のお知らせ</h3>
-<div id="latestNotice"></div>
 </div>
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+最新のお知らせ
+</h3>
+
+
+<div id="latestNotice">
+
+読み込み中...
+
+</div>
+
+
+</div>
+
 
 </section>
+
+
+
+
+
 
 
 
 
 <section id="notice" class="hidden">
 
-<h1>お知らせ</h1>
 
-<div id="noticeList"></div>
+<h1>
+お知らせ
+</h1>
+
+
+<div id="noticeList">
+
+</div>
+
 
 </section>
+
+
+
+
+
 
 
 
 
 <section id="message" class="hidden">
 
-<h1>連絡</h1>
 
-<textarea id="messageText"
-placeholder="運営への連絡"></textarea>
+<h1>
+連絡
+</h1>
+
+
+<textarea
+id="messageText"
+placeholder="運営への連絡内容">
+</textarea>
+
+
 
 <button onclick="sendMessage()">
+
 送信
+
 </button>
 
+
+
+
+<h3>
+送信履歴
+</h3>
+
+
+<div id="messageHistory">
+
+</div>
+
+
+
 </section>
+
+
+
+
+
 
 
 
 
 <section id="documents" class="hidden">
 
-<h1>配布文書</h1>
 
-<div id="documentList"></div>
+<h1>
+配布文書
+</h1>
+
+
+<div id="documentList">
+
+</div>
+
+
 
 
 <div class="pagination">
 
-<button>1</button>
-<button>2</button>
-<button>3</button>
-<button>次へ</button>
+
+<button>
+1
+</button>
+
+
+<button>
+2
+</button>
+
+
+<button>
+3
+</button>
+
+
+<button>
+次へ
+</button>
+
 
 </div>
 
+
 </section>
+
+
+
+
 
 
 
@@ -138,11 +280,22 @@ placeholder="運営への連絡"></textarea>
 
 <section id="calendar" class="hidden">
 
-<h1>カレンダー</h1>
 
-<div id="calendarArea"></div>
+<h1>
+カレンダー
+</h1>
+
+
+<div id="calendarArea">
+
+</div>
+
 
 </section>
+
+
+
+
 
 
 
@@ -150,28 +303,66 @@ placeholder="運営への連絡"></textarea>
 
 <section id="scores" class="hidden">
 
-<h1>テスト成績</h1>
+
+<h1>
+テスト成績
+</h1>
 
 
-<input id="testName"
-placeholder="テスト名">
+
+<label>
+テスト名
+</label>
 
 
-<input id="subject"
-placeholder="教科">
+<input
+id="testName"
+placeholder="例：2学期期末テスト">
 
 
-<input id="score"
+
+
+
+<label>
+教科
+</label>
+
+
+<input
+id="subject"
+placeholder="例：数学">
+
+
+
+
+
+<label>
+点数
+</label>
+
+
+<input
+id="score"
 type="number"
 placeholder="点数">
 
 
+
+
+
 <button onclick="sendScore()">
-送信
+
+提出
+
 </button>
 
 
+
 </section>
+
+
+
+
 
 
 
@@ -179,32 +370,62 @@ placeholder="点数">
 
 <section id="settings" class="hidden">
 
-<h1>各種設定</h1>
+
+<h1>
+各種設定
+</h1>
+
 
 
 <div class="card">
 
-<p id="userInfo"></p>
+
+<div id="userInfo">
+
+読み込み中...
+
+</div>
+
+
+
+<br>
+
 
 
 <button onclick="changePassword()">
+
 パスワード変更
+
 </button>
 
 
+
 </div>
+
 
 </section>
 
 
+
+
+
 </main>
+
 
 </div>
 
 
+
+
+
+<script type="module" src="js/auth.js"></script>
+
 <script type="module" src="js/student.js"></script>
 
 <script type="module" src="js/settings.js"></script>
+
+<script type="module" src="js/calendar.js"></script>
+
 
 
 </body>
