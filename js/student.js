@@ -22,39 +22,39 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-
 let currentUser = null;
-
 let userData = null;
 
 
 
-
-
-
-// ページ切替
+// ページ切替 修正版
 
 window.showPage = function(page){
 
 
-document
-.querySelectorAll("main section")
-.forEach(section=>{
+  document
+  .querySelectorAll(".content section")
+  .forEach(section=>{
 
-section.classList.add("hidden");
+    section.classList.add("hidden");
 
-});
+  });
 
 
 
-document
-.getElementById(page)
-.classList.remove("hidden");
+  const target =
+  document.getElementById(page);
+
+
+
+  if(target){
+
+    target.classList.remove("hidden");
+
+  }
 
 
 };
-
-
 
 
 
@@ -77,8 +77,7 @@ return;
 }
 
 
-
-currentUser = user;
+currentUser=user;
 
 
 
@@ -95,9 +94,7 @@ user.uid
 
 if(!snap.exists()){
 
-alert(
-"ユーザー情報がありません"
-);
+alert("ユーザー情報がありません");
 
 return;
 
@@ -105,8 +102,7 @@ return;
 
 
 
-userData =
-snap.data();
+userData=snap.data();
 
 
 
@@ -119,10 +115,7 @@ loadDocuments();
 loadMessages();
 
 
-
 });
-
-
 
 
 
@@ -136,10 +129,7 @@ function loadUserInfo(){
 
 
 const area =
-document.getElementById(
-"userInfo"
-);
-
+document.getElementById("userInfo");
 
 
 if(area){
@@ -147,25 +137,16 @@ if(area){
 
 area.innerHTML = `
 
-名前：
-${userData.name || ""}
+<p>名前：${userData.name || ""}</p>
 
-<br>
+<p>メール：${currentUser.email}</p>
 
-メール：
-${currentUser.email}
+<p>地方：${userData.block || ""}</p>
 
-<br>
-
-地方：
-${userData.block || ""}
-
-<br>
-
-学年：
-${userData.grade || ""}
+<p>学年：${userData.grade || ""}</p>
 
 `;
+
 
 }
 
@@ -189,31 +170,22 @@ const snap =
 await getDocs(
 query(
 collection(db,"notices"),
-orderBy(
-"createdAt",
-"desc"
-)
+orderBy("createdAt","desc")
 )
 );
 
 
 
 const list =
-document.getElementById(
-"noticeList"
-);
+document.getElementById("noticeList");
 
 
 const latest =
-document.getElementById(
-"latestNotice"
-);
+document.getElementById("latestNotice");
 
 
 const important =
-document.getElementById(
-"importantNotice"
-);
+document.getElementById("importantNotice");
 
 
 
@@ -222,9 +194,7 @@ if(!list)return;
 
 
 list.innerHTML="";
-
 latest.innerHTML="";
-
 important.innerHTML="";
 
 
@@ -236,8 +206,7 @@ let count=0;
 snap.forEach(item=>{
 
 
-const data =
-item.data();
+const data=item.data();
 
 
 
@@ -249,39 +218,31 @@ return;
 
 
 
-
 let tag="";
 
 
-if(
-data.importance === "important"
-){
 
-tag = `
-<span class="important">
-重要
-</span>
-`;
+if(data.importance==="important"){
+
+
+tag=`<span class="important">重要</span>`;
+
+
 
 }
 
 
 
 
-const html = `
+const html=`
 
 <div class="notice-card">
 
 ${tag}
 
-<h3>
-${data.title}
-</h3>
+<h3>${data.title}</h3>
 
-
-<p>
-${data.body}
-</p>
+<p>${data.body}</p>
 
 
 </div>
@@ -294,22 +255,18 @@ list.innerHTML += html;
 
 
 
-if(
-data.importance==="important"
-&&
-count < 3
-){
+if(data.importance==="important" && count<3){
 
 important.innerHTML += html;
 
 
-}else if(count < 3){
-
+}else if(count<3){
 
 latest.innerHTML += html;
 
 
 }
+
 
 
 count++;
@@ -328,27 +285,19 @@ count++;
 
 
 
-// お知らせ表示条件
+// お知らせ表示判定
 
 function canDisplayNotice(notice){
 
 
-const today =
-new Date();
+const today=new Date();
 
 
 
 if(notice.startDate){
 
 
-const start =
-new Date(
-notice.startDate
-);
-
-
-
-if(today < start){
+if(today < new Date(notice.startDate)){
 
 return false;
 
@@ -356,21 +305,13 @@ return false;
 
 
 }
-
 
 
 
 if(notice.endDate){
 
 
-const end =
-new Date(
-notice.endDate
-);
-
-
-
-if(today > end){
+if(today > new Date(notice.endDate)){
 
 return false;
 
@@ -383,10 +324,7 @@ return false;
 
 
 
-
-if(
-notice.targetType === "all"
-){
+if(notice.targetType==="all"){
 
 return true;
 
@@ -394,53 +332,41 @@ return true;
 
 
 
+if(notice.targetType==="block"){
 
 
-if(
-notice.targetType === "block"
-){
+return notice.block===userData.block;
 
-return (
-notice.block === userData.block
-);
 
 }
 
 
 
+if(notice.targetType==="block_grade"){
 
-
-if(
-notice.targetType === "block_grade"
-){
 
 return (
 
-notice.block === userData.block
+notice.block===userData.block
 
 &&
 
-notice.grade === userData.grade
+notice.grade===userData.grade
 
 );
+
 
 }
 
 
 
+if(notice.targetType==="individual"){
 
 
-if(
-notice.targetType === "individual"
-){
+return notice.uid===currentUser.uid;
 
-return (
-notice.uid === currentUser.uid
-);
 
 }
-
-
 
 
 
@@ -463,24 +389,17 @@ window.sendMessage = async function(){
 
 
 const text =
-document
-.getElementById(
-"messageText"
-)
-.value;
+document.getElementById("messageText").value;
 
 
 
 if(!text){
 
-alert(
-"内容を入力してください"
-);
+alert("内容を入力してください");
 
 return;
 
 }
-
 
 
 
@@ -489,22 +408,15 @@ collection(db,"messages"),
 {
 
 
-senderUid:
-currentUser.uid,
+senderUid:currentUser.uid,
 
-
-senderName:
-userData.name,
-
+senderName:userData.name,
 
 body:text,
 
-
 status:"unread",
 
-
-createdAt:
-serverTimestamp()
+createdAt:serverTimestamp()
 
 
 }
@@ -513,17 +425,10 @@ serverTimestamp()
 
 
 
-alert(
-"送信しました"
-);
+alert("送信しました");
 
 
-
-document
-.getElementById(
-"messageText"
-)
-.value="";
+document.getElementById("messageText").value="";
 
 
 };
@@ -542,9 +447,7 @@ async function loadMessages(){
 
 
 const area =
-document.getElementById(
-"messageHistory"
-);
+document.getElementById("messageHistory");
 
 
 
@@ -573,8 +476,7 @@ area.innerHTML="";
 snap.forEach(item=>{
 
 
-const data =
-item.data();
+const data=item.data();
 
 
 
@@ -587,6 +489,8 @@ ${data.body}
 </div>
 
 `;
+
+
 
 });
 
@@ -607,9 +511,7 @@ async function loadDocuments(){
 
 
 const area =
-document.getElementById(
-"documentList"
-);
+document.getElementById("documentList");
 
 
 
@@ -621,10 +523,7 @@ const snap =
 await getDocs(
 query(
 collection(db,"documents"),
-orderBy(
-"createdAt",
-"desc"
-)
+orderBy("createdAt","desc")
 )
 );
 
@@ -637,8 +536,7 @@ area.innerHTML="";
 snap.forEach(item=>{
 
 
-const data =
-item.data();
+const data=item.data();
 
 
 
@@ -655,7 +553,6 @@ ${data.title}
 </div>
 
 `;
-
 
 
 });
@@ -681,42 +578,25 @@ collection(db,"scores"),
 {
 
 
-uid:
-currentUser.uid,
+uid:currentUser.uid,
 
-
-name:
-userData.name,
-
+name:userData.name,
 
 testName:
-document
-.getElementById(
-"testName"
-)
-.value,
+document.getElementById("testName").value,
 
 
 subject:
-document
-.getElementById(
-"subject"
-)
-.value,
+document.getElementById("subject").value,
 
 
 score:
 Number(
-document
-.getElementById(
-"score"
-)
-.value
+document.getElementById("score").value
 ),
 
 
-createdAt:
-serverTimestamp()
+createdAt:serverTimestamp()
 
 
 }
@@ -725,9 +605,7 @@ serverTimestamp()
 
 
 
-alert(
-"提出しました"
-);
+alert("提出しました");
 
 
 };
