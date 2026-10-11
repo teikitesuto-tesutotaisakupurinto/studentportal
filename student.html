@@ -25,7 +25,8 @@
 <div class="layout">
 
 
-<!-- サイドメニュー -->
+
+<!-- 左メニュー -->
 
 <aside class="sidebar">
 
@@ -35,6 +36,7 @@
 定期テスト対策ポータル
 
 </div>
+
 
 
 
@@ -84,10 +86,13 @@
 </button>
 
 
+
 </nav>
 
 
 </aside>
+
+
 
 
 
@@ -100,6 +105,9 @@
 
 
 
+
+
+<!-- ホーム -->
 
 <section id="home">
 
@@ -120,8 +128,6 @@
 
 <div id="importantNotice">
 
-読み込み中...
-
 </div>
 
 
@@ -141,8 +147,6 @@
 
 <div id="latestNotice">
 
-読み込み中...
-
 </div>
 
 
@@ -159,7 +163,9 @@
 
 
 
-<section id="notice" class="hidden">
+<!-- お知らせ -->
+
+<section id="notice">
 
 
 <h1>
@@ -182,7 +188,9 @@
 
 
 
-<section id="message" class="hidden">
+<!-- 連絡 -->
+
+<section id="message">
 
 
 <h1>
@@ -190,9 +198,10 @@
 </h1>
 
 
+
 <textarea
 id="messageText"
-placeholder="運営への連絡内容">
+placeholder="運営への連絡内容を入力してください">
 </textarea>
 
 
@@ -211,10 +220,10 @@ placeholder="運営への連絡内容">
 </h3>
 
 
+
 <div id="messageHistory">
 
 </div>
-
 
 
 </section>
@@ -227,12 +236,16 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="documents" class="hidden">
+<!-- 配布文書 -->
+
+<section id="documents">
 
 
 <h1>
 配布文書
 </h1>
+
+
 
 
 <div id="documentList">
@@ -241,31 +254,10 @@ placeholder="運営への連絡内容">
 
 
 
-
-<div class="pagination">
-
-
-<button>
-1
-</button>
-
-
-<button>
-2
-</button>
-
-
-<button>
-3
-</button>
-
-
-<button>
-次へ
-</button>
-
+<div id="documentPagination">
 
 </div>
+
 
 
 </section>
@@ -278,12 +270,15 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="calendar" class="hidden">
+<!-- カレンダー -->
+
+<section id="calendar">
 
 
 <h1>
 カレンダー
 </h1>
+
 
 
 <div id="calendarArea">
@@ -301,12 +296,15 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="scores" class="hidden">
+<!-- テスト成績 -->
+
+<section id="scores">
 
 
 <h1>
 テスト成績
 </h1>
+
 
 
 
@@ -368,12 +366,15 @@ placeholder="点数">
 
 
 
-<section id="settings" class="hidden">
+<!-- 各種設定 -->
+
+<section id="settings">
 
 
 <h1>
 各種設定
 </h1>
+
 
 
 
@@ -385,6 +386,7 @@ placeholder="点数">
 読み込み中...
 
 </div>
+
 
 
 
@@ -403,7 +405,10 @@ placeholder="点数">
 </div>
 
 
+
 </section>
+
+
 
 
 
@@ -418,6 +423,7 @@ placeholder="点数">
 
 
 
+
 <script type="module" src="js/auth.js"></script>
 
 <script type="module" src="js/student.js"></script>
@@ -425,6 +431,23 @@ placeholder="点数">
 <script type="module" src="js/settings.js"></script>
 
 <script type="module" src="js/calendar.js"></script>
+
+
+
+<script>
+
+// 初期表示
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+document.getElementById("home")
+.style.display="block";
+
+});
+
+</script>
 
 
 
