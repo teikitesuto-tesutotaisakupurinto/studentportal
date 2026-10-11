@@ -20,11 +20,13 @@ import {
 
 
 
-// ログイン後の振り分け
+
+// ユーザー振り分け
 
 async function redirectUser(user){
 
-  const userRef = doc(
+  const userRef =
+  doc(
     db,
     "users",
     user.uid
@@ -47,6 +49,7 @@ async function redirectUser(user){
   }
 
 
+
   const data =
   userSnap.data();
 
@@ -54,17 +57,24 @@ async function redirectUser(user){
 
   if(data.role === "admin"){
 
-    location.href =
+    window.location.href =
     "admin.html";
 
   }else{
 
-    location.href =
+
+    window.location.href =
     "student.html";
+
 
   }
 
+
 }
+
+
+
+
 
 
 
@@ -74,16 +84,16 @@ window.login = async function(){
 
 
   const email =
-  document.getElementById(
-    "email"
-  ).value;
+  document
+  .getElementById("email")
+  .value;
 
 
 
   const password =
-  document.getElementById(
-    "password"
-  ).value;
+  document
+  .getElementById("password")
+  .value;
 
 
 
@@ -98,22 +108,31 @@ window.login = async function(){
     );
 
 
+
     await redirectUser(
       result.user
     );
 
 
+
   }catch(error){
 
+
     alert(
-      "ログイン失敗\n"
-      + error.message
+      "ログインに失敗しました\n"
+      +
+      error.message
     );
+
 
   }
 
 
 };
+
+
+
+
 
 
 
@@ -135,7 +154,7 @@ await signInWithPopup(
 
 
 await redirectUser(
- result.user
+  result.user
 );
 
 
@@ -144,8 +163,9 @@ await redirectUser(
 
 
 alert(
-"Googleログイン失敗\n"
-+ error.message
+"Googleログインに失敗しました\n"
++
+error.message
 );
 
 
@@ -153,6 +173,10 @@ alert(
 
 
 };
+
+
+
+
 
 
 
@@ -169,16 +193,20 @@ try{
 await signOut(auth);
 
 
-location.href =
-"index.html";
+
+window.location.replace(
+"index.html"
+);
+
 
 
 }catch(error){
 
 
 alert(
-"ログアウト失敗\n"
-+ error.message
+"ログアウトに失敗しました\n"
++
+error.message
 );
 
 
@@ -191,7 +219,11 @@ alert(
 
 
 
-// ログイン状態確認
+
+
+
+
+// 認証状態確認
 
 onAuthStateChanged(
 auth,
