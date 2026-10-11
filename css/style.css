@@ -18,11 +18,9 @@ body {
 }
 
 
-/* ログイン画面 */
+/* ログイン */
 
 .login-container {
-
-  width: 100%;
 
   min-height: 100vh;
 
@@ -37,16 +35,16 @@ body {
 
 .login-box {
 
-  background: white;
-
   width: 380px;
+
+  background: white;
 
   padding: 35px;
 
   border-radius: 12px;
 
   box-shadow:
-  0 4px 15px rgba(0,0,0,0.1);
+  0 5px 20px rgba(0,0,0,0.1);
 
 }
 
@@ -54,6 +52,20 @@ body {
 .login-box h1 {
 
   text-align: center;
+
+  font-size: 24px;
+
+}
+
+
+
+label {
+
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-weight: bold;
 
 }
 
@@ -63,12 +75,11 @@ input,
 textarea,
 select {
 
-
   width: 100%;
 
   padding: 12px;
 
-  margin: 8px 0 18px;
+  margin-bottom: 15px;
 
   border:
 
@@ -76,13 +87,21 @@ select {
 
   border-radius: 6px;
 
+  font-size: 14px;
+
+}
+
+
+
+textarea {
+
+  min-height: 120px;
 
 }
 
 
 
 button {
-
 
   width: 100%;
 
@@ -100,20 +119,31 @@ button {
 
   margin-bottom: 10px;
 
-
 }
-
 
 
 button:hover {
 
-  opacity: 0.85;
+  opacity: .85;
 
 }
 
 
 
-/* Googleボタン */
+
+.separator {
+
+  text-align: center;
+
+  margin: 15px 0;
+
+  color: #777;
+
+}
+
+
+
+/* Googleログイン */
 
 .google-btn {
 
@@ -123,22 +153,24 @@ button:hover {
 
   border: 1px solid #ddd;
 
-  display: flex;
+  display:flex;
 
-  align-items: center;
+  justify-content:center;
 
-  justify-content: center;
+  align-items:center;
 
-  gap: 10px;
+  gap:10px;
 
 }
 
 
 .google-btn img {
 
-  width: 20px;
+  width:20px;
 
 }
+
+
 
 
 
@@ -146,27 +178,25 @@ button:hover {
 
 .portal {
 
-  display: flex;
+  display:flex;
 
-  min-height: 100vh;
+  min-height:100vh;
 
 }
 
 
 
-/* サイドメニュー */
+/* サイドバー */
 
 .sidebar {
 
+  width:250px;
 
-  width: 250px;
+  background:white;
 
-  background: white;
+  border-right:1px solid #ddd;
 
-  border-right: 1px solid #ddd;
-
-  padding: 20px;
-
+  padding:20px;
 
 }
 
@@ -174,9 +204,9 @@ button:hover {
 
 .sidebar h2 {
 
-  font-size: 18px;
+  font-size:18px;
 
-  margin-bottom: 25px;
+  margin-bottom:25px;
 
 }
 
@@ -184,11 +214,11 @@ button:hover {
 
 .sidebar button {
 
-  background: transparent;
+  background:white;
 
-  color: #333;
+  color:#333;
 
-  text-align: left;
+  text-align:left;
 
 }
 
@@ -196,9 +226,12 @@ button:hover {
 
 .sidebar button:hover {
 
-  background: #f0f2f5;
+  background:#f0f2f5;
 
 }
+
+
+
 
 
 
@@ -206,11 +239,13 @@ button:hover {
 
 .main {
 
-  flex: 1;
+  flex:1;
 
-  padding: 30px;
+  padding:30px;
 
 }
+
+
 
 
 
@@ -219,50 +254,126 @@ button:hover {
 .page,
 .admin-page {
 
-  background: white;
+  background:white;
 
-  padding: 25px;
+  padding:25px;
 
-  border-radius: 10px;
+  border-radius:10px;
 
 }
 
 
 
-/* 非表示 */
 
 .hidden {
 
-  display: none;
+  display:none;
 
 }
 
 
 
-/* お知らせカード */
+
+/* カード */
+
+.card {
+
+  background:white;
+
+  padding:20px;
+
+  border-radius:10px;
+
+  margin-bottom:20px;
+
+}
+
+
 
 .notice-card {
+
+  background:white;
 
   border:
 
   1px solid #ddd;
 
-  padding: 15px;
+  padding:15px;
 
-  border-radius: 8px;
+  border-radius:8px;
 
-  margin-bottom: 15px;
+  margin-bottom:15px;
 
 }
 
 
 
-/* フォーム */
+.notice-card h3 {
 
-textarea {
+  margin-top:0;
 
-  min-height: 120px;
+}
 
-  resize: vertical;
+
+
+
+
+
+/* リンク */
+
+a {
+
+  color:#2563eb;
+
+  text-decoration:none;
+
+}
+
+
+
+a:hover {
+
+  text-decoration:underline;
+
+}
+
+
+
+
+
+/* スマホ対応 */
+
+@media(max-width:768px){
+
+
+.portal{
+
+  flex-direction:column;
+
+}
+
+
+.sidebar{
+
+  width:100%;
+
+}
+
+
+
+.main{
+
+  padding:15px;
+
+}
+
+
+
+.login-box{
+
+  width:90%;
+
+}
+
 
 }
