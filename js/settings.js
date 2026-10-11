@@ -5,6 +5,7 @@ import {
 
 
 import {
+  onAuthStateChanged,
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider
@@ -19,25 +20,13 @@ import {
 
 
 
-// プロフィール取得
 
-async function loadSettings(){
+// 設定情報読み込み
 
-
-const user =
-auth.currentUser;
+async function loadSettings(user){
 
 
-
-if(!user){
-
-return;
-
-}
-
-
-
-const snap =
+const userSnap =
 await getDoc(
 doc(
 db,
@@ -48,7 +37,7 @@ user.uid
 
 
 
-if(!snap.exists()){
+if(!userSnap.exists()){
 
 return;
 
@@ -57,7 +46,7 @@ return;
 
 
 const data =
-snap.data();
+userSnap.data();
 
 
 
@@ -73,23 +62,27 @@ if(area){
 
 area.innerHTML = `
 
-名前：
-${data.name || ""}
+<p>
+名前：${data.name || ""}
+</p>
 
-<br>
 
-メール：
-${user.email || ""}
+<p>
+メールアドレス：
+${user.email}
+</p>
 
-<br>
 
+<p>
 地方：
 ${data.block || ""}
+</p>
 
-<br>
 
+<p>
 学年：
 ${data.grade || ""}
+</p>
 
 `;
 
@@ -101,13 +94,41 @@ ${data.grade || ""}
 
 
 
+
+
+
+
+// 認証確認
+
+onAuthStateChanged(
+auth,
+(user)=>{
+
+
+if(user){
+
+loadSettings(user);
+
+}
+
+
+});
+
+
+
+
+
+
+
+
+
 // パスワード変更
 
 window.changePassword = async function(){
 
 
 
-const current =
+const oldPassword =
 prompt(
 "現在のパスワードを入力してください"
 );
@@ -121,8 +142,10 @@ prompt(
 
 
 
+
+
 if(
-!current ||
+!oldPassword ||
 !newPassword
 ){
 
@@ -132,8 +155,10 @@ return;
 
 
 
+
 const user =
 auth.currentUser;
+
 
 
 
@@ -142,23 +167,38 @@ try{
 
 const credential =
 EmailAuthProvider.credential(
+
 user.email,
-current
+
+oldPassword
+
 );
+
+
 
 
 
 await reauthenticateWithCredential(
+
 user,
+
 credential
+
 );
+
+
 
 
 
 await updatePassword(
+
 user,
+
 newPassword
+
 );
+
+
 
 
 
@@ -168,39 +208,25 @@ alert(
 
 
 
+
+
 }catch(error){
 
 
 
 alert(
-"変更できませんでした\n"
+
+"パスワード変更に失敗しました\n"
+
 +
+
 error.message
+
 );
 
 
-
 }
+
 
 
 };
-
-
-
-
-
-
-// 読み込み
-
-auth.onAuthStateChanged(
-(user)=>{
-
-
-if(user){
-
-loadSettings();
-
-}
-
-
-});
