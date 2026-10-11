@@ -25,18 +25,30 @@ import {
 let currentUser = null;
 let userData = null;
 
+let documents = [];
+
+let documentPage = 1;
+
+const documentPerPage = 10;
 
 
-// ページ切替 修正版
+
+// =====================
+// ページ切替
+// =====================
 
 window.showPage = function(page){
 
 
-  document
-  .querySelectorAll(".content section")
-  .forEach(section=>{
+  const sections =
+  document.querySelectorAll(
+    ".content > section"
+  );
 
-    section.classList.add("hidden");
+
+  sections.forEach(section=>{
+
+    section.style.display = "none";
 
   });
 
@@ -49,7 +61,7 @@ window.showPage = function(page){
 
   if(target){
 
-    target.classList.remove("hidden");
+    target.style.display = "block";
 
   }
 
@@ -61,7 +73,9 @@ window.showPage = function(page){
 
 
 
+// =====================
 // ログイン確認
+// =====================
 
 onAuthStateChanged(
 auth,
@@ -77,7 +91,7 @@ return;
 }
 
 
-currentUser=user;
+currentUser = user;
 
 
 
@@ -94,7 +108,9 @@ user.uid
 
 if(!snap.exists()){
 
-alert("ユーザー情報がありません");
+alert(
+"ユーザー情報がありません"
+);
 
 return;
 
@@ -102,7 +118,8 @@ return;
 
 
 
-userData=snap.data();
+userData =
+snap.data();
 
 
 
@@ -123,13 +140,18 @@ loadMessages();
 
 
 
+// =====================
 // ユーザー情報
+// =====================
 
 function loadUserInfo(){
 
 
 const area =
-document.getElementById("userInfo");
+document.getElementById(
+"userInfo"
+);
+
 
 
 if(area){
@@ -147,7 +169,6 @@ area.innerHTML = `
 
 `;
 
-
 }
 
 
@@ -159,9 +180,9 @@ area.innerHTML = `
 
 
 
-
-
-// お知らせ取得
+// =====================
+// お知らせ
+// =====================
 
 async function loadNotices(){
 
@@ -170,22 +191,31 @@ const snap =
 await getDocs(
 query(
 collection(db,"notices"),
-orderBy("createdAt","desc")
+orderBy(
+"createdAt",
+"desc"
+)
 )
 );
 
 
 
 const list =
-document.getElementById("noticeList");
+document.getElementById(
+"noticeList"
+);
 
 
 const latest =
-document.getElementById("latestNotice");
+document.getElementById(
+"latestNotice"
+);
 
 
 const important =
-document.getElementById("importantNotice");
+document.getElementById(
+"importantNotice"
+);
 
 
 
@@ -199,14 +229,15 @@ important.innerHTML="";
 
 
 
-let count=0;
+let count = 0;
 
 
 
 snap.forEach(item=>{
 
 
-const data=item.data();
+const data =
+item.data();
 
 
 
@@ -218,32 +249,36 @@ return;
 
 
 
-let tag="";
+let tag = "";
 
 
 
-if(data.importance==="important"){
+if(data.importance === "important"){
 
 
-tag=`<span class="important">重要</span>`;
-
-
+tag = `
+<span class="important">
+重要
+</span>
+`;
 
 }
 
 
 
-
-const html=`
+const html = `
 
 <div class="notice-card">
 
 ${tag}
 
-<h3>${data.title}</h3>
+<h3>
+${data.title}
+</h3>
 
-<p>${data.body}</p>
-
+<p>
+${data.body}
+</p>
 
 </div>
 
@@ -255,18 +290,22 @@ list.innerHTML += html;
 
 
 
-if(data.importance==="important" && count<3){
+if(
+data.importance === "important"
+&&
+count < 3
+){
 
 important.innerHTML += html;
 
 
-}else if(count<3){
+}else if(count < 3){
+
 
 latest.innerHTML += html;
 
 
 }
-
 
 
 count++;
@@ -284,13 +323,11 @@ count++;
 
 
 
-
-// お知らせ表示判定
-
 function canDisplayNotice(notice){
 
 
-const today=new Date();
+const today =
+new Date();
 
 
 
@@ -302,7 +339,6 @@ if(today < new Date(notice.startDate)){
 return false;
 
 }
-
 
 }
 
@@ -317,14 +353,14 @@ return false;
 
 }
 
-
 }
 
 
 
 
 
-if(notice.targetType==="all"){
+
+if(notice.targetType === "all"){
 
 return true;
 
@@ -332,26 +368,27 @@ return true;
 
 
 
-if(notice.targetType==="block"){
+if(notice.targetType === "block"){
 
 
-return notice.block===userData.block;
+return notice.block === userData.block;
 
 
 }
 
 
 
-if(notice.targetType==="block_grade"){
+
+if(notice.targetType === "block_grade"){
 
 
 return (
 
-notice.block===userData.block
+notice.block === userData.block
 
 &&
 
-notice.grade===userData.grade
+notice.grade === userData.grade
 
 );
 
@@ -360,13 +397,17 @@ notice.grade===userData.grade
 
 
 
-if(notice.targetType==="individual"){
 
 
-return notice.uid===currentUser.uid;
+if(notice.targetType === "individual"){
+
+
+return notice.uid === currentUser.uid;
 
 
 }
+
+
 
 
 
@@ -382,20 +423,25 @@ return false;
 
 
 
-
+// =====================
 // 連絡送信
+// =====================
 
 window.sendMessage = async function(){
 
 
 const text =
-document.getElementById("messageText").value;
+document.getElementById(
+"messageText"
+).value;
 
 
 
 if(!text){
 
-alert("内容を入力してください");
+alert(
+"内容を入力してください"
+);
 
 return;
 
@@ -407,16 +453,22 @@ await addDoc(
 collection(db,"messages"),
 {
 
+senderUid:
+currentUser.uid,
 
-senderUid:currentUser.uid,
 
-senderName:userData.name,
+senderName:
+userData.name,
+
 
 body:text,
 
+
 status:"unread",
 
-createdAt:serverTimestamp()
+
+createdAt:
+serverTimestamp()
 
 
 }
@@ -425,10 +477,15 @@ createdAt:serverTimestamp()
 
 
 
-alert("送信しました");
+alert(
+"送信しました"
+);
 
 
-document.getElementById("messageText").value="";
+
+document.getElementById(
+"messageText"
+).value="";
 
 
 };
@@ -441,13 +498,17 @@ document.getElementById("messageText").value="";
 
 
 
+// =====================
 // 連絡履歴
+// =====================
 
 async function loadMessages(){
 
 
 const area =
-document.getElementById("messageHistory");
+document.getElementById(
+"messageHistory"
+);
 
 
 
@@ -476,7 +537,8 @@ area.innerHTML="";
 snap.forEach(item=>{
 
 
-const data=item.data();
+const data =
+item.data();
 
 
 
@@ -505,13 +567,65 @@ ${data.body}
 
 
 
+// =====================
 // 配布文書
+// =====================
 
 async function loadDocuments(){
 
 
+const snap =
+await getDocs(
+query(
+collection(db,"documents"),
+orderBy(
+"createdAt",
+"desc"
+)
+)
+);
+
+
+
+documents = [];
+
+
+
+snap.forEach(item=>{
+
+documents.push(
+item.data()
+);
+
+});
+
+
+
+showDocuments();
+
+
+}
+
+
+
+
+
+
+
+
+function showDocuments(){
+
+
 const area =
-document.getElementById("documentList");
+document.getElementById(
+"documentList"
+);
+
+
+const pager =
+document.getElementById(
+"documentPagination"
+);
 
 
 
@@ -519,34 +633,35 @@ if(!area)return;
 
 
 
-const snap =
-await getDocs(
-query(
-collection(db,"documents"),
-orderBy("createdAt","desc")
-)
-);
-
-
-
 area.innerHTML="";
 
 
 
-snap.forEach(item=>{
+const start =
+(documentPage - 1)
+*
+documentPerPage;
 
 
-const data=item.data();
 
+const display =
+documents.slice(
+start,
+start + documentPerPage
+);
+
+
+
+display.forEach(doc=>{
 
 
 area.innerHTML += `
 
 <div class="card">
 
-<a href="${data.fileUrl}" target="_blank">
+<a href="${doc.fileUrl}" target="_blank">
 
-${data.title}
+${doc.title}
 
 </a>
 
@@ -554,8 +669,69 @@ ${data.title}
 
 `;
 
-
 });
+
+
+
+
+
+// 10件以下はページ表示なし
+
+if(documents.length <= documentPerPage){
+
+pager.innerHTML="";
+
+return;
+
+}
+
+
+
+const pages =
+Math.ceil(
+documents.length / documentPerPage
+);
+
+
+
+pager.innerHTML="";
+
+
+
+for(
+let i=1;
+i<=pages;
+i++
+){
+
+
+const button =
+document.createElement(
+"button"
+);
+
+
+
+button.textContent=i;
+
+
+button.onclick=()=>{
+
+
+documentPage=i;
+
+
+showDocuments();
+
+
+};
+
+
+
+pager.appendChild(button);
+
+
+}
 
 
 }
@@ -568,7 +744,9 @@ ${data.title}
 
 
 
+// =====================
 // 成績送信
+// =====================
 
 window.sendScore = async function(){
 
@@ -577,27 +755,36 @@ await addDoc(
 collection(db,"scores"),
 {
 
+uid:
+currentUser.uid,
 
-uid:currentUser.uid,
 
-name:userData.name,
+name:
+userData.name,
+
 
 testName:
-document.getElementById("testName").value,
+document.getElementById(
+"testName"
+).value,
 
 
 subject:
-document.getElementById("subject").value,
+document.getElementById(
+"subject"
+).value,
 
 
 score:
 Number(
-document.getElementById("score").value
+document.getElementById(
+"score"
+).value
 ),
 
 
-createdAt:serverTimestamp()
-
+createdAt:
+serverTimestamp()
 
 }
 
@@ -605,7 +792,9 @@ createdAt:serverTimestamp()
 
 
 
-alert("提出しました");
+alert(
+"提出しました"
+);
 
 
 };
