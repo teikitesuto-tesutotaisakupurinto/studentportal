@@ -6,7 +6,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ポータル管理画面</title>
+<title>
+運営管理画面
+</title>
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -21,6 +23,7 @@
 
 <aside class="sidebar">
 
+
 <h2>
 運営管理
 </h2>
@@ -28,37 +31,38 @@
 
 <nav>
 
+
 <button onclick="showAdminPage('dashboard')">
 ダッシュボード
 </button>
 
 
-<button onclick="showAdminPage('noticeCreate')">
+<button onclick="showAdminPage('notice')">
 お知らせ管理
 </button>
 
 
-<button onclick="showAdminPage('messageManage')">
+<button onclick="showAdminPage('messages')">
 連絡管理
 </button>
 
 
-<button onclick="showAdminPage('documentManage')">
+<button onclick="showAdminPage('documents')">
 配布文書管理
 </button>
 
 
-<button onclick="showAdminPage('calendarManage')">
+<button onclick="showAdminPage('calendar')">
 カレンダー管理
 </button>
 
 
-<button onclick="showAdminPage('scoreManage')">
+<button onclick="showAdminPage('scores')">
 テスト成績管理
 </button>
 
 
-<button onclick="showAdminPage('userManage')">
+<button onclick="showAdminPage('users')">
 生徒管理
 </button>
 
@@ -71,19 +75,27 @@
 
 
 
+
 <main class="main">
 
 
 
 <section id="dashboard" class="admin-page">
 
+
 <h1>
 ダッシュボード
 </h1>
 
+
+<div class="card">
+
 <p>
-運営情報を表示します
+管理画面へようこそ
 </p>
+
+</div>
+
 
 </section>
 
@@ -91,12 +103,14 @@
 
 
 
-<section id="noticeCreate" class="admin-page hidden">
+
+<section id="notice" class="admin-page hidden">
 
 
 <h1>
 お知らせ作成
 </h1>
+
 
 
 <label>
@@ -116,29 +130,36 @@
 
 
 
+
 <label>
 送信範囲
 </label>
 
 
-<select id="targetType"
+<select
+id="targetType"
 onchange="changeTarget()">
+
 
 <option value="">
 選択してください
 </option>
 
+
 <option value="all">
 全ブロック全学年一斉送信
 </option>
+
 
 <option value="block">
 ブロック一斉送信
 </option>
 
+
 <option value="block_grade">
 ブロック＋学年指定送信
 </option>
+
 
 <option value="individual">
 個別送信
@@ -150,15 +171,17 @@ onchange="changeTarget()">
 
 
 
+
 <div id="blockArea" class="hidden">
 
 
 <label>
-ブロック
+ブロック（地方）
 </label>
 
 
 <select id="block">
+
 
 <option>北海道</option>
 <option>東北</option>
@@ -169,9 +192,12 @@ onchange="changeTarget()">
 <option>四国</option>
 <option>九州</option>
 
+
 </select>
 
+
 </div>
+
 
 
 
@@ -187,9 +213,11 @@ onchange="changeTarget()">
 
 <select id="grade">
 
+
 <option>中学1年</option>
 <option>中学2年</option>
 <option>中学3年</option>
+
 
 </select>
 
@@ -199,13 +227,18 @@ onchange="changeTarget()">
 
 
 
+
+
 <div id="userArea" class="hidden">
 
+
 <label>
-生徒ID
+対象生徒ID
 </label>
 
+
 <input id="targetUid">
+
 
 </div>
 
@@ -220,7 +253,6 @@ onchange="changeTarget()">
 </button>
 
 
-
 </section>
 
 
@@ -228,77 +260,133 @@ onchange="changeTarget()">
 
 
 
-<section id="messageManage" class="admin-page hidden">
+
+
+<section id="messages" class="admin-page hidden">
+
 
 <h1>
 連絡管理
 </h1>
 
-<p>
-生徒からの連絡確認
-</p>
+
+<div id="messageList">
+
+読み込み中...
+
+</div>
+
 
 </section>
 
 
 
 
-<section id="documentManage" class="admin-page hidden">
+
+
+
+
+<section id="documents" class="admin-page hidden">
+
 
 <h1>
 配布文書管理
 </h1>
 
-<p>
-資料アップロード
-</p>
+
+<input id="documentTitle"
+placeholder="資料名">
+
+
+<input id="documentUrl"
+placeholder="PDF URL">
+
+
+<button onclick="addDocument()">
+
+登録
+
+</button>
+
 
 </section>
 
 
 
 
-<section id="calendarManage" class="admin-page hidden">
+
+
+
+
+<section id="calendar" class="admin-page hidden">
+
 
 <h1>
 カレンダー管理
 </h1>
 
-<p>
-予定登録
-</p>
+
+<input id="calendarTitle"
+placeholder="予定名">
+
+
+<input id="calendarDate"
+type="date">
+
+
+<button onclick="addCalendar()">
+
+登録
+
+</button>
+
 
 </section>
 
 
 
 
-<section id="scoreManage" class="admin-page hidden">
+
+
+
+
+<section id="scores" class="admin-page hidden">
+
 
 <h1>
 テスト成績管理
 </h1>
 
-<p>
-成績一覧
-</p>
+
+<div id="scoreList">
+
+</div>
+
 
 </section>
 
 
 
 
-<section id="userManage" class="admin-page hidden">
+
+
+
+
+<section id="users" class="admin-page hidden">
+
 
 <h1>
 生徒管理
 </h1>
 
-<p>
-生徒一覧
-</p>
+
+<div id="userList">
+
+</div>
+
 
 </section>
+
 
 
 
@@ -309,7 +397,12 @@ onchange="changeTarget()">
 
 
 
-<script type="module" src="js/admin.js"></script>
+
+
+<script
+type="module"
+src="js/admin.js">
+</script>
 
 
 </body>
