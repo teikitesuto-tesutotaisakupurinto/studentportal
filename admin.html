@@ -25,6 +25,7 @@
 <div class="layout">
 
 
+
 <aside class="sidebar">
 
 
@@ -74,7 +75,9 @@
 </button>
 
 
+
 <hr>
+
 
 
 <button onclick="logout()">
@@ -86,6 +89,7 @@
 
 
 </aside>
+
 
 
 
@@ -123,7 +127,7 @@
 
 
 
-<section id="notice" class="hidden">
+<section id="notice">
 
 
 <h1>
@@ -132,9 +136,11 @@
 
 
 
+
 <label>
 タイトル
 </label>
+
 
 <input id="noticeTitle">
 
@@ -145,6 +151,7 @@
 <label>
 本文
 </label>
+
 
 <textarea id="noticeBody"></textarea>
 
@@ -172,6 +179,7 @@
 
 
 </select>
+
 
 
 
@@ -223,11 +231,9 @@ onchange="changeTarget()">
 </option>
 
 
-
 <option value="all">
 全ブロック全学年一斉送信
 </option>
-
 
 
 <option value="block">
@@ -235,17 +241,14 @@ onchange="changeTarget()">
 </option>
 
 
-
 <option value="block_grade">
 ブロック＋学年指定送信
 </option>
 
 
-
 <option value="individual">
 個別送信
 </option>
-
 
 
 </select>
@@ -257,7 +260,8 @@ onchange="changeTarget()">
 
 
 
-<div id="blockArea" class="hidden">
+<div id="blockArea"
+style="display:none;">
 
 
 <label>
@@ -290,7 +294,8 @@ onchange="changeTarget()">
 
 
 
-<div id="gradeArea" class="hidden">
+<div id="gradeArea"
+style="display:none;">
 
 
 <label>
@@ -301,19 +306,9 @@ onchange="changeTarget()">
 <select id="grade">
 
 
-<option>
-中学1年
-</option>
-
-
-<option>
-中学2年
-</option>
-
-
-<option>
-中学3年
-</option>
+<option>中学1年</option>
+<option>中学2年</option>
+<option>中学3年</option>
 
 
 </select>
@@ -328,7 +323,8 @@ onchange="changeTarget()">
 
 
 
-<div id="userArea" class="hidden">
+<div id="userArea"
+style="display:none;">
 
 
 <label>
@@ -340,7 +336,6 @@ onchange="changeTarget()">
 
 
 </div>
-
 
 
 
@@ -364,7 +359,7 @@ onchange="changeTarget()">
 
 
 
-<section id="messages" class="hidden">
+<section id="messages">
 
 
 <h1>
@@ -387,7 +382,7 @@ onchange="changeTarget()">
 
 
 
-<section id="documents" class="hidden">
+<section id="documents">
 
 
 <h1>
@@ -396,9 +391,11 @@ onchange="changeTarget()">
 
 
 
+
 <input
 id="documentTitle"
 placeholder="資料名">
+
 
 
 <input
@@ -424,12 +421,13 @@ placeholder="PDF URL">
 
 
 
-<section id="calendar" class="hidden">
+<section id="calendar">
 
 
 <h1>
 カレンダー管理
 </h1>
+
 
 
 
@@ -439,9 +437,13 @@ placeholder="予定名">
 
 
 
+
+
 <input
 id="calendarDate"
 type="date">
+
+
 
 
 
@@ -449,6 +451,7 @@ type="date">
 id="calendarDescription"
 placeholder="予定内容">
 </textarea>
+
 
 
 
@@ -470,7 +473,7 @@ placeholder="予定内容">
 
 
 
-<section id="scores" class="hidden">
+<section id="scores">
 
 
 <h1>
@@ -493,7 +496,7 @@ placeholder="予定内容">
 
 
 
-<section id="users" class="hidden">
+<section id="users">
 
 
 <h1>
@@ -525,6 +528,22 @@ placeholder="予定内容">
 <script type="module" src="js/auth.js"></script>
 
 <script type="module" src="js/admin.js"></script>
+
+
+
+
+<script>
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+document.getElementById("dashboard")
+.style.display="block";
+
+});
+
+</script>
 
 
 
