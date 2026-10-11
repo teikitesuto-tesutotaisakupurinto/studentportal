@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ポータル管理画面</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="portal">
+
+
+<aside class="sidebar">
+
+<h2>
+運営管理
+</h2>
+
+
+<nav>
+
+<button onclick="showAdminPage('dashboard')">
+ダッシュボード
+</button>
+
+
+<button onclick="showAdminPage('noticeCreate')">
+お知らせ管理
+</button>
+
+
+<button onclick="showAdminPage('messageManage')">
+連絡管理
+</button>
+
+
+<button onclick="showAdminPage('documentManage')">
+配布文書管理
+</button>
+
+
+<button onclick="showAdminPage('calendarManage')">
+カレンダー管理
+</button>
+
+
+<button onclick="showAdminPage('scoreManage')">
+テスト成績管理
+</button>
+
+
+<button onclick="showAdminPage('userManage')">
+生徒管理
+</button>
+
+
+</nav>
+
+
+</aside>
+
+
+
+
+<main class="main">
+
+
+
+<section id="dashboard" class="admin-page">
+
+<h1>
+ダッシュボード
+</h1>
+
+<p>
+運営情報を表示します
+</p>
+
+</section>
+
+
+
+
+
+<section id="noticeCreate" class="admin-page hidden">
+
+
+<h1>
+お知らせ作成
+</h1>
+
+
+<label>
+タイトル
+</label>
+
+<input id="noticeTitle">
+
+
+
+<label>
+本文
+</label>
+
+<textarea id="noticeBody"></textarea>
+
+
+
+
+<label>
+送信範囲
+</label>
+
+
+<select id="targetType"
+onchange="changeTarget()">
+
+<option value="">
+選択してください
+</option>
+
+<option value="all">
+全ブロック全学年一斉送信
+</option>
+
+<option value="block">
+ブロック一斉送信
+</option>
+
+<option value="block_grade">
+ブロック＋学年指定送信
+</option>
+
+<option value="individual">
+個別送信
+</option>
+
+
+</select>
+
+
+
+
+<div id="blockArea" class="hidden">
+
+
+<label>
+ブロック
+</label>
+
+
+<select id="block">
+
+<option>北海道</option>
+<option>東北</option>
+<option>関東</option>
+<option>中部</option>
+<option>近畿</option>
+<option>中国</option>
+<option>四国</option>
+<option>九州</option>
+
+</select>
+
+</div>
+
+
+
+
+
+<div id="gradeArea" class="hidden">
+
+
+<label>
+学年
+</label>
+
+
+<select id="grade">
+
+<option>中学1年</option>
+<option>中学2年</option>
+<option>中学3年</option>
+
+</select>
+
+
+</div>
+
+
+
+
+<div id="userArea" class="hidden">
+
+<label>
+生徒ID
+</label>
+
+<input id="targetUid">
+
+</div>
+
+
+
+
+
+<button onclick="createNotice()">
+
+公開
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+<section id="messageManage" class="admin-page hidden">
+
+<h1>
+連絡管理
+</h1>
+
+<p>
+生徒からの連絡確認
+</p>
+
+</section>
+
+
+
+
+<section id="documentManage" class="admin-page hidden">
+
+<h1>
+配布文書管理
+</h1>
+
+<p>
+資料アップロード
+</p>
+
+</section>
+
+
+
+
+<section id="calendarManage" class="admin-page hidden">
+
+<h1>
+カレンダー管理
+</h1>
+
+<p>
+予定登録
+</p>
+
+</section>
+
+
+
+
+<section id="scoreManage" class="admin-page hidden">
+
+<h1>
+テスト成績管理
+</h1>
+
+<p>
+成績一覧
+</p>
+
+</section>
+
+
+
+
+<section id="userManage" class="admin-page hidden">
+
+<h1>
+生徒管理
+</h1>
+
+<p>
+生徒一覧
+</p>
+
+</section>
+
+
+
+</main>
+
+
+</div>
+
+
+
+<script type="module" src="js/admin.js"></script>
+
+
+</body>
+
+</html>
