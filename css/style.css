@@ -4,45 +4,53 @@
 
 
 body {
-  margin:0;
-  font-family:"Noto Sans JP",sans-serif;
-  background:#f5f6f8;
-  color:#333;
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  background: #f5f6f8;
+  color: #333;
 }
 
 
+/* =====================
+   レイアウト
+===================== */
 
-/* 横レイアウト */
 
 .layout {
 
-  display:flex;
+  display: flex;
 
-  min-height:100vh;
+  min-height: 100vh;
 
 }
 
 
 
-/* 左メニュー */
+/* =====================
+   サイドメニュー
+===================== */
+
 
 .sidebar {
 
-  width:250px;
+  position: fixed;
 
-  height:100vh;
+  top: 0;
 
-  position:fixed;
+  left: 0;
 
-  left:0;
+  width: 250px;
 
-  top:0;
+  height: 100vh;
 
-  background:#fff;
+  background: #ffffff;
 
-  border-right:1px solid #ddd;
+  border-right: 1px solid #ddd;
 
-  padding:20px;
+  padding: 20px;
+
+  overflow-y: auto;
 
 }
 
@@ -50,11 +58,11 @@ body {
 
 .logo {
 
-  font-size:18px;
+  font-size: 18px;
 
-  font-weight:bold;
+  font-weight: bold;
 
-  margin-bottom:30px;
+  margin-bottom: 30px;
 
 }
 
@@ -62,11 +70,11 @@ body {
 
 .sidebar nav {
 
-  display:flex;
+  display: flex;
 
-  flex-direction:column;
+  flex-direction: column;
 
-  gap:8px;
+  gap: 8px;
 
 }
 
@@ -74,21 +82,25 @@ body {
 
 .sidebar button {
 
-  width:100%;
+  width: 100%;
 
-  padding:12px;
+  height: 45px;
 
-  background:white;
+  border: none;
 
-  color:#333;
+  border-radius: 8px;
 
-  border:none;
+  background: #fff;
 
-  border-radius:8px;
+  color: #333;
 
-  text-align:left;
+  text-align: left;
 
-  cursor:pointer;
+  padding: 0 15px;
+
+  cursor: pointer;
+
+  font-size: 14px;
 
 }
 
@@ -96,46 +108,68 @@ body {
 
 .sidebar button:hover {
 
-  background:#eef2ff;
+  background: #eef2ff;
 
 }
 
 
 
+.sidebar hr {
 
-/* 右側コンテンツ */
+  border: 0;
+
+  border-top: 1px solid #ddd;
+
+  margin: 15px 0;
+
+}
+
+
+
+/* =====================
+   メインエリア
+===================== */
+
 
 .content {
 
-  margin-left:250px;
+  margin-left: 250px;
 
-  width:calc(100% - 250px);
+  width: calc(100% - 250px);
 
-  padding:30px;
-
-}
-
-
-
-/* 重要修正 */
-
-.content section {
-
-  display:none;
-
-  background:white;
-
-  padding:25px;
-
-  border-radius:12px;
+  padding: 30px;
 
 }
 
 
 
-.content section:not(.hidden){
 
-  display:block;
+/* 重要：ページ切替 */
+
+.content > section {
+
+  display: none;
+
+}
+
+
+
+.content > section:not(.hidden) {
+
+  display: block;
+
+}
+
+
+
+/* =====================
+   共通
+===================== */
+
+
+h1 {
+
+  margin-top: 0;
 
 }
 
@@ -143,35 +177,47 @@ body {
 
 .hidden {
 
-  display:none !important;
+  display: none !important;
 
 }
-
 
 
 
 
 .card {
 
-  background:white;
+  background: white;
 
-  padding:20px;
+  border-radius: 12px;
 
-  border-radius:12px;
+  padding: 20px;
 
-  margin-bottom:20px;
+  margin-bottom: 20px;
+
+  box-shadow:
+
+  0 2px 8px rgba(0,0,0,0.05);
 
 }
 
 
 
+
+
+/* =====================
+   お知らせ
+===================== */
+
+
 .notice-card {
+
+  background:white;
 
   border:1px solid #ddd;
 
-  padding:15px;
-
   border-radius:10px;
+
+  padding:15px;
 
   margin-bottom:15px;
 
@@ -181,73 +227,274 @@ body {
 
 .important {
 
-  background:red;
+  display:inline-block;
+
+  background:#dc2626;
 
   color:white;
 
-  padding:4px 10px;
+  padding:4px 12px;
 
   border-radius:20px;
 
+  font-size:12px;
+
 }
 
+
+
+/* =====================
+   フォーム
+===================== */
 
 
 input,
 textarea,
 select {
 
- width:100%;
+  width:100%;
 
- padding:12px;
+  padding:12px;
 
- margin-bottom:15px;
+  border:1px solid #ccc;
 
- border:1px solid #ddd;
+  border-radius:8px;
 
- border-radius:8px;
+  margin-bottom:15px;
+
+  font-size:14px;
 
 }
+
+
+
+textarea {
+
+  min-height:120px;
+
+}
+
 
 
 
 button {
 
- padding:12px;
+  background:#2563eb;
 
- border-radius:8px;
+  color:white;
 
- cursor:pointer;
+  border:none;
+
+  border-radius:8px;
+
+  padding:12px 18px;
+
+  cursor:pointer;
 
 }
+
+
+
+button:hover {
+
+  opacity:0.85;
+
+}
+
+
+
+/* =====================
+ログイン
+===================== */
+
+
+.login-container {
+
+  width:100%;
+
+  min-height:100vh;
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+}
+
+
+
+.login-box {
+
+  width:380px;
+
+  background:white;
+
+  padding:35px;
+
+  border-radius:15px;
+
+  box-shadow:
+
+  0 5px 20px rgba(0,0,0,.1);
+
+}
+
+
+
+.separator {
+
+  text-align:center;
+
+  margin:15px 0;
+
+}
+
+
+
+.google-btn {
+
+  background:white;
+
+  color:#333;
+
+  border:1px solid #ddd;
+
+}
+
+
+
+.google-btn img {
+
+  width:20px;
+
+}
+
+
+
+/* =====================
+カレンダー
+===================== */
+
+
+.calendar-header {
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+}
+
+
+
+.calendar {
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  background:white;
+
+}
+
+
+
+.calendar th,
+.calendar td {
+
+  border:1px solid #ddd;
+
+  height:90px;
+
+  vertical-align:top;
+
+  padding:8px;
+
+}
+
+
+
+.event {
+
+  background:#2563eb;
+
+  color:white;
+
+  border-radius:5px;
+
+  padding:4px;
+
+  margin-top:5px;
+
+  font-size:12px;
+
+}
+
+
+
+/* =====================
+ページネーション
+===================== */
+
+
+.pagination {
+
+  display:flex;
+
+  gap:8px;
+
+}
+
+
+
+.pagination button {
+
+  width:auto;
+
+}
+
+
+
+
+/* =====================
+スマホ
+===================== */
 
 
 @media(max-width:768px){
 
-.sidebar{
 
- position:relative;
+.layout {
 
- width:100%;
-
- height:auto;
+  display:block;
 
 }
 
 
-.content{
 
- margin-left:0;
+.sidebar {
 
- width:100%;
+  position:relative;
+
+  width:100%;
+
+  height:auto;
+
+}
+
+
+
+.content {
+
+  margin-left:0;
+
+  width:100%;
+
+  padding:15px;
 
 }
 
-
-.layout{
-
- display:block;
-
-}
 
 }
