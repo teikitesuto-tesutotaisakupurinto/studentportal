@@ -27,24 +27,26 @@ import {
 
 window.showAdminPage = function(page){
 
+  document
+  .querySelectorAll(
+    "main section"
+  )
+  .forEach(section=>{
 
-document
-.querySelectorAll(".admin-page")
-.forEach((item)=>{
+    section.classList.add(
+      "hidden"
+    );
 
-item.classList.add("hidden");
-
-});
+  });
 
 
-document
-.getElementById(page)
-.classList.remove("hidden");
-
+  document
+  .getElementById(page)
+  .classList.remove(
+    "hidden"
+  );
 
 };
-
-
 
 
 
@@ -69,7 +71,11 @@ return;
 
 const snap =
 await getDoc(
-doc(db,"users",user.uid)
+doc(
+db,
+"users",
+user.uid
+)
 );
 
 
@@ -91,12 +97,14 @@ snap.data();
 
 if(data.role !== "admin"){
 
+
 alert(
 "管理者権限がありません"
 );
 
 
-location.href="student.html";
+location.href =
+"student.html";
 
 
 return;
@@ -121,7 +129,6 @@ loadUsers();
 
 
 
-
 // 送信範囲変更
 
 window.changeTarget = function(){
@@ -135,65 +142,101 @@ document.getElementById(
 
 
 document
-.getElementById("blockArea")
-.classList.add("hidden");
+.getElementById(
+"blockArea"
+)
+.classList.add(
+"hidden"
+);
+
 
 
 document
-.getElementById("gradeArea")
-.classList.add("hidden");
+.getElementById(
+"gradeArea"
+)
+.classList.add(
+"hidden"
+);
+
 
 
 document
-.getElementById("userArea")
-.classList.add("hidden");
+.getElementById(
+"userArea"
+)
+.classList.add(
+"hidden"
+);
 
 
 
 
 
 if(
-type==="block"
+type === "block"
 ){
 
 document
-.getElementById("blockArea")
-.classList.remove("hidden");
+.getElementById(
+"blockArea"
+)
+.classList.remove(
+"hidden"
+);
+
 
 }
 
 
 
+
 if(
-type==="block_grade"
+type === "block_grade"
 ){
 
+
 document
-.getElementById("blockArea")
-.classList.remove("hidden");
+.getElementById(
+"blockArea"
+)
+.classList.remove(
+"hidden"
+);
 
 
 document
-.getElementById("gradeArea")
-.classList.remove("hidden");
+.getElementById(
+"gradeArea"
+)
+.classList.remove(
+"hidden"
+);
+
 
 }
 
 
 
+
 if(
-type==="individual"
+type === "individual"
 ){
 
+
 document
-.getElementById("userArea")
-.classList.remove("hidden");
+.getElementById(
+"userArea"
+)
+.classList.remove(
+"hidden"
+);
+
 
 }
 
 
 };
-
 
 
 
@@ -208,7 +251,6 @@ document
 window.createNotice = async function(){
 
 
-
 const targetType =
 document.getElementById(
 "targetType"
@@ -216,7 +258,7 @@ document.getElementById(
 
 
 
-const data = {
+const notice = {
 
 
 title:
@@ -231,6 +273,24 @@ document.getElementById(
 ).value,
 
 
+importance:
+document.getElementById(
+"importance"
+).value,
+
+
+startDate:
+document.getElementById(
+"startDate"
+).value,
+
+
+endDate:
+document.getElementById(
+"endDate"
+).value,
+
+
 targetType:
 
 
@@ -238,10 +298,7 @@ targetType,
 
 
 createdAt:
-serverTimestamp(),
-
-
-published:true
+serverTimestamp()
 
 
 };
@@ -251,13 +308,13 @@ published:true
 
 
 if(
-targetType==="block"
+targetType === "block"
 ||
-targetType==="block_grade"
+targetType === "block_grade"
 ){
 
 
-data.block =
+notice.block =
 document.getElementById(
 "block"
 ).value;
@@ -267,12 +324,13 @@ document.getElementById(
 
 
 
+
 if(
-targetType==="block_grade"
+targetType === "block_grade"
 ){
 
 
-data.grade =
+notice.grade =
 document.getElementById(
 "grade"
 ).value;
@@ -282,12 +340,13 @@ document.getElementById(
 
 
 
+
 if(
-targetType==="individual"
+targetType === "individual"
 ){
 
 
-data.uid =
+notice.uid =
 document.getElementById(
 "targetUid"
 ).value;
@@ -298,24 +357,19 @@ document.getElementById(
 
 
 
-
 await addDoc(
-
 collection(
 db,
 "notices"
 ),
-
-data
-
+notice
 );
 
 
 
 alert(
-"公開しました"
+"お知らせを公開しました"
 );
-
 
 
 };
@@ -328,7 +382,8 @@ alert(
 
 
 
-// 連絡一覧
+
+// 連絡確認
 
 async function loadMessages(){
 
@@ -361,17 +416,17 @@ area.innerHTML="";
 
 
 
-snap.forEach((doc)=>{
+snap.forEach(item=>{
 
 
 const data =
-doc.data();
+item.data();
 
 
 
 area.innerHTML += `
 
-<div class="notice-card">
+<div class="card">
 
 <p>
 ${data.senderName || ""}
@@ -390,7 +445,6 @@ ${data.body}
 });
 
 
-
 }
 
 
@@ -406,16 +460,12 @@ ${data.body}
 window.addDocument = async function(){
 
 
-
 await addDoc(
-
 collection(
 db,
 "documents"
 ),
-
 {
-
 
 title:
 document.getElementById(
@@ -459,16 +509,12 @@ alert(
 window.addCalendar = async function(){
 
 
-
 await addDoc(
-
 collection(
 db,
 "calendar"
 ),
-
 {
-
 
 title:
 document.getElementById(
@@ -479,6 +525,12 @@ document.getElementById(
 date:
 document.getElementById(
 "calendarDate"
+).value,
+
+
+description:
+document.getElementById(
+"calendarDescription"
 ).value,
 
 
@@ -493,7 +545,7 @@ serverTimestamp()
 
 
 alert(
-"登録しました"
+"予定を登録しました"
 );
 
 
@@ -507,7 +559,7 @@ alert(
 
 
 
-// 成績一覧
+// 成績確認
 
 async function loadScores(){
 
@@ -534,17 +586,17 @@ area.innerHTML="";
 
 
 
-snap.forEach((doc)=>{
+snap.forEach(item=>{
 
 
 const data =
-doc.data();
+item.data();
 
 
 
 area.innerHTML += `
 
-<div class="notice-card">
+<div class="card">
 
 <p>
 ${data.name}
@@ -556,10 +608,9 @@ ${data.testName}
 
 <p>
 ${data.subject}
-:
+：
 ${data.score}点
 </p>
-
 
 </div>
 
@@ -607,29 +658,25 @@ area.innerHTML="";
 
 
 
-snap.forEach((doc)=>{
+snap.forEach(item=>{
 
 
 const data =
-doc.data();
+item.data();
 
 
 
 area.innerHTML += `
 
-<div>
+<div class="card">
 
-${data.name}
+${data.name}<br>
 
-<br>
-
-${data.block}
+${data.block}<br>
 
 ${data.grade}
 
 </div>
-
-<hr>
 
 `;
 
