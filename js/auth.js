@@ -8,6 +8,7 @@ import {
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
+  signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -19,14 +20,11 @@ import {
 
 
 
-
-// ユーザー振り分け
+// ログイン後の振り分け
 
 async function redirectUser(user){
 
-
-  const userRef =
-  doc(
+  const userRef = doc(
     db,
     "users",
     user.uid
@@ -40,16 +38,13 @@ async function redirectUser(user){
 
   if(!userSnap.exists()){
 
-
     alert(
       "ユーザー情報が登録されていません"
     );
 
-
     return;
 
   }
-
 
 
   const data =
@@ -59,25 +54,17 @@ async function redirectUser(user){
 
   if(data.role === "admin"){
 
-
     location.href =
     "admin.html";
 
-
   }else{
-
 
     location.href =
     "student.html";
 
-
   }
 
-
 }
-
-
-
 
 
 
@@ -111,28 +98,22 @@ window.login = async function(){
     );
 
 
-
     await redirectUser(
       result.user
     );
 
 
-
   }catch(error){
 
-
     alert(
-      "ログインに失敗しました\n"
+      "ログイン失敗\n"
       + error.message
     );
-
 
   }
 
 
 };
-
-
 
 
 
@@ -142,33 +123,33 @@ window.login = async function(){
 window.googleLogin = async function(){
 
 
-  try{
+try{
 
 
-    const result =
-    await signInWithPopup(
-      auth,
-      googleProvider
-    );
-
-
-
-    await redirectUser(
-      result.user
-    );
+const result =
+await signInWithPopup(
+  auth,
+  googleProvider
+);
 
 
 
-  }catch(error){
+await redirectUser(
+ result.user
+);
 
 
-    alert(
-      "Googleログインに失敗しました\n"
-      + error.message
-    );
+
+}catch(error){
 
 
-  }
+alert(
+"Googleログイン失敗\n"
++ error.message
+);
+
+
+}
 
 
 };
@@ -177,26 +158,55 @@ window.googleLogin = async function(){
 
 
 
+// ログアウト
+
+window.logout = async function(){
+
+
+try{
+
+
+await signOut(auth);
+
+
+location.href =
+"index.html";
+
+
+}catch(error){
+
+
+alert(
+"ログアウト失敗\n"
++ error.message
+);
+
+
+}
+
+
+};
+
+
+
 
 
 // ログイン状態確認
 
 onAuthStateChanged(
-  auth,
-  (user)=>{
+auth,
+(user)=>{
 
 
-    if(user){
+if(user){
 
-
-      console.log(
-        "ログイン中:",
-        user.email
-      );
-
-
-    }
-
-
-  }
+console.log(
+"ログイン中:",
+user.email
 );
+
+
+}
+
+
+});
