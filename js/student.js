@@ -22,9 +22,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-
-let currentUser = null;
-let userData = null;
+let currentUser;
+let userData;
 
 
 
@@ -32,29 +31,31 @@ let userData = null;
 
 window.showPage = function(page){
 
-
   document
-  .querySelectorAll(".page")
-  .forEach((item)=>{
+  .querySelectorAll(
+    "main section"
+  )
+  .forEach(section=>{
 
-    item.classList.add("hidden");
+    section.classList.add(
+      "hidden"
+    );
 
   });
 
 
-
   document
   .getElementById(page)
-  .classList.remove("hidden");
-
+  .classList.remove(
+    "hidden"
+  );
 
 };
 
 
 
 
-
-// ログイン確認
+// 認証確認
 
 onAuthStateChanged(
 auth,
@@ -70,18 +71,22 @@ return;
 }
 
 
-currentUser = user;
+currentUser=user;
 
 
 
-const userSnap =
+const snap =
 await getDoc(
-doc(db,"users",user.uid)
+doc(
+db,
+"users",
+user.uid
+)
 );
 
 
 
-if(!userSnap.exists()){
+if(!snap.exists()){
 
 alert(
 "ユーザー情報がありません"
@@ -92,22 +97,18 @@ return;
 }
 
 
-
 userData =
-userSnap.data();
+snap.data();
 
 
 
-loadProfile();
+loadUserInfo();
 
 loadNotices();
 
 loadDocuments();
 
 loadCalendar();
-
-loadMessages();
-
 
 
 });
@@ -117,17 +118,15 @@ loadMessages();
 
 
 
+// ユーザー情報
 
-// プロフィール表示
-
-function loadProfile(){
+function loadUserInfo(){
 
 
 const area =
 document.getElementById(
-"profile"
+"userInfo"
 );
-
 
 
 if(area){
@@ -136,7 +135,7 @@ area.innerHTML = `
 
 名前：${userData.name}<br>
 
-ブロック：${userData.block}<br>
+地方：${userData.block}<br>
 
 学年：${userData.grade}
 
@@ -183,31 +182,61 @@ document.getElementById(
 );
 
 
+const important =
+document.getElementById(
+"importantNotice"
+);
+
+
 
 list.innerHTML="";
 latest.innerHTML="";
+important.innerHTML="";
 
 
 
-let count = 0;
+let count=0;
 
 
 
-snap.forEach((doc)=>{
+snap.forEach(item=>{
 
 
 const data =
-doc.data();
+item.data();
 
 
 
-if(canViewNotice(data)){
+if(!canDisplayNotice(data)){
+
+return;
+
+}
+
+
+
+let tag="";
+
+
+if(
+data.importance === "important"
+){
+
+tag = `
+<span class="important">
+重要
+</span>
+`;
+
+}
 
 
 
 const html = `
 
 <div class="notice-card">
+
+${tag}
 
 <h3>
 ${data.title}
@@ -227,7 +256,16 @@ list.innerHTML += html;
 
 
 
-if(count < 3){
+if(
+data.importance==="important"
+&&
+count<3
+){
+
+important.innerHTML += html;
+
+
+}else if(count<3){
 
 latest.innerHTML += html;
 
@@ -235,10 +273,6 @@ latest.innerHTML += html;
 
 
 count++;
-
-
-}
-
 
 
 });
@@ -251,12 +285,55 @@ count++;
 
 
 
-// 表示対象判定
 
-function canViewNotice(notice){
+// お知らせ表示判定
+
+function canDisplayNotice(notice){
 
 
-if(notice.targetType==="all"){
+const today =
+new Date();
+
+
+
+const start =
+notice.startDate
+?
+new Date(notice.startDate)
+:
+null;
+
+
+
+const end =
+notice.endDate
+?
+new Date(notice.endDate)
+:
+null;
+
+
+
+if(start && today < start){
+
+return false;
+
+}
+
+
+
+if(end && today > end){
+
+return false;
+
+}
+
+
+
+
+if(
+notice.targetType==="all"
+){
 
 return true;
 
@@ -310,7 +387,6 @@ return false;
 
 
 }
-
 
 
 
@@ -374,73 +450,7 @@ alert(
 );
 
 
-
-document.getElementById(
-"messageText"
-).value="";
-
-
 };
-
-
-
-
-
-
-
-
-// 連絡履歴
-
-async function loadMessages(){
-
-
-const snap =
-await getDocs(
-query(
-collection(db,"messages"),
-where(
-"senderUid",
-"==",
-currentUser.uid
-)
-)
-);
-
-
-
-const area =
-document.getElementById(
-"messageHistory"
-);
-
-
-
-if(!area)return;
-
-
-area.innerHTML="";
-
-
-
-snap.forEach((doc)=>{
-
-
-const data =
-doc.data();
-
-
-area.innerHTML += `
-
-<p>
-${data.body}
-</p>
-
-`;
-
-});
-
-
-}
 
 
 
@@ -451,21 +461,57 @@ ${data.body}
 
 // 配布文書
 
+let documentPage = 1;
+
+
+const documentLimit = 10;
+
+
+
 async function loadDocuments(){
 
 
 const snap =
 await getDocs(
-collection(db,"documents")
+query(
+collection(db,"documents"),
+orderBy(
+"createdAt",
+"desc"
+)
+)
 );
 
+
+
+const docs=[];
+
+
+snap.forEach(d=>{
+
+docs.push(d.data());
+
+});
+
+
+
+showDocuments(
+docs
+);
+
+
+}
+
+
+
+
+function showDocuments(list){
 
 
 const area =
 document.getElementById(
 "documentList"
 );
-
 
 
 if(!area)return;
@@ -476,21 +522,31 @@ area.innerHTML="";
 
 
 
-snap.forEach((doc)=>{
+const start =
+(documentPage-1)
+*
+documentLimit;
+
 
 
 const data =
-doc.data();
+list.slice(
+start,
+start + documentLimit
+);
 
+
+
+data.forEach(item=>{
 
 
 area.innerHTML += `
 
 <p>
 
-<a href="${data.fileUrl}" target="_blank">
+<a href="${item.fileUrl}" target="_blank">
 
-${data.title}
+${item.title}
 
 </a>
 
@@ -502,7 +558,6 @@ ${data.title}
 
 
 }
-
 
 
 
@@ -524,7 +579,7 @@ collection(db,"calendar")
 
 const area =
 document.getElementById(
-"calendarList"
+"calendarArea"
 );
 
 
@@ -537,27 +592,27 @@ area.innerHTML="";
 
 
 
-snap.forEach((doc)=>{
+snap.forEach(item=>{
 
 
 const data =
-doc.data();
+item.data();
 
 
 
 area.innerHTML += `
 
-<div>
+<div class="calendar-event">
 
+<strong>
 ${data.date}
+</strong>
 
 <br>
 
 ${data.title}
 
 </div>
-
-<hr>
 
 `;
 
@@ -572,8 +627,7 @@ ${data.title}
 
 
 
-
-// テスト成績送信
+// 成績送信
 
 window.sendScore = async function(){
 
