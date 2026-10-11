@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>生徒ポータル</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="portal">
+
+
+<!-- サイドメニュー -->
+<aside class="sidebar">
+
+<h2>
+定期テスト対策ポータル
+</h2>
+
+
+<nav>
+
+<button onclick="showPage('home')">
+ホーム
+</button>
+
+
+<button onclick="showPage('notice')">
+お知らせ
+</button>
+
+
+<button onclick="showPage('message')">
+連絡
+</button>
+
+
+<button onclick="showPage('documents')">
+配布文書
+</button>
+
+
+<button onclick="showPage('calendar')">
+カレンダー
+</button>
+
+
+<button onclick="showPage('scores')">
+テスト成績
+</button>
+
+
+<button onclick="showPage('settings')">
+各種設定
+</button>
+
+
+</nav>
+
+
+</aside>
+
+
+
+
+<!-- メイン -->
+<main class="main">
+
+
+<section id="home" class="page">
+
+<h1>
+ホーム
+</h1>
+
+<h3>
+最新のお知らせ
+</h3>
+
+<div id="latestNotice">
+読み込み中...
+</div>
+
+</section>
+
+
+
+
+<section id="notice" class="page hidden">
+
+<h1>
+お知らせ
+</h1>
+
+<div id="noticeList">
+</div>
+
+</section>
+
+
+
+
+<section id="message" class="page hidden">
+
+<h1>
+連絡
+</h1>
+
+
+<textarea 
+id="messageText"
+placeholder="運営への連絡内容">
+</textarea>
+
+
+<button>
+送信
+</button>
+
+
+</section>
+
+
+
+
+
+<section id="documents" class="page hidden">
+
+<h1>
+配布文書
+</h1>
+
+
+<div id="documentList">
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section id="calendar" class="page hidden">
+
+<h1>
+カレンダー
+</h1>
+
+
+<div id="calendarList">
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section id="scores" class="page hidden">
+
+<h1>
+テスト成績
+</h1>
+
+
+<input 
+placeholder="テスト名">
+
+
+<input 
+placeholder="教科">
+
+
+<input 
+type="number"
+placeholder="点数">
+
+
+<button>
+提出
+</button>
+
+
+</section>
+
+
+
+
+
+<section id="settings" class="page hidden">
+
+<h1>
+各種設定
+</h1>
+
+
+<p>
+プロフィール設定
+</p>
+
+
+</section>
+
+
+
+</main>
+
+
+</div>
+
+
+
+<script type="module" src="js/student.js"></script>
+
+
+</body>
+
+</html>
