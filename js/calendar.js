@@ -14,14 +14,14 @@ import {
 
 let currentDate = new Date();
 
-let events = [];
+let calendarEvents = [];
 
 
 
 
-// カレンダー読み込み
+// 予定取得
 
-async function loadCalendarEvents(){
+async function loadCalendar(){
 
 
 const snap =
@@ -34,20 +34,20 @@ orderBy("date")
 
 
 
-events = [];
+calendarEvents = [];
 
 
 snap.forEach(doc=>{
 
-events.push(
+calendarEvents.push(
 doc.data()
 );
 
 });
 
 
-renderCalendar();
 
+renderCalendar();
 
 }
 
@@ -55,8 +55,7 @@ renderCalendar();
 
 
 
-
-// カレンダー表示
+// カレンダー生成
 
 function renderCalendar(){
 
@@ -68,12 +67,17 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
 const year =
 currentDate.getFullYear();
+
 
 
 const month =
@@ -90,35 +94,47 @@ month,
 
 
 
-const lastDay =
+const lastDate =
 new Date(
 year,
 month + 1,
 0
-);
+).getDate();
+
 
 
 
 let html = `
 
+
 <div class="calendar-header">
+
 
 <button onclick="prevMonth()">
 前月
 </button>
 
+
+
 <h2>
-${year}年 ${month+1}月
+
+${year}年${month + 1}月
+
 </h2>
+
+
 
 <button onclick="nextMonth()">
 次月
 </button>
 
+
 </div>
 
 
+
 <table class="calendar">
+
 
 <tr>
 
@@ -132,17 +148,19 @@ ${year}年 ${month+1}月
 
 </tr>
 
+
 <tr>
+
 `;
 
 
 
 
-// 空白
+// 月初の空白
 
 for(
-let i=0;
-i<firstDay.getDay();
+let i = 0;
+i < firstDay.getDay();
 i++
 ){
 
@@ -152,12 +170,11 @@ html += "<td></td>";
 
 
 
-
 // 日付
 
 for(
-let day=1;
-day<=lastDay.getDate();
+let day = 1;
+day <= lastDate;
 day++
 ){
 
@@ -181,9 +198,10 @@ ${day}
 
 
 
+
 // 予定表示
 
-events.forEach(event=>{
+calendarEvents.forEach(event=>{
 
 
 if(event.date === date){
@@ -200,6 +218,7 @@ ${event.title}
 `;
 
 
+
 }
 
 
@@ -212,8 +231,9 @@ html += "</td>";
 
 
 
+
 if(
-(firstDay.getDay()+day)%7===0
+(firstDay.getDay() + day) % 7 === 0
 ){
 
 html += "</tr><tr>";
@@ -222,6 +242,7 @@ html += "</tr><tr>";
 
 
 }
+
 
 
 html += `
@@ -243,17 +264,18 @@ area.innerHTML = html;
 
 
 
-
-
 // 前月
 
-window.prevMonth=function(){
+window.prevMonth = function(){
+
 
 currentDate.setMonth(
-currentDate.getMonth()-1
+currentDate.getMonth() - 1
 );
 
+
 renderCalendar();
+
 
 };
 
@@ -264,13 +286,16 @@ renderCalendar();
 
 // 次月
 
-window.nextMonth=function(){
+window.nextMonth = function(){
+
 
 currentDate.setMonth(
-currentDate.getMonth()+1
+currentDate.getMonth() + 1
 );
 
+
 renderCalendar();
+
 
 };
 
@@ -279,5 +304,4 @@ renderCalendar();
 
 
 
-
-loadCalendarEvents();
+loadCalendar();
