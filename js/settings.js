@@ -21,12 +21,12 @@ import {
 
 
 
-// 設定情報読み込み
+// ユーザー情報読み込み
 
 async function loadSettings(user){
 
 
-const userSnap =
+const snap =
 await getDoc(
 doc(
 db,
@@ -37,7 +37,7 @@ user.uid
 
 
 
-if(!userSnap.exists()){
+if(!snap.exists()){
 
 return;
 
@@ -46,7 +46,7 @@ return;
 
 
 const data =
-userSnap.data();
+snap.data();
 
 
 
@@ -97,8 +97,7 @@ ${data.grade || ""}
 
 
 
-
-// 認証確認
+// ログイン確認
 
 onAuthStateChanged(
 auth,
@@ -113,8 +112,6 @@ loadSettings(user);
 
 
 });
-
-
 
 
 
@@ -142,8 +139,6 @@ prompt(
 
 
 
-
-
 if(
 !oldPassword ||
 !newPassword
@@ -155,10 +150,8 @@ return;
 
 
 
-
 const user =
 auth.currentUser;
-
 
 
 
@@ -167,38 +160,23 @@ try{
 
 const credential =
 EmailAuthProvider.credential(
-
 user.email,
-
 oldPassword
-
 );
-
-
 
 
 
 await reauthenticateWithCredential(
-
 user,
-
 credential
-
 );
-
-
 
 
 
 await updatePassword(
-
 user,
-
 newPassword
-
 );
-
-
 
 
 
@@ -208,25 +186,17 @@ alert(
 
 
 
-
-
 }catch(error){
 
 
-
 alert(
-
-"パスワード変更に失敗しました\n"
-
+"変更できませんでした\n"
 +
-
 error.message
-
 );
 
 
 }
-
 
 
 };
