@@ -11,14 +11,14 @@ body {
   "Noto Sans JP",
   sans-serif;
 
-  background: #f4f6f8;
+  background: #f5f6f8;
 
   color: #333;
 
 }
 
 
-/* レイアウト */
+/* 全体レイアウト */
 
 .layout {
 
@@ -30,21 +30,28 @@ body {
 
 
 
-/* サイドバー */
+
+/* 左メニュー */
 
 .sidebar {
 
   width: 250px;
 
-  background: #fff;
+  height: 100vh;
+
+  position: fixed;
+
+  left: 0;
+
+  top: 0;
+
+  background: #ffffff;
 
   border-right: 1px solid #ddd;
 
   padding: 20px;
 
-  position: fixed;
-
-  height: 100vh;
+  overflow-y: auto;
 
 }
 
@@ -58,6 +65,22 @@ body {
 
   margin-bottom: 30px;
 
+  line-height: 1.5;
+
+}
+
+
+
+/* メニュー */
+
+.sidebar nav {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
 }
 
 
@@ -66,17 +89,21 @@ body {
 
   width: 100%;
 
+  padding: 12px;
+
+  border: none;
+
+  border-radius: 8px;
+
   background: transparent;
 
   color: #333;
 
   text-align: left;
 
-  border-radius: 8px;
+  cursor: pointer;
 
-  padding: 12px;
-
-  margin-bottom: 5px;
+  font-size: 14px;
 
 }
 
@@ -91,6 +118,19 @@ body {
 
 
 
+.sidebar hr {
+
+  border: 0;
+
+  border-top: 1px solid #ddd;
+
+  margin: 15px 0;
+
+}
+
+
+
+
 
 /* メイン */
 
@@ -98,35 +138,37 @@ body {
 
   margin-left: 250px;
 
-  padding: 30px;
-
   width: calc(100% - 250px);
 
+  padding: 30px;
+
 }
+
 
 
 
 section {
 
-  background: white;
+  background: #fff;
 
   border-radius: 12px;
 
   padding: 25px;
 
-  margin-bottom: 20px;
+  min-height: 200px;
 
 }
-
 
 
 
 
 .hidden {
 
-  display: none;
+  display: none !important;
 
 }
+
+
 
 
 
@@ -135,29 +177,33 @@ section {
 
 .card {
 
-  background: white;
+  background: #fff;
 
   border-radius: 12px;
 
   padding: 20px;
 
+  margin-bottom: 20px;
+
   box-shadow:
 
-  0 2px 8px rgba(0,0,0,0.05);
-
-  margin-bottom: 20px;
+  0 2px 8px rgba(0,0,0,0.06);
 
 }
 
 
 
+
+
+/* お知らせ */
+
 .notice-card {
 
-  padding: 18px;
+  border: 1px solid #e5e7eb;
 
   border-radius: 10px;
 
-  border: 1px solid #eee;
+  padding: 15px;
 
   margin-bottom: 15px;
 
@@ -167,7 +213,7 @@ section {
 
 .notice-card h3 {
 
-  margin-top: 8px;
+  margin: 10px 0;
 
 }
 
@@ -197,17 +243,53 @@ section {
 
 
 
+/* 入力 */
+
+input,
+textarea,
+select {
+
+  width: 100%;
+
+  padding: 12px;
+
+  margin-bottom: 15px;
+
+  border:
+
+  1px solid #d1d5db;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+}
+
+
+
+textarea {
+
+  min-height: 120px;
+
+  resize: vertical;
+
+}
+
+
+
+
+
 /* ボタン */
 
 button {
-
-  border: none;
 
   background: #2563eb;
 
   color: white;
 
-  padding: 12px;
+  border: none;
+
+  padding: 12px 16px;
 
   border-radius: 8px;
 
@@ -219,7 +301,7 @@ button {
 
 button:hover {
 
-  opacity: .85;
+  opacity: 0.85;
 
 }
 
@@ -227,48 +309,58 @@ button:hover {
 
 
 
-/* 入力 */
+/* ログイン */
 
-input,
-textarea,
-select {
+.login-container {
 
-  width:100%;
+  min-height: 100vh;
 
-  padding:12px;
+  display: flex;
 
-  border:
+  justify-content: center;
 
-  1px solid #ddd;
-
-  border-radius:8px;
-
-  margin-bottom:15px;
+  align-items: center;
 
 }
 
 
 
-textarea {
+.login-box {
 
-  min-height:120px;
+  width: 380px;
+
+  background: white;
+
+  padding: 35px;
+
+  border-radius: 15px;
+
+  box-shadow:
+
+  0 5px 20px rgba(0,0,0,.1);
 
 }
 
 
 
 
-/* Googleボタン */
+.separator {
+
+  text-align: center;
+
+  margin: 15px 0;
+
+}
+
+
 
 .google-btn {
 
-  background:white;
+  background: white;
 
-  color:#333;
+  color: #333;
 
-  border:
-
-  1px solid #ddd;
+  border: 1px solid #ddd;
 
 }
 
@@ -276,11 +368,10 @@ textarea {
 
 .google-btn img {
 
-  width:20px;
-
-  vertical-align:middle;
+  width: 20px;
 
 }
+
 
 
 
@@ -302,8 +393,6 @@ textarea {
 .pagination button {
 
   width:auto;
-
-  padding:8px 15px;
 
 }
 
@@ -331,8 +420,6 @@ textarea {
 
   border-collapse:collapse;
 
-  margin-top:20px;
-
 }
 
 
@@ -342,19 +429,11 @@ textarea {
 
   border:1px solid #ddd;
 
-  height:100px;
-
-  vertical-align:top;
+  height:90px;
 
   padding:8px;
 
-}
-
-
-
-.day {
-
-  font-weight:bold;
+  vertical-align:top;
 
 }
 
@@ -366,48 +445,13 @@ textarea {
 
   color:white;
 
-  padding:4px;
-
   border-radius:5px;
+
+  padding:4px;
 
   font-size:12px;
 
   margin-top:5px;
-
-}
-
-
-
-
-/* ログイン */
-
-.login-container {
-
-  min-height:100vh;
-
-  display:flex;
-
-  justify-content:center;
-
-  align-items:center;
-
-}
-
-
-
-.login-box {
-
-  background:white;
-
-  width:380px;
-
-  padding:35px;
-
-  border-radius:15px;
-
-  box-shadow:
-
-  0 5px 20px rgba(0,0,0,.1);
 
 }
 
@@ -420,6 +464,14 @@ textarea {
 @media(max-width:768px){
 
 
+.layout {
+
+  display:block;
+
+}
+
+
+
 .sidebar {
 
   position:relative;
@@ -430,12 +482,6 @@ textarea {
 
 }
 
-
-.layout {
-
-  display:block;
-
-}
 
 
 .content {
