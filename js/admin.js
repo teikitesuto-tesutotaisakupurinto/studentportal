@@ -27,26 +27,24 @@ import {
 
 window.showAdminPage = function(page){
 
-  document
-  .querySelectorAll(
-    "main section"
-  )
-  .forEach(section=>{
 
-    section.classList.add(
-      "hidden"
-    );
+document
+.querySelectorAll("main section")
+.forEach(section=>{
 
-  });
+section.classList.add("hidden");
+
+});
 
 
-  document
-  .getElementById(page)
-  .classList.remove(
-    "hidden"
-  );
+
+document
+.getElementById(page)
+.classList.remove("hidden");
+
 
 };
+
 
 
 
@@ -103,11 +101,11 @@ alert(
 );
 
 
-location.href =
-"student.html";
+location.href="student.html";
 
 
 return;
+
 
 }
 
@@ -129,7 +127,8 @@ loadUsers();
 
 
 
-// 送信範囲変更
+
+// 送信対象変更
 
 window.changeTarget = function(){
 
@@ -185,9 +184,7 @@ document
 "hidden"
 );
 
-
 }
-
 
 
 
@@ -205,6 +202,7 @@ document
 );
 
 
+
 document
 .getElementById(
 "gradeArea"
@@ -215,7 +213,6 @@ document
 
 
 }
-
 
 
 
@@ -292,8 +289,6 @@ document.getElementById(
 
 
 targetType:
-
-
 targetType,
 
 
@@ -321,6 +316,7 @@ document.getElementById(
 
 
 }
+
 
 
 
@@ -357,6 +353,7 @@ document.getElementById(
 
 
 
+
 await addDoc(
 collection(
 db,
@@ -372,8 +369,8 @@ alert(
 );
 
 
-};
 
+};
 
 
 
@@ -388,6 +385,17 @@ alert(
 async function loadMessages(){
 
 
+const area =
+document.getElementById(
+"messageList"
+);
+
+
+
+if(!area)return;
+
+
+
 const snap =
 await getDocs(
 query(
@@ -398,17 +406,6 @@ orderBy(
 )
 )
 );
-
-
-
-const area =
-document.getElementById(
-"messageList"
-);
-
-
-
-if(!area)return;
 
 
 
@@ -461,11 +458,9 @@ window.addDocument = async function(){
 
 
 await addDoc(
-collection(
-db,
-"documents"
-),
+collection(db,"documents"),
 {
+
 
 title:
 document.getElementById(
@@ -510,11 +505,9 @@ window.addCalendar = async function(){
 
 
 await addDoc(
-collection(
-db,
-"calendar"
-),
+collection(db,"calendar"),
 {
+
 
 title:
 document.getElementById(
@@ -559,16 +552,9 @@ alert(
 
 
 
-// 成績確認
+// 成績一覧
 
 async function loadScores(){
-
-
-const snap =
-await getDocs(
-collection(db,"scores")
-);
-
 
 
 const area =
@@ -579,6 +565,13 @@ document.getElementById(
 
 
 if(!area)return;
+
+
+
+const snap =
+await getDocs(
+collection(db,"scores")
+);
 
 
 
@@ -636,13 +629,6 @@ ${data.score}点
 async function loadUsers(){
 
 
-const snap =
-await getDocs(
-collection(db,"users")
-);
-
-
-
 const area =
 document.getElementById(
 "userList"
@@ -651,6 +637,13 @@ document.getElementById(
 
 
 if(!area)return;
+
+
+
+const snap =
+await getDocs(
+collection(db,"users")
+);
 
 
 
@@ -670,9 +663,13 @@ area.innerHTML += `
 
 <div class="card">
 
-${data.name}<br>
+${data.name}
 
-${data.block}<br>
+<br>
+
+${data.block}
+
+<br>
 
 ${data.grade}
 
