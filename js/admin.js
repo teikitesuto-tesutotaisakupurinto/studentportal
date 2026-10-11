@@ -22,17 +22,22 @@ import {
 
 
 
-
-// ページ切替 修正版
+// =====================
+// ページ切替
+// =====================
 
 window.showAdminPage = function(page){
 
 
-  document
-  .querySelectorAll(".content section")
-  .forEach(section=>{
+  const sections =
+  document.querySelectorAll(
+    ".content > section"
+  );
 
-    section.classList.add("hidden");
+
+  sections.forEach(section=>{
+
+    section.style.display = "none";
 
   });
 
@@ -45,7 +50,7 @@ window.showAdminPage = function(page){
 
   if(target){
 
-    target.classList.remove("hidden");
+    target.style.display = "block";
 
   }
 
@@ -59,7 +64,9 @@ window.showAdminPage = function(page){
 
 
 
+// =====================
 // 管理者確認
+// =====================
 
 onAuthStateChanged(
 auth,
@@ -110,10 +117,12 @@ alert(
 );
 
 
+
 location.href="student.html";
 
 
 return;
+
 
 }
 
@@ -136,7 +145,9 @@ loadUsers();
 
 
 
+// =====================
 // 送信範囲変更
+// =====================
 
 window.changeTarget = function(){
 
@@ -150,28 +161,28 @@ document.getElementById(
 
 document
 .getElementById("blockArea")
-.classList.add("hidden");
+.style.display = "none";
 
 
 document
 .getElementById("gradeArea")
-.classList.add("hidden");
+.style.display = "none";
 
 
 document
 .getElementById("userArea")
-.classList.add("hidden");
+.style.display = "none";
 
 
 
 
 
-if(type==="block"){
+if(type === "block"){
 
 
 document
 .getElementById("blockArea")
-.classList.remove("hidden");
+.style.display = "block";
 
 
 }
@@ -180,17 +191,17 @@ document
 
 
 
-if(type==="block_grade"){
+if(type === "block_grade"){
 
 
 document
 .getElementById("blockArea")
-.classList.remove("hidden");
+.style.display = "block";
 
 
 document
 .getElementById("gradeArea")
-.classList.remove("hidden");
+.style.display = "block";
 
 
 }
@@ -199,12 +210,12 @@ document
 
 
 
-if(type==="individual"){
+if(type === "individual"){
 
 
 document
 .getElementById("userArea")
-.classList.remove("hidden");
+.style.display = "block";
 
 
 }
@@ -220,7 +231,9 @@ document
 
 
 
+// =====================
 // お知らせ作成
+// =====================
 
 window.createNotice = async function(){
 
@@ -281,8 +294,8 @@ serverTimestamp()
 
 
 if(
-targetType==="block" ||
-targetType==="block_grade"
+targetType === "block" ||
+targetType === "block_grade"
 ){
 
 
@@ -297,8 +310,9 @@ document.getElementById(
 
 
 
+
 if(
-targetType==="block_grade"
+targetType === "block_grade"
 ){
 
 
@@ -315,7 +329,7 @@ document.getElementById(
 
 
 if(
-targetType==="individual"
+targetType === "individual"
 ){
 
 
@@ -331,9 +345,11 @@ document.getElementById(
 
 
 
-
 await addDoc(
-collection(db,"notices"),
+collection(
+db,
+"notices"
+),
 notice
 );
 
@@ -355,7 +371,9 @@ alert(
 
 
 
-// 連絡確認
+// =====================
+// 連絡管理
+// =====================
 
 async function loadMessages(){
 
@@ -429,7 +447,9 @@ ${data.body}
 
 
 
+// =====================
 // 配布文書登録
+// =====================
 
 window.addDocument = async function(){
 
@@ -476,7 +496,9 @@ alert(
 
 
 
+// =====================
 // カレンダー登録
+// =====================
 
 window.addCalendar = async function(){
 
@@ -529,7 +551,9 @@ alert(
 
 
 
-// 成績一覧
+// =====================
+// 成績確認
+// =====================
 
 async function loadScores(){
 
@@ -602,7 +626,9 @@ ${data.score}点
 
 
 
+// =====================
 // 生徒一覧
+// =====================
 
 async function loadUsers(){
 
