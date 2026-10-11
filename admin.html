@@ -6,9 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-運営管理画面
-</title>
+<title>運営管理画面</title>
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -18,19 +16,18 @@
 <body>
 
 
-<div class="portal">
+<div class="layout">
 
 
 <aside class="sidebar">
 
 
-<h2>
+<div class="logo">
 運営管理
-</h2>
+</div>
 
 
 <nav>
-
 
 <button onclick="showAdminPage('dashboard')">
 ダッシュボード
@@ -42,7 +39,7 @@
 </button>
 
 
-<button onclick="showAdminPage('messages')">
+<button onclick="showAdminPage('message')">
 連絡管理
 </button>
 
@@ -67,6 +64,11 @@
 </button>
 
 
+<button onclick="logout()">
+ログアウト
+</button>
+
+
 </nav>
 
 
@@ -76,11 +78,11 @@
 
 
 
-<main class="main">
+<main class="content">
 
 
 
-<section id="dashboard" class="admin-page">
+<section id="dashboard">
 
 
 <h1>
@@ -91,7 +93,7 @@
 <div class="card">
 
 <p>
-管理画面へようこそ
+運営管理画面
 </p>
 
 </div>
@@ -104,7 +106,8 @@
 
 
 
-<section id="notice" class="admin-page hidden">
+
+<section id="notice" class="hidden">
 
 
 <h1>
@@ -121,6 +124,8 @@
 
 
 
+
+
 <label>
 本文
 </label>
@@ -132,11 +137,58 @@
 
 
 <label>
+重要タグ
+</label>
+
+<select id="importance">
+
+
+<option value="normal">
+通常
+</option>
+
+
+<option value="important">
+重要
+</option>
+
+
+</select>
+
+
+
+
+
+<label>
+公開開始日
+</label>
+
+<input 
+id="startDate"
+type="date">
+
+
+
+
+
+<label>
+公開終了日
+</label>
+
+<input
+id="endDate"
+type="date">
+
+
+
+
+
+<label>
 送信範囲
 </label>
 
 
-<select
+<select 
 id="targetType"
 onchange="changeTarget()">
 
@@ -203,6 +255,8 @@ onchange="changeTarget()">
 
 
 
+
+
 <div id="gradeArea" class="hidden">
 
 
@@ -229,11 +283,12 @@ onchange="changeTarget()">
 
 
 
+
 <div id="userArea" class="hidden">
 
 
 <label>
-対象生徒ID
+生徒ID
 </label>
 
 
@@ -241,6 +296,7 @@ onchange="changeTarget()">
 
 
 </div>
+
 
 
 
@@ -262,7 +318,9 @@ onchange="changeTarget()">
 
 
 
-<section id="messages" class="admin-page hidden">
+
+
+<section id="message" class="hidden">
 
 
 <h1>
@@ -271,8 +329,6 @@ onchange="changeTarget()">
 
 
 <div id="messageList">
-
-読み込み中...
 
 </div>
 
@@ -286,7 +342,9 @@ onchange="changeTarget()">
 
 
 
-<section id="documents" class="admin-page hidden">
+
+
+<section id="documents" class="hidden">
 
 
 <h1>
@@ -294,11 +352,13 @@ onchange="changeTarget()">
 </h1>
 
 
-<input id="documentTitle"
+<input
+id="documentTitle"
 placeholder="資料名">
 
 
-<input id="documentUrl"
+<input
+id="documentUrl"
 placeholder="PDF URL">
 
 
@@ -318,7 +378,9 @@ placeholder="PDF URL">
 
 
 
-<section id="calendar" class="admin-page hidden">
+
+
+<section id="calendar" class="hidden">
 
 
 <h1>
@@ -326,12 +388,21 @@ placeholder="PDF URL">
 </h1>
 
 
-<input id="calendarTitle"
+
+<input
+id="calendarTitle"
 placeholder="予定名">
 
 
-<input id="calendarDate"
+<input
+id="calendarDate"
 type="date">
+
+
+<textarea
+id="calendarDescription"
+placeholder="内容">
+</textarea>
 
 
 <button onclick="addCalendar()">
@@ -350,7 +421,9 @@ type="date">
 
 
 
-<section id="scores" class="admin-page hidden">
+
+
+<section id="scores" class="hidden">
 
 
 <h1>
@@ -372,7 +445,9 @@ type="date">
 
 
 
-<section id="users" class="admin-page hidden">
+
+
+<section id="users" class="hidden">
 
 
 <h1>
@@ -390,6 +465,7 @@ type="date">
 
 
 
+
 </main>
 
 
@@ -397,12 +473,7 @@ type="date">
 
 
 
-
-
-<script
-type="module"
-src="js/admin.js">
-</script>
+<script type="module" src="js/admin.js"></script>
 
 
 </body>
