@@ -18,6 +18,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
+import {
+  getUserRole
+} from "./auth.js";
+
+
 
 let currentUser = null;
 
@@ -29,7 +34,7 @@ let formData = null;
 
 
 
-// URLからフォームID取得
+// URL取得
 
 const params =
 new URLSearchParams(
@@ -67,6 +72,29 @@ return;
 
 
 
+const role =
+await getUserRole(user);
+
+
+
+if(role !== "student"){
+
+
+alert(
+"アクセス権限がありません"
+);
+
+
+location.href="admin.html";
+
+
+return;
+
+
+}
+
+
+
 currentUser = user;
 
 
@@ -79,14 +107,6 @@ db,
 user.uid
 )
 );
-
-
-
-if(!userSnap.exists()){
-
-return;
-
-}
 
 
 
@@ -158,6 +178,7 @@ formData.title;
 
 
 
+
 const area =
 document.getElementById(
 "subjectArea"
@@ -188,9 +209,9 @@ ${subject}
 
 <input
 
-type="number"
-
 class="scoreInput"
+
+type="number"
 
 data-subject="${subject}"
 
@@ -217,19 +238,15 @@ placeholder="点数">
 
 
 // =====================
-// 成績提出
+// 提出
 // =====================
 
 window.submitScore = async function(){
 
 
-
 const subjects = {};
 
-
-
 let total = 0;
-
 
 let count = 0;
 
@@ -244,25 +261,32 @@ document
 .forEach(input=>{
 
 
-const value =
+const score =
 Number(
 input.value
 );
 
 
 
+if(
+!isNaN(score)
+){
+
 subjects[
 input.dataset.subject
 ]
 =
-value;
+score;
 
 
 
-total += value;
+total += score;
 
 
 count++;
+
+
+}
 
 
 
@@ -272,13 +296,18 @@ count++;
 
 
 
+
+
 if(count === 0){
+
 
 alert(
 "点数を入力してください"
 );
 
+
 return;
+
 
 }
 
@@ -293,6 +322,7 @@ total / count
 )
 .toFixed(1)
 );
+
 
 
 
@@ -343,6 +373,7 @@ serverTimestamp()
 
 
 
+
 // 入力クリア
 
 document
@@ -351,7 +382,9 @@ document
 )
 .forEach(input=>{
 
+
 input.value="";
+
 
 });
 
