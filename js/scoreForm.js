@@ -19,19 +19,17 @@ import {
 
 
 
-let formData = null;
-
 let currentUser = null;
 
 let userData = null;
 
+let formData = null;
 
 
 
 
 
-
-// URL取得
+// URLからフォームID取得
 
 const params =
 new URLSearchParams(
@@ -49,7 +47,10 @@ params.get("id");
 
 
 
-// 認証
+
+// =====================
+// 認証確認
+// =====================
 
 onAuthStateChanged(
 auth,
@@ -66,14 +67,26 @@ return;
 
 
 
-currentUser=user;
+currentUser = user;
 
 
 
 const userSnap =
 await getDoc(
-doc(db,"users",user.uid)
+doc(
+db,
+"users",
+user.uid
+)
 );
+
+
+
+if(!userSnap.exists()){
+
+return;
+
+}
 
 
 
@@ -94,7 +107,10 @@ loadForm();
 
 
 
+
+// =====================
 // フォーム取得
+// =====================
 
 async function loadForm(){
 
@@ -110,12 +126,17 @@ formId
 
 
 
+const title =
+document.getElementById(
+"formTitle"
+);
+
+
+
 if(!snap.exists()){
 
 
-document.getElementById(
-"formTitle"
-).textContent =
+title.textContent =
 "フォームがありません";
 
 
@@ -131,13 +152,8 @@ snap.data();
 
 
 
-
-
-document.getElementById(
-"formTitle"
-).textContent =
+title.textContent =
 formData.title;
-
 
 
 
@@ -200,26 +216,35 @@ placeholder="点数">
 
 
 
-// 提出
+// =====================
+// 成績提出
+// =====================
 
 window.submitScore = async function(){
 
 
+
 const subjects = {};
 
+
+
 let total = 0;
+
 
 let count = 0;
 
 
 
 
+
 document
-.querySelectorAll(".scoreInput")
+.querySelectorAll(
+".scoreInput"
+)
 .forEach(input=>{
 
 
-const score =
+const value =
 Number(
 input.value
 );
@@ -230,13 +255,15 @@ subjects[
 input.dataset.subject
 ]
 =
-score;
+value;
 
 
 
-total += score;
+total += value;
+
 
 count++;
+
 
 
 });
@@ -245,9 +272,28 @@ count++;
 
 
 
+if(count === 0){
+
+alert(
+"点数を入力してください"
+);
+
+return;
+
+}
+
+
+
+
 
 const average =
-total / count;
+Number(
+(
+total / count
+)
+.toFixed(1)
+);
+
 
 
 
@@ -259,37 +305,31 @@ collection(db,"scores"),
 
 
 formId:
-
-
 formId,
 
 
 uid:
-
 currentUser.uid,
 
 
 name:
-
 userData.name,
 
 
 testName:
-
 formData.title,
 
 
-subjects,
+subjects:subjects,
 
 
-total,
+total:total,
 
 
-average,
+average:average,
 
 
 createdAt:
-
 serverTimestamp()
 
 
@@ -302,14 +342,27 @@ serverTimestamp()
 
 
 
+
+// 入力クリア
+
+document
+.querySelectorAll(
+".scoreInput"
+)
+.forEach(input=>{
+
+input.value="";
+
+});
+
+
+
+
+
 alert(
-"提出しました"
+"成績を提出しました"
 );
 
-
-
-location.href =
-"student.html";
 
 
 };
