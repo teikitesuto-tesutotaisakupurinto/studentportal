@@ -10,13 +10,13 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
 import {
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
@@ -58,6 +58,8 @@ return snap.data().role;
 
 
 
+
+
 // =====================
 // ログイン後振り分け
 // =====================
@@ -70,14 +72,11 @@ await getUserRole(user);
 
 
 
-
-
 if(role === "admin"){
 
 
 location.href =
 "admin.html";
-
 
 
 }
@@ -86,7 +85,6 @@ else if(role === "student"){
 
 location.href =
 "student.html";
-
 
 
 }
@@ -98,9 +96,7 @@ alert(
 );
 
 
-
 }
-
 
 
 }
@@ -155,6 +151,9 @@ result.user
 }catch(error){
 
 
+console.error(error);
+
+
 alert(
 "ログイン失敗\n"
 +
@@ -203,6 +202,9 @@ result.user
 }catch(error){
 
 
+console.error(error);
+
+
 alert(
 "Googleログイン失敗\n"
 +
@@ -246,6 +248,9 @@ location.href =
 }catch(error){
 
 
+console.error(error);
+
+
 alert(
 "ログアウト失敗\n"
 +
@@ -278,15 +283,12 @@ auth,
 
 if(user){
 
-
 console.log(
 "ログイン中:",
 user.email
 );
 
-
 }
-
 
 
 });
