@@ -22,9 +22,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
+import {
+  getUserRole
+} from "./auth.js";
+
+
+
 let currentUser = null;
 
 let userData = null;
+
+
+
+
 
 
 
@@ -35,16 +45,13 @@ let userData = null;
 window.showPage = function(page){
 
 
-const sections =
-document.querySelectorAll(
-".content > section"
-);
+document
+.querySelectorAll(".content > section")
+.forEach(section=>{
 
-
-
-sections.forEach(section=>{
 
 section.style.display="none";
+
 
 });
 
@@ -91,6 +98,29 @@ return;
 
 
 
+const role =
+await getUserRole(user);
+
+
+
+if(role !== "student"){
+
+
+alert(
+"アクセス権限がありません"
+);
+
+
+
+location.href="admin.html";
+
+return;
+
+
+}
+
+
+
 currentUser=user;
 
 
@@ -106,18 +136,6 @@ user.uid
 
 
 
-if(!snap.exists()){
-
-alert(
-"ユーザー情報がありません"
-);
-
-return;
-
-}
-
-
-
 userData =
 snap.data();
 
@@ -129,7 +147,9 @@ loadNotices();
 
 loadDocuments();
 
-loadMessages();
+loadCalendar();
+
+loadScoreForms();
 
 
 });
@@ -183,6 +203,7 @@ ${userData.grade || ""}
 
 `;
 
+
 }
 
 
@@ -203,6 +224,21 @@ ${userData.grade || ""}
 async function loadNotices(){
 
 
+const area =
+document.getElementById(
+"noticeList"
+);
+
+
+
+if(!area){
+
+return;
+
+}
+
+
+
 const snap =
 await getDocs(
 query(
@@ -216,44 +252,7 @@ orderBy(
 
 
 
-const list =
-document.getElementById(
-"noticeList"
-);
-
-
-
-const latest =
-document.getElementById(
-"latestNotice"
-);
-
-
-
-const important =
-document.getElementById(
-"importantNotice"
-);
-
-
-
-if(!list){
-
-return;
-
-}
-
-
-
-list.innerHTML="";
-
-latest.innerHTML="";
-
-important.innerHTML="";
-
-
-
-let count=0;
+area.innerHTML="";
 
 
 
@@ -265,43 +264,13 @@ item.data();
 
 
 
-if(!canDisplayNotice(data)){
-
-return;
-
-}
-
-
-
-
-let tag="";
-
-
-
-if(
-data.importance==="important"
-){
-
-tag=`
-
-<span class="important">
-
-重要
-
-</span>
-
-`;
-
-}
-
-
-
-
-const html=`
+area.innerHTML += `
 
 <div class="notice-card">
 
-${tag}
+
+<a href="notice.html?id=${item.id}">
+
 
 <h3>
 
@@ -310,9 +279,12 @@ ${data.title}
 </h3>
 
 
+</a>
+
+
 <p>
 
-${data.body}
+${data.body.substring(0,50)}
 
 </p>
 
@@ -323,147 +295,7 @@ ${data.body}
 
 
 
-list.innerHTML += html;
-
-
-
-if(
-data.importance==="important"
-&&
-count<3
-){
-
-important.innerHTML += html;
-
-
-}
-else if(count<3){
-
-
-latest.innerHTML += html;
-
-
-}
-
-
-
-count++;
-
-
 });
-
-
-}
-
-
-
-
-
-
-
-
-
-function canDisplayNotice(notice){
-
-
-const today =
-new Date();
-
-
-
-if(notice.startDate){
-
-
-if(
-today < new Date(notice.startDate)
-){
-
-return false;
-
-}
-
-}
-
-
-
-if(notice.endDate){
-
-
-if(
-today > new Date(notice.endDate)
-){
-
-return false;
-
-}
-
-}
-
-
-
-
-
-if(
-notice.targetType==="all"
-){
-
-return true;
-
-}
-
-
-
-
-
-if(
-notice.targetType==="block"
-){
-
-return (
-notice.block === userData.block
-);
-
-}
-
-
-
-
-
-if(
-notice.targetType==="block_grade"
-){
-
-return (
-
-notice.block === userData.block
-
-&&
-
-notice.grade === userData.grade
-
-);
-
-}
-
-
-
-
-
-if(
-notice.targetType==="individual"
-){
-
-return (
-notice.uid === currentUser.uid
-);
-
-}
-
-
-
-
-
-return false;
 
 
 }
@@ -502,43 +334,30 @@ return;
 
 
 
-
-
 await addDoc(
 collection(db,"messages"),
 {
 
 
 senderUid:
-
 currentUser.uid,
 
 
 senderName:
-
 userData.name,
 
 
 senderEmail:
-
 currentUser.email,
 
 
-
-body:
-
-text,
+body:text,
 
 
-
-status:
-
-"unread",
-
+status:"unread",
 
 
 createdAt:
-
 serverTimestamp()
 
 
@@ -548,91 +367,18 @@ serverTimestamp()
 
 
 
-alert(
-"送信しました"
-);
-
-
-
 document.getElementById(
 "messageText"
 ).value="";
 
 
+
+alert(
+"送信しました"
+);
+
+
 };
-
-
-
-
-
-
-
-
-
-// =====================
-// 連絡履歴
-// =====================
-
-async function loadMessages(){
-
-
-const area =
-document.getElementById(
-"messageHistory"
-);
-
-
-
-if(!area){
-
-return;
-
-}
-
-
-
-const snap =
-await getDocs(
-query(
-collection(db,"messages"),
-where(
-"senderUid",
-"==",
-currentUser.uid
-)
-)
-);
-
-
-
-area.innerHTML="";
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-${data.body}
-
-</div>
-
-`;
-
-
-
-});
-
-
-}
 
 
 
@@ -693,11 +439,26 @@ area.innerHTML += `
 
 <div class="card">
 
-<a href="${data.fileUrl}" target="_blank">
+
+<a href="document.html?id=${item.id}">
+
+
+<h3>
 
 ${data.title}
 
+</h3>
+
+
 </a>
+
+
+<p>
+
+${data.body || ""}
+
+</p>
+
 
 </div>
 
@@ -719,64 +480,142 @@ ${data.title}
 
 
 // =====================
-// 成績送信
+// カレンダー
 // =====================
 
-window.sendScore = async function(){
+async function loadCalendar(){
 
 
-await addDoc(
-collection(db,"scores"),
-{
-
-
-uid:
-
-currentUser.uid,
-
-
-name:
-
-userData.name,
-
-
-testName:
-
+const area =
 document.getElementById(
-"testName"
-).value,
+"calendarArea"
+);
 
 
-subject:
 
-document.getElementById(
-"subject"
-).value,
+if(!area){
 
+return;
 
-score:
-
-Number(
-document.getElementById(
-"score"
-).value
-),
+}
 
 
-createdAt:
 
-serverTimestamp()
+const snap =
+await getDocs(
+collection(db,"calendar")
+);
+
+
+
+area.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+area.innerHTML += `
+
+<div class="card">
+
+${data.date}
+
+<br>
+
+${data.title}
+
+</div>
+
+`;
+
+
+
+});
 
 
 }
 
+
+
+
+
+
+
+
+
+// =====================
+// 成績フォーム取得
+// =====================
+
+async function loadScoreForms(){
+
+
+const area =
+document.getElementById(
+"scoreFormList"
 );
 
 
 
-alert(
-"提出しました"
+if(!area){
+
+return;
+
+}
+
+
+
+const snap =
+await getDocs(
+collection(db,"scoreForms")
 );
 
 
-};
+
+area.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+area.innerHTML += `
+
+<div class="card">
+
+
+<h3>
+
+${data.title}
+
+</h3>
+
+
+<button>
+
+入力する
+
+</button>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+}
