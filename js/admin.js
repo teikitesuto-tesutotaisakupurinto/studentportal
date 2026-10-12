@@ -37,6 +37,7 @@ import {
 
 window.showAdminPage = function(page){
 
+
   const sections =
   document.querySelectorAll(
     ".content > section"
@@ -62,7 +63,9 @@ window.showAdminPage = function(page){
 
   }
 
+
 };
+
 
 
 
@@ -90,12 +93,20 @@ return;
 
 const snap =
 await getDoc(
-doc(db,"users",user.uid)
+doc(
+db,
+"users",
+user.uid
+)
 );
 
 
 
 if(!snap.exists()){
+
+alert(
+"ユーザー情報がありません"
+);
 
 location.href="index.html";
 
@@ -112,15 +123,21 @@ snap.data();
 
 if(data.role !== "admin"){
 
-alert("管理者権限がありません");
+
+alert(
+"管理者権限がありません"
+);
+
 
 location.href="student.html";
 
 return;
 
+
 }
 
 
+// 初期読み込み
 
 loadBlocksFromUsers();
 
@@ -158,10 +175,17 @@ document.getElementById(
 
 if(!select){
 
+console.log(
+"block selectなし"
+);
+
 return;
 
 }
 
+
+
+try{
 
 
 const snap =
@@ -171,7 +195,14 @@ collection(db,"users")
 
 
 
-const blockSet =
+console.log(
+"users件数:",
+snap.size
+);
+
+
+
+const blocks =
 new Set();
 
 
@@ -184,47 +215,41 @@ item.data();
 
 
 
+console.log(
+"user:",
+data
+);
+
+
+
 if(data.block){
 
-blockSet.add(
+
+blocks.add(
 data.block
 );
 
+
 }
+
 
 
 });
 
 
 
-select.innerHTML="";
+select.innerHTML = "";
 
 
 
-if(blockSet.size===0){
-
-
-select.innerHTML=`
-
-<option>
-登録なし
-</option>
-
-`;
-
-return;
-
-}
-
-
-
-blockSet.forEach(block=>{
+blocks.forEach(block=>{
 
 
 const option =
 document.createElement(
 "option"
 );
+
 
 
 option.value =
@@ -235,24 +260,55 @@ option.textContent =
 block;
 
 
+
 select.appendChild(
 option
 );
 
 
+
 });
+
+
+
+if(blocks.size === 0){
+
+
+const option =
+document.createElement(
+"option"
+);
+
+
+option.textContent =
+"ブロック未登録";
+
+
+select.appendChild(
+option
+);
 
 
 }
 
 
 
+}catch(error){
+
+
+console.error(
+"ブロック取得エラー:",
+error
+);
 
 
 
+select.innerHTML =
+"<option>取得エラー</option>";
 
 
 
+}
 // =====================
 // 個別送信用 生徒取得
 // =====================
@@ -269,10 +325,17 @@ document.getElementById(
 
 if(!select){
 
+console.log(
+"targetUserなし"
+);
+
 return;
 
 }
 
+
+
+try{
 
 
 const snap =
@@ -282,7 +345,7 @@ collection(db,"users")
 
 
 
-select.innerHTML="";
+select.innerHTML = "";
 
 
 
@@ -297,18 +360,49 @@ item.data();
 if(data.role === "student"){
 
 
+
 const option =
 document.createElement(
 "option"
 );
 
 
+
 option.value =
 item.id;
 
 
+
 option.textContent =
-data.name;
+data.name || "名前未設定";
+
+
+
+select.appendChild(
+option
+);
+
+
+
+}
+
+
+
+});
+
+
+
+if(select.options.length === 0){
+
+
+const option =
+document.createElement(
+"option"
+);
+
+
+option.textContent =
+"生徒なし";
 
 
 select.appendChild(
@@ -320,7 +414,17 @@ option
 
 
 
-});
+}catch(error){
+
+
+console.error(
+"生徒取得エラー:",
+error
+);
+
+
+
+}
 
 
 }
@@ -349,57 +453,57 @@ document.getElementById(
 
 document.getElementById(
 "blockArea"
-).style.display="none";
+).style.display = "none";
 
 
 document.getElementById(
 "gradeArea"
-).style.display="none";
+).style.display = "none";
 
 
 document.getElementById(
 "userArea"
-).style.display="none";
+).style.display = "none";
 
 
 
 
 
-if(type==="block"){
+if(type === "block"){
 
 
 document.getElementById(
 "blockArea"
-).style.display="block";
+).style.display = "block";
 
 
 }
 
 
 
-if(type==="block_grade"){
+if(type === "block_grade"){
 
 
 document.getElementById(
 "blockArea"
-).style.display="block";
+).style.display = "block";
 
 
 document.getElementById(
 "gradeArea"
-).style.display="block";
+).style.display = "block";
 
 
 }
 
 
 
-if(type==="individual"){
+if(type === "individual"){
 
 
 document.getElementById(
 "userArea"
-).style.display="block";
+).style.display = "block";
 
 
 }
@@ -421,6 +525,7 @@ document.getElementById(
 // =====================
 
 window.createNotice = async function(){
+
 
 
 const targetType =
@@ -477,9 +582,10 @@ serverTimestamp()
 
 
 
+
 if(
-targetType==="block" ||
-targetType==="block_grade"
+targetType === "block" ||
+targetType === "block_grade"
 ){
 
 
@@ -494,8 +600,10 @@ document.getElementById(
 
 
 
+
+
 if(
-targetType==="block_grade"
+targetType === "block_grade"
 ){
 
 
@@ -511,8 +619,9 @@ document.getElementById(
 
 
 
+
 if(
-targetType==="individual"
+targetType === "individual"
 ){
 
 
@@ -536,8 +645,9 @@ notice
 
 
 alert(
-"公開しました"
+"お知らせを公開しました"
 );
+
 
 
 };
@@ -557,6 +667,7 @@ alert(
 window.addDocument = async function(){
 
 
+
 const file =
 document.getElementById(
 "documentFile"
@@ -571,23 +682,31 @@ document.getElementById(
 
 
 
+
 if(!file){
+
 
 alert(
 "PDFを選択してください"
 );
 
+
 return;
 
+
 }
+
+
 
 
 
 const storageRef =
 ref(
 storage,
-"documents/"+file.name
+"documents/" + file.name
 );
+
+
 
 
 
@@ -598,10 +717,14 @@ file
 
 
 
+
+
 const url =
 await getDownloadURL(
 storageRef
 );
+
+
 
 
 
@@ -634,17 +757,9 @@ alert(
 );
 
 
+
 };
-
-
-
-
-
-
-
-
-
-// =====================
+  // =====================
 // カレンダー登録
 // =====================
 
@@ -654,7 +769,6 @@ window.addCalendar = async function(){
 await addDoc(
 collection(db,"calendar"),
 {
-
 
 title:
 document.getElementById(
@@ -676,7 +790,6 @@ document.getElementById(
 
 createdAt:
 serverTimestamp()
-
 
 }
 
@@ -721,6 +834,9 @@ return;
 
 
 
+try{
+
+
 const snap =
 await getDocs(
 query(
@@ -734,7 +850,7 @@ orderBy(
 
 
 
-area.innerHTML="";
+area.innerHTML = "";
 
 
 
@@ -751,13 +867,27 @@ area.innerHTML += `
 <div class="card">
 
 <p>
+送信者：
 ${data.senderName || ""}
 </p>
 
 
 <p>
-${data.body}
+メール：
+${data.senderEmail || ""}
 </p>
+
+
+<p>
+${data.body || ""}
+</p>
+
+
+<p>
+状態：
+${data.status || "unread"}
+</p>
+
 
 </div>
 
@@ -766,6 +896,21 @@ ${data.body}
 
 
 });
+
+
+
+}catch(error){
+
+
+console.error(
+"連絡取得エラー:",
+error
+);
+
+
+
+}
+
 
 
 }
@@ -800,6 +945,9 @@ return;
 
 
 
+try{
+
+
 const snap =
 await getDocs(
 collection(db,"scores")
@@ -807,7 +955,7 @@ collection(db,"scores")
 
 
 
-area.innerHTML="";
+area.innerHTML = "";
 
 
 
@@ -823,12 +971,22 @@ area.innerHTML += `
 
 <div class="card">
 
-${data.name || ""}<br>
 
-${data.testName || ""}<br>
+<p>
+${data.name || ""}
+</p>
 
+
+<p>
+${data.testName || ""}
+</p>
+
+
+<p>
 ${data.subject || ""}：
 ${data.score || ""}点
+</p>
+
 
 </div>
 
@@ -837,6 +995,21 @@ ${data.score || ""}点
 
 
 });
+
+
+
+}catch(error){
+
+
+console.error(
+"成績取得エラー:",
+error
+);
+
+
+
+}
+
 
 
 }
@@ -871,6 +1044,9 @@ return;
 
 
 
+try{
+
+
 const snap =
 await getDocs(
 collection(db,"users")
@@ -878,7 +1054,7 @@ collection(db,"users")
 
 
 
-area.innerHTML="";
+area.innerHTML = "";
 
 
 
@@ -894,15 +1070,29 @@ area.innerHTML += `
 
 <div class="card">
 
+<p>
+名前：
 ${data.name || ""}
+</p>
 
-<br>
 
+<p>
+地方：
 ${data.block || ""}
+</p>
 
-<br>
 
+<p>
+学年：
 ${data.grade || ""}
+</p>
+
+
+<p>
+権限：
+${data.role || ""}
+</p>
+
 
 </div>
 
@@ -911,6 +1101,24 @@ ${data.grade || ""}
 
 
 });
+
+
+
+}catch(error){
+
+
+console.error(
+"生徒取得エラー:",
+error
+);
+
+
+
+}
+
+
+
+}
 
 
 }
