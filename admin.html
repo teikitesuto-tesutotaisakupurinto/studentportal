@@ -7,14 +7,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <title>
 運営管理画面
 </title>
 
-
 <link rel="stylesheet" href="css/style.css">
-
 
 </head>
 
@@ -25,20 +22,15 @@
 <div class="layout">
 
 
-
 <aside class="sidebar">
 
 
 <div class="logo">
-
 運営管理
-
 </div>
 
 
-
 <nav>
-
 
 <button onclick="showAdminPage('dashboard')">
 ダッシュボード
@@ -85,9 +77,7 @@
 
 </nav>
 
-
 </aside>
-
 
 
 
@@ -97,25 +87,13 @@
 
 
 
-
-
 <section id="dashboard" style="display:block;">
-
 
 <h1>
 ダッシュボード
 </h1>
 
-
-<div class="card">
-
-運営管理画面
-
-</div>
-
-
 </section>
-
 
 
 
@@ -136,10 +114,7 @@
 タイトル
 </label>
 
-
 <input id="noticeTitle">
-
-
 
 
 
@@ -147,10 +122,7 @@
 本文
 </label>
 
-
 <textarea id="noticeBody"></textarea>
-
-
 
 
 
@@ -159,22 +131,17 @@
 重要タグ
 </label>
 
-
 <select id="importance">
-
 
 <option value="normal">
 通常
 </option>
 
-
 <option value="important">
 重要
 </option>
 
-
 </select>
-
 
 
 
@@ -184,12 +151,9 @@
 公開開始日
 </label>
 
-
 <input
 id="startDate"
 type="date">
-
-
 
 
 
@@ -197,11 +161,9 @@ type="date">
 公開終了日
 </label>
 
-
 <input
 id="endDate"
 type="date">
-
 
 
 
@@ -216,7 +178,6 @@ type="date">
 <select
 id="targetType"
 onchange="changeTarget()">
-
 
 
 <option value="">
@@ -264,7 +225,7 @@ onchange="changeTarget()">
 <select id="block">
 
 <option>
-読み込み中...
+取得中...
 </option>
 
 
@@ -295,11 +256,9 @@ onchange="changeTarget()">
 中学1年
 </option>
 
-
 <option>
 中学2年
 </option>
-
 
 <option>
 中学3年
@@ -322,14 +281,22 @@ onchange="changeTarget()">
 
 
 <label>
-対象生徒ID
+生徒
 </label>
 
 
-<input id="targetUid">
+<select id="targetUser">
+
+<option>
+取得中...
+</option>
+
+
+</select>
 
 
 </div>
+
 
 
 
@@ -355,7 +322,6 @@ onchange="changeTarget()">
 
 <section id="messages">
 
-
 <h1>
 連絡管理
 </h1>
@@ -364,7 +330,6 @@ onchange="changeTarget()">
 <div id="messageList">
 
 </div>
-
 
 </section>
 
@@ -375,19 +340,11 @@ onchange="changeTarget()">
 
 
 
-
 <section id="documents">
-
 
 <h1>
 配布文書管理
 </h1>
-
-
-
-<label>
-資料名
-</label>
 
 
 <input
@@ -395,21 +352,10 @@ id="documentTitle"
 placeholder="資料名">
 
 
-
-
-
-<label>
-PDFファイル
-</label>
-
-
 <input
 type="file"
 id="documentFile"
 accept=".pdf">
-
-
-
 
 
 <button onclick="addDocument()">
@@ -431,12 +377,9 @@ accept=".pdf">
 
 <section id="calendar">
 
-
 <h1>
 カレンダー管理
 </h1>
-
-
 
 
 <input
@@ -444,24 +387,15 @@ id="calendarTitle"
 placeholder="予定名">
 
 
-
-
-
 <input
 id="calendarDate"
 type="date">
 
 
-
-
-
 <textarea
 id="calendarDescription"
-placeholder="予定内容">
+placeholder="内容">
 </textarea>
-
-
-
 
 
 <button onclick="addCalendar()">
@@ -483,7 +417,6 @@ placeholder="予定内容">
 
 <section id="scores">
 
-
 <h1>
 テスト成績管理
 </h1>
@@ -492,7 +425,6 @@ placeholder="予定内容">
 <div id="scoreList">
 
 </div>
-
 
 </section>
 
@@ -505,7 +437,6 @@ placeholder="予定内容">
 
 
 <section id="users">
-
 
 <h1>
 生徒管理
@@ -521,15 +452,9 @@ placeholder="予定内容">
 
 
 
-
-
-
-
 </main>
 
-
 </div>
-
 
 
 
@@ -538,7 +463,6 @@ placeholder="予定内容">
 <script type="module" src="js/auth.js"></script>
 
 <script type="module" src="js/admin.js"></script>
-
 
 
 </body>
