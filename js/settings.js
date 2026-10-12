@@ -20,8 +20,9 @@ import {
 
 
 
-
-// ユーザー情報読み込み
+// =====================
+// ユーザー情報取得
+// =====================
 
 async function loadSettings(user){
 
@@ -63,13 +64,14 @@ if(area){
 area.innerHTML = `
 
 <p>
-名前：${data.name || ""}
+名前：
+${data.name || ""}
 </p>
 
 
 <p>
 メールアドレス：
-${user.email}
+${user.email || ""}
 </p>
 
 
@@ -97,7 +99,11 @@ ${data.grade || ""}
 
 
 
-// ログイン確認
+
+
+// =====================
+// 認証確認
+// =====================
 
 onAuthStateChanged(
 auth,
@@ -119,10 +125,13 @@ loadSettings(user);
 
 
 
+
+
+// =====================
 // パスワード変更
+// =====================
 
 window.changePassword = async function(){
-
 
 
 const oldPassword =
@@ -194,6 +203,7 @@ alert(
 +
 error.message
 );
+
 
 
 }
