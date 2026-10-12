@@ -15,7 +15,6 @@ import {
   getDocs,
   query,
   orderBy,
-  where,
   doc,
   getDoc,
   serverTimestamp
@@ -40,7 +39,7 @@ let userData = null;
 // ページ切替
 // =====================
 
-window.showPage = function(page){
+window.showPage=function(page){
 
 
 document
@@ -112,12 +111,11 @@ location.href="admin.html";
 
 return;
 
-
 }
 
 
 
-currentUser = user;
+currentUser=user;
 
 
 
@@ -134,8 +132,6 @@ user.uid
 
 userData =
 snap.data();
-
-
 
 
 
@@ -184,15 +180,18 @@ area.innerHTML = `
 ${userData.name || ""}
 </p>
 
+
 <p>
 メール：
 ${currentUser.email}
 </p>
 
+
 <p>
 地方：
 ${userData.block || ""}
 </p>
+
 
 <p>
 学年：
@@ -215,7 +214,7 @@ ${userData.grade || ""}
 
 
 // =====================
-// お知らせ
+// お知らせ一覧
 // =====================
 
 async function loadNotices(){
@@ -265,17 +264,13 @@ orderBy(
 
 area.innerHTML="";
 
-
-
 latest.innerHTML="";
-
-
 
 important.innerHTML="";
 
 
 
-let count = 0;
+let count=0;
 
 
 
@@ -295,23 +290,19 @@ return;
 
 
 
-let tag = "";
+let tag="";
 
 
 
-if(
-data.importance==="important"
-){
+if(data.importance==="important"){
 
 
-tag = `
+tag=
 
+`
 <span class="important">
-
 重要
-
 </span>
-
 `;
 
 }
@@ -322,26 +313,19 @@ const html = `
 
 <div class="notice-card">
 
-
 <a href="notice.html?id=${item.id}">
-
 
 ${tag}
 
 <h3>
-
 ${data.title}
-
 </h3>
-
 
 </a>
 
 
 <p>
-
 ${data.body.substring(0,50)}
-
 </p>
 
 
@@ -358,15 +342,14 @@ area.innerHTML += html;
 if(
 data.importance==="important"
 &&
-count < 3
+count<3
 ){
 
 important.innerHTML += html;
 
 
 }
-else if(count < 3){
-
+else if(count<3){
 
 latest.innerHTML += html;
 
@@ -399,9 +382,7 @@ new Date();
 
 
 
-if(data.startDate){
-
-if(
+if(data.startDate &&
 today < new Date(data.startDate)
 ){
 
@@ -409,13 +390,9 @@ return false;
 
 }
 
-}
 
 
-
-if(data.endDate){
-
-if(
+if(data.endDate &&
 today > new Date(data.endDate)
 ){
 
@@ -423,13 +400,13 @@ return false;
 
 }
 
-}
 
 
 
 
-
-if(data.targetType==="all"){
+if(
+data.targetType==="all"
+){
 
 return true;
 
@@ -437,20 +414,19 @@ return true;
 
 
 
-if(data.targetType==="block"){
+if(
+data.targetType==="block"
+){
 
-
-return (
-data.block === userData.block
-);
-
+return data.block === userData.block;
 
 }
 
 
 
-if(data.targetType==="block_grade"){
-
+if(
+data.targetType==="block_grade"
+){
 
 return (
 
@@ -462,18 +438,15 @@ data.grade === userData.grade
 
 );
 
-
 }
 
 
 
-if(data.targetType==="individual"){
+if(
+data.targetType==="individual"
+){
 
-
-return (
-data.uid === currentUser.uid
-);
-
+return data.uid === currentUser.uid;
 
 }
 
@@ -506,7 +479,6 @@ alert(
 return;
 
 }
-
 
 
 
@@ -566,8 +538,7 @@ alert(
 
 
 // =====================
-// 配布文書
-// URL方式
+// 配布文書一覧
 // =====================
 
 async function loadDocuments(){
@@ -623,12 +594,13 @@ area.innerHTML += `
 
 <h3>
 
-${data.title}
+${data.title || ""}
 
 </h3>
 
 
 </a>
+
 
 
 <p>
@@ -702,18 +674,25 @@ area.innerHTML += `
 
 <div class="card">
 
+
 <h3>
-${data.date}
+
+${data.date || ""}
+
 </h3>
 
 
 <p>
-${data.title}
+
+${data.title || ""}
+
 </p>
 
 
 <p>
+
 ${data.description || ""}
+
 </p>
 
 
@@ -737,7 +716,7 @@ ${data.description || ""}
 
 
 // =====================
-// 成績フォーム取得
+// 成績フォーム一覧
 // =====================
 
 async function loadScoreForms(){
@@ -782,9 +761,9 @@ item.data();
 
 
 
-if(
-data.published === false
-){
+
+
+if(data.published === false){
 
 return;
 
@@ -794,12 +773,9 @@ return;
 
 
 
-// 公開期間確認
-
-if(data.startDate){
-
-
 if(
+data.startDate
+&&
 today < new Date(data.startDate)
 ){
 
@@ -807,14 +783,13 @@ return;
 
 }
 
-}
 
 
-
-if(data.endDate){
 
 
 if(
+data.endDate
+&&
 today > new Date(data.endDate)
 ){
 
@@ -822,15 +797,10 @@ return;
 
 }
 
-}
 
 
 
 
-
-
-
-// 対象確認
 
 if(
 !canViewScoreForm(data)
@@ -844,6 +814,8 @@ return;
 
 
 
+
+
 area.innerHTML += `
 
 <div class="card">
@@ -851,9 +823,10 @@ area.innerHTML += `
 
 <h3>
 
-${data.title}
+${data.title || ""}
 
 </h3>
+
 
 
 <p>
@@ -861,6 +834,7 @@ ${data.title}
 ${data.testType || ""}
 
 </p>
+
 
 
 
@@ -897,14 +871,17 @@ ${data.testType || ""}
 
 
 
+// =====================
+// 成績フォーム表示判定
+// =====================
+
 function canViewScoreForm(data){
 
 
-
 if(
-data.targetType === "all"
-||
 !data.targetType
+||
+data.targetType==="all"
 ){
 
 return true;
@@ -913,27 +890,21 @@ return true;
 
 
 
-
 if(
-data.targetType === "block"
+data.targetType==="block"
 ){
-
 
 return (
 data.block === userData.block
 );
 
-
 }
 
 
 
-
-
 if(
-data.targetType === "block_grade"
+data.targetType==="block_grade"
 ){
-
 
 return (
 
@@ -945,10 +916,7 @@ data.grade === userData.grade
 
 );
 
-
 }
-
-
 
 
 
