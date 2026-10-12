@@ -29,6 +29,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 
+import {
+  getUserRole
+} from "./auth.js";
+
+
+
 
 
 // =====================
@@ -38,33 +44,31 @@ import {
 window.showAdminPage = function(page){
 
 
-  const sections =
-  document.querySelectorAll(
-    ".content > section"
-  );
+document
+.querySelectorAll(".content > section")
+.forEach(section=>{
 
+section.style.display="none";
 
-  sections.forEach(section=>{
-
-    section.style.display = "none";
-
-  });
+});
 
 
 
-  const target =
-  document.getElementById(page);
+const target =
+document.getElementById(page);
 
 
 
-  if(target){
+if(target){
 
-    target.style.display = "block";
+target.style.display="block";
 
-  }
+}
 
 
 };
+
+
 
 
 
@@ -91,63 +95,38 @@ return;
 
 
 
-const snap =
-await getDoc(
-doc(
-db,
-"users",
-user.uid
-)
-);
+const role =
+await getUserRole(user);
 
 
 
-if(!snap.exists()){
-
-alert(
-"ユーザー情報がありません"
-);
-
-location.href="index.html";
-
-return;
-
-}
-
-
-
-const data =
-snap.data();
-
-
-
-if(data.role !== "admin"){
+if(role !== "admin"){
 
 
 alert(
-"管理者権限がありません"
+"アクセス権限がありません"
 );
 
 
 location.href="student.html";
 
+
 return;
 
 
 }
 
 
-// 初期読み込み
 
-loadBlocksFromUsers();
+loadBlocks();
 
-loadStudentsForNotice();
+loadStudents();
 
 loadMessages();
 
-loadScores();
-
 loadUsers();
+
+loadScores();
 
 
 });
@@ -159,11 +138,13 @@ loadUsers();
 
 
 
+
 // =====================
-// usersからブロック取得
+// ブロック取得
+// usersから取得
 // =====================
 
-async function loadBlocksFromUsers(){
+async function loadBlocks(){
 
 
 const select =
@@ -175,29 +156,15 @@ document.getElementById(
 
 if(!select){
 
-console.log(
-"block selectなし"
-);
-
 return;
 
 }
 
 
 
-try{
-
-
 const snap =
 await getDocs(
 collection(db,"users")
-);
-
-
-
-console.log(
-"users件数:",
-snap.size
 );
 
 
@@ -215,30 +182,20 @@ item.data();
 
 
 
-console.log(
-"user:",
-data
-);
-
-
-
 if(data.block){
-
 
 blocks.add(
 data.block
 );
 
-
 }
-
 
 
 });
 
 
 
-select.innerHTML = "";
+select.innerHTML="";
 
 
 
@@ -246,74 +203,35 @@ blocks.forEach(block=>{
 
 
 const option =
-document.createElement(
-"option"
-);
+document.createElement("option");
 
 
+option.value=block;
 
-option.value =
-block;
-
-
-option.textContent =
-block;
+option.textContent=block;
 
 
-
-select.appendChild(
-option
-);
-
+select.appendChild(option);
 
 
 });
 
 
-
-if(blocks.size === 0){
-
-
-const option =
-document.createElement(
-"option"
-);
-
-
-option.textContent =
-"ブロック未登録";
-
-
-select.appendChild(
-option
-);
-
-
 }
 
 
 
-}catch(error){
-
-
-console.error(
-"ブロック取得エラー:",
-error
-);
 
 
 
-select.innerHTML =
-"<option>取得エラー</option>";
 
 
 
-}
 // =====================
 // 個別送信用 生徒取得
 // =====================
 
-async function loadStudentsForNotice(){
+async function loadStudents(){
 
 
 const select =
@@ -325,17 +243,10 @@ document.getElementById(
 
 if(!select){
 
-console.log(
-"targetUserなし"
-);
-
 return;
 
 }
 
-
-
-try{
 
 
 const snap =
@@ -345,7 +256,7 @@ collection(db,"users")
 
 
 
-select.innerHTML = "";
+select.innerHTML="";
 
 
 
@@ -357,31 +268,20 @@ item.data();
 
 
 
-if(data.role === "student"){
-
+if(data.role==="student"){
 
 
 const option =
-document.createElement(
-"option"
-);
+document.createElement("option");
 
 
-
-option.value =
-item.id;
+option.value=item.id;
 
 
-
-option.textContent =
-data.name || "名前未設定";
+option.textContent=data.name;
 
 
-
-select.appendChild(
-option
-);
-
+select.appendChild(option);
 
 
 }
@@ -389,42 +289,6 @@ option
 
 
 });
-
-
-
-if(select.options.length === 0){
-
-
-const option =
-document.createElement(
-"option"
-);
-
-
-option.textContent =
-"生徒なし";
-
-
-select.appendChild(
-option
-);
-
-
-}
-
-
-
-}catch(error){
-
-
-console.error(
-"生徒取得エラー:",
-error
-);
-
-
-
-}
 
 
 }
@@ -441,7 +305,7 @@ error
 // 送信範囲変更
 // =====================
 
-window.changeTarget = function(){
+window.changeTarget=function(){
 
 
 const type =
@@ -453,61 +317,52 @@ document.getElementById(
 
 document.getElementById(
 "blockArea"
-).style.display = "none";
+).style.display="none";
 
 
 document.getElementById(
 "gradeArea"
-).style.display = "none";
+).style.display="none";
 
 
 document.getElementById(
 "userArea"
-).style.display = "none";
+).style.display="none";
 
 
 
 
 
-if(type === "block"){
-
+if(type==="block"){
 
 document.getElementById(
 "blockArea"
-).style.display = "block";
-
+).style.display="block";
 
 }
 
 
-
-if(type === "block_grade"){
-
+if(type==="block_grade"){
 
 document.getElementById(
 "blockArea"
-).style.display = "block";
+).style.display="block";
 
 
 document.getElementById(
 "gradeArea"
-).style.display = "block";
-
+).style.display="block";
 
 }
 
 
-
-if(type === "individual"){
-
+if(type==="individual"){
 
 document.getElementById(
 "userArea"
-).style.display = "block";
-
+).style.display="block";
 
 }
-
 
 
 };
@@ -524,8 +379,7 @@ document.getElementById(
 // お知らせ作成
 // =====================
 
-window.createNotice = async function(){
-
+window.createNotice=async function(){
 
 
 const targetType =
@@ -535,7 +389,7 @@ document.getElementById(
 
 
 
-const notice = {
+const data={
 
 
 title:
@@ -568,7 +422,6 @@ document.getElementById(
 ).value,
 
 
-targetType:
 targetType,
 
 
@@ -582,72 +435,66 @@ serverTimestamp()
 
 
 
-
 if(
-targetType === "block" ||
-targetType === "block_grade"
+targetType==="block" ||
+targetType==="block_grade"
 ){
 
-
-notice.block =
+data.block =
 document.getElementById(
 "block"
 ).value;
 
-
 }
 
 
 
-
-
-
 if(
-targetType === "block_grade"
+targetType==="block_grade"
 ){
 
-
-notice.grade =
+data.grade =
 document.getElementById(
 "grade"
 ).value;
 
-
 }
-
-
-
 
 
 
 if(
-targetType === "individual"
+targetType==="individual"
 ){
 
-
-notice.uid =
+data.uid =
 document.getElementById(
 "targetUser"
 ).value;
 
-
 }
-
-
 
 
 
 await addDoc(
 collection(db,"notices"),
-notice
+data
 );
 
+
+
+document
+.getElementById("noticeTitle")
+.value="";
+
+
+document
+.getElementById("noticeBody")
+.value="";
 
 
 alert(
-"お知らせを公開しました"
+"公開しました"
 );
-
 
 
 };
@@ -661,11 +508,10 @@ alert(
 
 
 // =====================
-// PDFアップロード
+// 配布文書アップロード
 // =====================
 
-window.addDocument = async function(){
-
+window.addDocument=async function(){
 
 
 const file =
@@ -681,32 +527,30 @@ document.getElementById(
 ).value;
 
 
+const body =
+document.getElementById(
+"documentBody"
+).value;
+
 
 
 if(!file){
-
 
 alert(
 "PDFを選択してください"
 );
 
-
 return;
 
-
 }
-
-
 
 
 
 const storageRef =
 ref(
 storage,
-"documents/" + file.name
+"documents/"+file.name
 );
-
-
 
 
 
@@ -717,14 +561,10 @@ file
 
 
 
-
-
 const url =
 await getDownloadURL(
 storageRef
 );
-
-
 
 
 
@@ -733,14 +573,13 @@ collection(db,"documents"),
 {
 
 
-title:title,
+title,
 
+body,
 
 fileUrl:url,
 
-
 fileName:file.name,
-
 
 createdAt:
 serverTimestamp()
@@ -752,23 +591,42 @@ serverTimestamp()
 
 
 
+document.getElementById(
+"documentTitle"
+).value="";
+
+
+document.getElementById(
+"documentBody"
+).value="";
+
+
 alert(
 "アップロードしました"
 );
 
 
-
 };
-  // =====================
+
+
+
+
+
+
+
+
+
+// =====================
 // カレンダー登録
 // =====================
 
-window.addCalendar = async function(){
+window.addCalendar=async function(){
 
 
 await addDoc(
 collection(db,"calendar"),
 {
+
 
 title:
 document.getElementById(
@@ -791,6 +649,7 @@ document.getElementById(
 createdAt:
 serverTimestamp()
 
+
 }
 
 );
@@ -799,6 +658,75 @@ serverTimestamp()
 
 alert(
 "登録しました"
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+// =====================
+// 成績フォーム作成
+// =====================
+
+window.createScoreForm=async function(){
+
+
+const subjects=[];
+
+
+document
+.querySelectorAll(
+"#scoreForms input[type=checkbox]:checked"
+)
+.forEach(item=>{
+
+subjects.push(
+item.value
+);
+
+});
+
+
+
+await addDoc(
+collection(db,"scoreForms"),
+{
+
+
+title:
+document.getElementById(
+"formTitle"
+).value,
+
+
+testType:
+document.getElementById(
+"testType"
+).value,
+
+
+subjects,
+
+
+createdAt:
+serverTimestamp()
+
+
+}
+
+);
+
+
+
+alert(
+"フォームを作成しました"
 );
 
 
@@ -826,190 +754,42 @@ document.getElementById(
 
 
 
-if(!area){
+if(!area)return;
 
-return;
-
-}
-
-
-
-try{
 
 
 const snap =
 await getDocs(
-query(
-collection(db,"messages"),
-orderBy(
-"createdAt",
-"desc"
-)
-)
+collection(db,"messages")
 );
 
 
 
-area.innerHTML = "";
+area.innerHTML="";
 
 
 
 snap.forEach(item=>{
 
 
-const data =
-item.data();
+const data=item.data();
 
 
 
-area.innerHTML += `
+area.innerHTML+=`
 
 <div class="card">
 
-<p>
-送信者：
-${data.senderName || ""}
-</p>
+${data.senderName}<br>
 
-
-<p>
-メール：
-${data.senderEmail || ""}
-</p>
-
-
-<p>
-${data.body || ""}
-</p>
-
-
-<p>
-状態：
-${data.status || "unread"}
-</p>
-
+${data.body}
 
 </div>
 
 `;
 
 
-
 });
-
-
-
-}catch(error){
-
-
-console.error(
-"連絡取得エラー:",
-error
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =====================
-// 成績確認
-// =====================
-
-async function loadScores(){
-
-
-const area =
-document.getElementById(
-"scoreList"
-);
-
-
-
-if(!area){
-
-return;
-
-}
-
-
-
-try{
-
-
-const snap =
-await getDocs(
-collection(db,"scores")
-);
-
-
-
-area.innerHTML = "";
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-
-<p>
-${data.name || ""}
-</p>
-
-
-<p>
-${data.testName || ""}
-</p>
-
-
-<p>
-${data.subject || ""}：
-${data.score || ""}点
-</p>
-
-
-</div>
-
-`;
-
-
-
-});
-
-
-
-}catch(error){
-
-
-console.error(
-"成績取得エラー:",
-error
-);
-
-
-
-}
-
 
 
 }
@@ -1036,15 +816,8 @@ document.getElementById(
 
 
 
-if(!area){
+if(!area)return;
 
-return;
-
-}
-
-
-
-try{
 
 
 const snap =
@@ -1054,71 +827,70 @@ collection(db,"users")
 
 
 
-area.innerHTML = "";
+area.innerHTML="";
 
 
 
 snap.forEach(item=>{
 
 
-const data =
-item.data();
+const data=item.data();
 
 
 
-area.innerHTML += `
+area.innerHTML+=`
 
 <div class="card">
 
-<p>
-名前：
-${data.name || ""}
-</p>
+${data.name}<br>
 
+${data.block || ""}<br>
 
-<p>
-地方：
-${data.block || ""}
-</p>
-
-
-<p>
-学年：
 ${data.grade || ""}
-</p>
-
-
-<p>
-権限：
-${data.role || ""}
-</p>
-
 
 </div>
 
 `;
 
-
-
 });
 
 
+}
 
-}catch(error){
 
 
-console.error(
-"生徒取得エラー:",
-error
+
+
+
+
+
+
+// =====================
+// 成績確認
+// =====================
+
+async function loadScores(){
+
+
+const area =
+document.getElementById(
+"analysisArea"
 );
 
 
 
-}
+if(!area)return;
 
 
 
-}
+const snap =
+await getDocs(
+collection(db,"scores")
+);
 
+
+
+area.innerHTML =
+`提出件数：${snap.size}件`;
 
 }
