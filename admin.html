@@ -75,9 +75,7 @@
 </button>
 
 
-
 <hr>
-
 
 
 <button onclick="logout()">
@@ -95,14 +93,13 @@
 
 
 
-
 <main class="content">
 
 
 
 
 
-<section id="dashboard">
+<section id="dashboard" style="display:block;">
 
 
 <h1>
@@ -126,14 +123,12 @@
 
 
 
-
 <section id="notice">
 
 
 <h1>
 お知らせ作成
 </h1>
-
 
 
 
@@ -185,7 +180,6 @@
 
 
 
-
 <label>
 公開開始日
 </label>
@@ -219,7 +213,6 @@ type="date">
 </label>
 
 
-
 <select
 id="targetType"
 onchange="changeTarget()">
@@ -232,22 +225,22 @@ onchange="changeTarget()">
 
 
 <option value="all">
-全ブロック全学年一斉送信
+全生徒
 </option>
 
 
 <option value="block">
-ブロック一斉送信
+ブロック
 </option>
 
 
 <option value="block_grade">
-ブロック＋学年指定送信
+ブロック＋学年
 </option>
 
 
 <option value="individual">
-個別送信
+個別
 </option>
 
 
@@ -260,26 +253,19 @@ onchange="changeTarget()">
 
 
 
-<div id="blockArea"
-style="display:none;">
+<div id="blockArea" style="display:none;">
 
 
 <label>
-ブロック（地方）
+ブロック
 </label>
 
 
 <select id="block">
 
-
-<option>北海道</option>
-<option>東北</option>
-<option>関東</option>
-<option>中部</option>
-<option>近畿</option>
-<option>中国</option>
-<option>四国</option>
-<option>九州</option>
+<option>
+読み込み中...
+</option>
 
 
 </select>
@@ -294,8 +280,7 @@ style="display:none;">
 
 
 
-<div id="gradeArea"
-style="display:none;">
+<div id="gradeArea" style="display:none;">
 
 
 <label>
@@ -306,9 +291,19 @@ style="display:none;">
 <select id="grade">
 
 
-<option>中学1年</option>
-<option>中学2年</option>
-<option>中学3年</option>
+<option>
+中学1年
+</option>
+
+
+<option>
+中学2年
+</option>
+
+
+<option>
+中学3年
+</option>
 
 
 </select>
@@ -323,8 +318,7 @@ style="display:none;">
 
 
 
-<div id="userArea"
-style="display:none;">
+<div id="userArea" style="display:none;">
 
 
 <label>
@@ -391,6 +385,10 @@ style="display:none;">
 
 
 
+<label>
+資料名
+</label>
+
 
 <input
 id="documentTitle"
@@ -398,15 +396,25 @@ placeholder="資料名">
 
 
 
+
+
+<label>
+PDFファイル
+</label>
+
+
 <input
-id="documentUrl"
-placeholder="PDF URL">
+type="file"
+id="documentFile"
+accept=".pdf">
+
+
 
 
 
 <button onclick="addDocument()">
 
-登録
+アップロード
 
 </button>
 
@@ -516,6 +524,7 @@ placeholder="予定内容">
 
 
 
+
 </main>
 
 
@@ -525,25 +534,10 @@ placeholder="予定内容">
 
 
 
+
 <script type="module" src="js/auth.js"></script>
 
 <script type="module" src="js/admin.js"></script>
-
-
-
-
-<script>
-
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
-
-document.getElementById("dashboard")
-.style.display="block";
-
-});
-
-</script>
 
 
 
