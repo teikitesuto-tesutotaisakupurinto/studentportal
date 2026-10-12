@@ -1,7 +1,6 @@
 import {
   auth,
-  db,
-  storage
+  db
 } from "./firebase.js";
 
 
@@ -23,13 +22,6 @@ import {
 
 
 import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-
-import {
   getUserRole
 } from "./auth.js";
 
@@ -43,26 +35,24 @@ import {
 window.showAdminPage = function(page){
 
 
-  document
-  .querySelectorAll(".content > section")
-  .forEach(section=>{
+document
+.querySelectorAll(".content > section")
+.forEach(section=>{
 
-    section.style.display = "none";
+section.style.display="none";
 
-  });
-
-
-
-  const target =
-  document.getElementById(page);
+});
 
 
+const target =
+document.getElementById(page);
 
-  if(target){
 
-    target.style.display = "block";
+if(target){
 
-  }
+target.style.display="block";
+
+}
 
 
 };
@@ -76,7 +66,7 @@ window.showAdminPage = function(page){
 
 
 // =====================
-// 管理者認証確認
+// 管理者確認
 // =====================
 
 onAuthStateChanged(
@@ -105,7 +95,6 @@ if(role !== "admin"){
 alert(
 "アクセス権限がありません"
 );
-
 
 
 location.href="student.html";
@@ -141,7 +130,7 @@ loadAnalysis();
 
 // =====================
 // ブロック取得
-// users.blockから取得
+// usersから取得
 // =====================
 
 async function loadBlocks(){
@@ -195,7 +184,7 @@ data.block
 
 
 
-select.innerHTML = "";
+select.innerHTML="";
 
 
 
@@ -208,15 +197,12 @@ document.createElement(
 );
 
 
-
 option.value =
 block;
 
 
-
 option.textContent =
 block;
-
 
 
 select.appendChild(
@@ -224,9 +210,7 @@ option
 );
 
 
-
 });
-
 
 
 }
@@ -240,7 +224,7 @@ option
 
 
 // =====================
-// 個別送信用 生徒取得
+// 個別送信用生徒取得
 // =====================
 
 async function loadStudents(){
@@ -280,7 +264,7 @@ item.data();
 
 
 
-if(data.role === "student"){
+if(data.role==="student"){
 
 
 const option =
@@ -289,21 +273,17 @@ document.createElement(
 );
 
 
-
 option.value =
 item.id;
-
 
 
 option.textContent =
 data.name;
 
 
-
 select.appendChild(
 option
 );
-
 
 
 }
@@ -387,6 +367,19 @@ document.getElementById(
 ).style.display="block";
 
 }
+
+
+
+};
+
+
+
+
+
+
+
+
+
 // =====================
 // お知らせ作成
 // =====================
@@ -401,7 +394,7 @@ document.getElementById(
 
 
 
-const data = {
+const data={
 
 
 title:
@@ -434,14 +427,12 @@ document.getElementById(
 ).value,
 
 
-targetType:
-
-
-targetType,
+targetType:targetType,
 
 
 createdAt:
 serverTimestamp()
+
 
 };
 
@@ -450,8 +441,8 @@ serverTimestamp()
 
 
 if(
-targetType === "block" ||
-targetType === "block_grade"
+targetType==="block" ||
+targetType==="block_grade"
 ){
 
 
@@ -467,7 +458,7 @@ document.getElementById(
 
 
 if(
-targetType === "block_grade"
+targetType==="block_grade"
 ){
 
 
@@ -484,7 +475,7 @@ document.getElementById(
 
 
 if(
-targetType === "individual"
+targetType==="individual"
 ){
 
 
@@ -507,11 +498,6 @@ data
 
 
 
-
-
-
-// 入力クリア
-
 document.getElementById(
 "noticeTitle"
 ).value="";
@@ -523,21 +509,9 @@ document.getElementById(
 
 
 
-document.getElementById(
-"startDate"
-).value="";
-
-
-document.getElementById(
-"endDate"
-).value="";
-
-
-
 alert(
 "お知らせを公開しました"
 );
-
 
 
 };
@@ -551,18 +525,10 @@ alert(
 
 
 // =====================
-// 配布文書アップロード
+// 配布文書登録 URL方式
 // =====================
 
 window.addDocument = async function(){
-
-
-
-const file =
-document.getElementById(
-"documentFile"
-).files[0];
-
 
 
 const title =
@@ -579,44 +545,24 @@ document.getElementById(
 
 
 
+const url =
+document.getElementById(
+"documentUrl"
+).value;
 
-if(!file){
+
+
+
+
+if(!title || !url){
 
 alert(
-"PDFを選択してください"
+"タイトルとURLを入力してください"
 );
 
 return;
 
 }
-
-
-
-
-
-const storageRef =
-ref(
-storage,
-"documents/" + file.name
-);
-
-
-
-
-
-await uploadBytes(
-storageRef,
-file
-);
-
-
-
-
-
-const url =
-await getDownloadURL(
-storageRef
-);
 
 
 
@@ -633,10 +579,7 @@ title:title,
 body:body,
 
 
-fileUrl:url,
-
-
-fileName:file.name,
+url:url,
 
 
 createdAt:
@@ -646,8 +589,6 @@ serverTimestamp()
 }
 
 );
-
-
 
 
 
@@ -662,7 +603,7 @@ document.getElementById(
 
 
 document.getElementById(
-"documentFile"
+"documentUrl"
 ).value="";
 
 
@@ -672,17 +613,7 @@ alert(
 );
 
 
-
 };
-
-
-
-
-
-
-
-
-
 // =====================
 // カレンダー登録
 // =====================
@@ -690,39 +621,42 @@ alert(
 window.addCalendar = async function(){
 
 
+const title =
+document.getElementById(
+"calendarTitle"
+).value;
+
+
+const date =
+document.getElementById(
+"calendarDate"
+).value;
+
+
+const description =
+document.getElementById(
+"calendarDescription"
+).value;
+
+
+
 
 await addDoc(
 collection(db,"calendar"),
 {
 
+title:title,
 
-title:
-document.getElementById(
-"calendarTitle"
-).value,
+date:date,
 
-
-date:
-document.getElementById(
-"calendarDate"
-).value,
-
-
-description:
-document.getElementById(
-"calendarDescription"
-).value,
-
+description:description,
 
 createdAt:
 serverTimestamp()
 
-
 }
 
 );
-
-
 
 
 
@@ -747,9 +681,17 @@ alert(
 );
 
 
-
 };
-  // =====================
+
+
+
+
+
+
+
+
+
+// =====================
 // 成績フォーム作成
 // =====================
 
@@ -766,9 +708,11 @@ document
 )
 .forEach(item=>{
 
+
 subjects.push(
 item.value
 );
+
 
 });
 
@@ -833,7 +777,6 @@ serverTimestamp()
 
 
 
-
 document.getElementById(
 "formTitle"
 ).value="";
@@ -843,7 +786,6 @@ document.getElementById(
 alert(
 "成績フォームを作成しました"
 );
-
 
 
 };
@@ -906,7 +848,6 @@ item.data();
 area.innerHTML += `
 
 <div class="card">
-
 
 <p>
 送信者：
@@ -996,7 +937,7 @@ item.data();
 
 
 
-if(data.role === "student"){
+if(data.role==="student"){
 
 
 count++;
@@ -1007,23 +948,22 @@ area.innerHTML += `
 
 <div class="card">
 
-
+<p>
 名前：
 ${data.name || ""}
+</p>
 
 
-<br>
-
-
+<p>
 地方：
 ${data.block || ""}
+</p>
 
 
-<br>
-
-
+<p>
 学年：
 ${data.grade || ""}
+</p>
 
 
 </div>
@@ -1115,7 +1055,6 @@ if(data.total){
 
 total += data.total;
 
-
 count++;
 
 
@@ -1124,7 +1063,6 @@ count++;
 
 
 });
-
 
 
 
@@ -1149,7 +1087,6 @@ count
 :
 0
 }
-
 </p>
 
 
@@ -1160,5 +1097,3 @@ count
 
 
 }
-
-};
