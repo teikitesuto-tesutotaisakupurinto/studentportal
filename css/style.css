@@ -1,9 +1,9 @@
-* {
-  box-sizing: border-box;
-}
-
-
+html,
 body {
+
+  width: 100%;
+
+  height: 100%;
 
   margin: 0;
 
@@ -20,6 +20,14 @@ body {
 }
 
 
+* {
+
+  box-sizing: border-box;
+
+}
+
+
+
 /* =====================
    ログイン画面
 ===================== */
@@ -30,6 +38,8 @@ body {
   width: 100vw;
 
   height: 100vh;
+
+  min-height: 100vh;
 
   display: flex;
 
@@ -47,13 +57,14 @@ body {
 
   width: 420px;
 
-  background: white;
+  background: #fff;
 
   padding: 45px;
 
   border-radius: 16px;
 
   box-shadow:
+
   0 8px 30px rgba(0,0,0,0.12);
 
 }
@@ -66,7 +77,7 @@ body {
 
   font-size: 26px;
 
-  margin-bottom: 15px;
+  margin: 0 0 15px;
 
 }
 
@@ -84,18 +95,76 @@ body {
 
 
 
+.login-box label {
+
+  display:block;
+
+  margin-bottom:8px;
+
+  font-weight:bold;
+
+}
+
+
+
+.login-box input {
+
+  width:100%;
+
+  height:48px;
+
+  padding:12px;
+
+  border:
+
+  1px solid #ddd;
+
+  border-radius:8px;
+
+  margin-bottom:18px;
+
+}
+
+
+
+.login-box button {
+
+  width:100%;
+
+  height:48px;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+}
+
+
+
+.login-box > button:not(.google-btn) {
+
+  background:#2563eb;
+
+  color:white;
+
+}
+
+
+
 
 .separator {
 
-  display: flex;
+  display:flex;
 
-  align-items: center;
+  align-items:center;
 
-  gap: 15px;
+  gap:15px;
 
-  margin: 25px 0;
+  margin:25px 0;
 
-  color: #777;
+  color:#777;
 
 }
 
@@ -104,16 +173,15 @@ body {
 .separator::before,
 .separator::after {
 
-  content: "";
+  content:"";
 
-  flex: 1;
+  flex:1;
 
-  height: 1px;
+  height:1px;
 
-  background: #ddd;
+  background:#ddd;
 
 }
-
 
 
 
@@ -127,11 +195,13 @@ body {
 
   gap:12px;
 
-  background:white;
+  background:#fff;
 
   color:#333;
 
-  border:1px solid #ddd;
+  border:
+
+  1px solid #ddd !important;
 
 }
 
@@ -150,7 +220,7 @@ body {
 
 
 /* =====================
-   共通レイアウト
+   ポータル共通
 ===================== */
 
 
@@ -164,26 +234,19 @@ body {
 
 
 
-
-
-/* =====================
-   左メニュー
-===================== */
-
-
 .sidebar {
 
   position:fixed;
 
-  top:0;
-
   left:0;
+
+  top:0;
 
   width:250px;
 
   height:100vh;
 
-  background:white;
+  background:#fff;
 
   border-right:1px solid #ddd;
 
@@ -205,7 +268,6 @@ body {
 
 
 
-
 .sidebar nav {
 
   display:flex;
@@ -215,7 +277,6 @@ body {
   gap:8px;
 
 }
-
 
 
 
@@ -229,7 +290,7 @@ body {
 
   border-radius:8px;
 
-  background:white;
+  background:#fff;
 
   color:#333;
 
@@ -251,26 +312,6 @@ body {
 
 
 
-.sidebar hr {
-
-  border:none;
-
-  border-top:1px solid #ddd;
-
-  margin:15px 0;
-
-}
-
-
-
-
-
-
-/* =====================
-   メイン表示
-===================== */
-
-
 .content {
 
   margin-left:250px;
@@ -283,24 +324,15 @@ body {
 
 
 
-/*
-JSでdisplay切替するため
-初期は非表示
-*/
+.content section {
 
-.content > section {
-
-  display:none;
-
-  background:white;
-
-  padding:25px;
+  background:#fff;
 
   border-radius:12px;
 
+  padding:25px;
+
 }
-
-
 
 
 
@@ -313,7 +345,7 @@ JSでdisplay切替するため
 
 .card {
 
-  background:white;
+  background:#fff;
 
   padding:20px;
 
@@ -323,10 +355,9 @@ JSでdisplay切替するため
 
   box-shadow:
 
-  0 2px 8px rgba(0,0,0,0.05);
+  0 2px 8px rgba(0,0,0,.05);
 
 }
-
 
 
 
@@ -344,14 +375,13 @@ JSでdisplay切替するため
 
 
 
-
 .important {
 
   display:inline-block;
 
   background:#dc2626;
 
-  color:white;
+  color:#fff;
 
   padding:4px 10px;
 
@@ -360,8 +390,6 @@ JSでdisplay切替するため
   font-size:12px;
 
 }
-
-
 
 
 
@@ -380,11 +408,13 @@ select {
 
   padding:12px;
 
-  margin-bottom:15px;
+  border:
 
-  border:1px solid #ddd;
+  1px solid #ddd;
 
   border-radius:8px;
+
+  margin-bottom:15px;
 
 }
 
@@ -401,29 +431,19 @@ textarea {
 
 button {
 
+  background:#2563eb;
+
+  color:#fff;
+
   padding:12px 18px;
 
   border:none;
 
   border-radius:8px;
 
-  background:#2563eb;
-
-  color:white;
-
   cursor:pointer;
 
 }
-
-
-
-button:hover {
-
-  opacity:.85;
-
-}
-
-
 
 
 
@@ -477,16 +497,13 @@ button:hover {
 
   color:white;
 
-  border-radius:5px;
-
   padding:4px;
 
-  margin-top:5px;
+  border-radius:5px;
 
   font-size:12px;
 
 }
-
 
 
 
@@ -503,19 +520,7 @@ button:hover {
 
   gap:8px;
 
-  margin-top:20px;
-
 }
-
-
-
-#documentPagination button {
-
-  width:auto;
-
-}
-
-
 
 
 
@@ -527,6 +532,14 @@ button:hover {
 
 
 @media(max-width:768px){
+
+
+.login-box {
+
+  width:90%;
+
+}
+
 
 
 .layout {
@@ -558,15 +571,6 @@ button:hover {
   padding:15px;
 
 }
-
-
-
-.login-box {
-
-  width:90%;
-
-}
-
 
 
 }
