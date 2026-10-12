@@ -16,10 +16,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-import {
-  getStorage
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
 
 
 
@@ -27,16 +23,13 @@ import {
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
+  apiKey: "AIzaSyDmXjXpibfIfejGsXj0xQ0x9UzklG4WhEmw",
 
   authDomain:
   "aitera-83486.firebaseapp.com",
 
   projectId:
   "aitera-83486",
-
-  storageBucket:
-  "aitera-83486.firebasestorage.app",
 
   messagingSenderId:
   "79405334766",
@@ -50,7 +43,7 @@ const firebaseConfig = {
 
 
 
-// Firebase初期化
+// 初期化
 
 const app =
 initializeApp(firebaseConfig);
@@ -86,14 +79,6 @@ getFirestore(app);
 
 
 
-// Storage
-
-const storage =
-getStorage(app);
-
-
-
-
 
 export {
 
@@ -103,8 +88,6 @@ export {
 
   googleProvider,
 
-  db,
-
-  storage
+  db
 
 };
