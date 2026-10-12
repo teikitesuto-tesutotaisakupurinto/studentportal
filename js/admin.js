@@ -16,6 +16,7 @@ import {
   doc,
   getDoc,
   deleteDoc,
+  updateDoc,
   serverTimestamp,
   query,
   orderBy
@@ -41,9 +42,7 @@ document
 .querySelectorAll(".content > section")
 .forEach(section=>{
 
-
 section.style.display="none";
-
 
 });
 
@@ -103,7 +102,6 @@ alert(
 );
 
 
-
 location.href="student.html";
 
 
@@ -139,7 +137,6 @@ loadAnalysis();
 
 // =====================
 // ブロック取得
-// usersから取得
 // =====================
 
 async function loadBlocks(){
@@ -206,19 +203,13 @@ document.createElement(
 );
 
 
-
-option.value =
-block;
+option.value=block;
 
 
-option.textContent =
-block;
+option.textContent=block;
 
 
-select.appendChild(
-option
-);
-
+select.appendChild(option);
 
 
 });
@@ -289,14 +280,11 @@ option.value =
 item.id;
 
 
-
 option.textContent =
 data.name;
 
 
-select.appendChild(
-option
-);
+select.appendChild(option);
 
 
 }
@@ -382,7 +370,6 @@ document.getElementById(
 }
 
 
-
 };
 // =====================
 // お知らせ作成
@@ -431,10 +418,7 @@ document.getElementById(
 ).value,
 
 
-targetType:
-
-
-targetType,
+targetType:targetType,
 
 
 createdAt:
@@ -502,6 +486,8 @@ data
 
 
 
+
+
 document.getElementById(
 "noticeTitle"
 ).value="";
@@ -560,7 +546,10 @@ document.getElementById(
 
 
 
-if(!title || !url){
+if(
+!title ||
+!url
+){
 
 alert(
 "タイトルとURLを入力してください"
@@ -595,6 +584,8 @@ serverTimestamp()
 }
 
 );
+
+
 
 
 
@@ -707,7 +698,7 @@ alert(
 
 
 // =====================
-// カレンダー管理一覧
+// カレンダー一覧
 // =====================
 
 async function loadCalendarAdmin(){
@@ -759,12 +750,12 @@ area.innerHTML += `
 
 
 <p>
-${data.date}
+${data.date || ""}
 </p>
 
 
 <p>
-${data.title}
+${data.title || ""}
 </p>
 
 
@@ -818,6 +809,54 @@ alert(
 
 
 loadCalendarAdmin();
+
+
+};
+
+
+
+
+
+
+
+
+
+// =====================
+// 連絡開封
+// =====================
+
+window.openMessage = async function(id){
+
+
+await updateDoc(
+doc(
+db,
+"messages",
+id
+),
+{
+
+
+status:"opened",
+
+
+openedAt:
+serverTimestamp()
+
+
+}
+
+);
+
+
+
+alert(
+"開封しました"
+);
+
+
+
+loadMessages();
 
 
 };
@@ -905,6 +944,8 @@ serverTimestamp()
 
 
 
+
+
 document.getElementById(
 "formTitle"
 ).value="";
@@ -928,7 +969,7 @@ alert(
 
 
 // =====================
-// 連絡管理
+// 連絡一覧
 // =====================
 
 async function loadMessages(){
@@ -1003,6 +1044,29 @@ ${data.status || "unread"}
 </p>
 
 
+
+${
+data.status !== "opened"
+
+?
+
+`
+
+<button onclick="openMessage('${item.id}')">
+
+開封する
+
+</button>
+
+`
+
+:
+
+"確認済み"
+
+}
+
+
 </div>
 
 `;
@@ -1067,7 +1131,9 @@ item.data();
 
 
 
-if(data.role==="student"){
+if(
+data.role === "student"
+){
 
 
 count++;
