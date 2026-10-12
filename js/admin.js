@@ -1,6 +1,7 @@
 import {
   auth,
-  db
+  db,
+  storage
 } from "./firebase.js";
 
 
@@ -21,6 +22,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+
+
+
 
 // =====================
 // ページ切替
@@ -29,30 +39,31 @@ import {
 window.showAdminPage = function(page){
 
 
-  const sections =
-  document.querySelectorAll(
-    ".content > section"
-  );
-
-
-  sections.forEach(section=>{
-
-    section.style.display = "none";
-
-  });
+const sections =
+document.querySelectorAll(
+".content > section"
+);
 
 
 
-  const target =
-  document.getElementById(page);
+sections.forEach(section=>{
+
+section.style.display="none";
+
+});
 
 
 
-  if(target){
+const target =
+document.getElementById(page);
 
-    target.style.display = "block";
 
-  }
+
+if(target){
+
+target.style.display="block";
+
+}
 
 
 };
@@ -117,9 +128,7 @@ alert(
 );
 
 
-
 location.href="student.html";
-
 
 return;
 
@@ -134,8 +143,86 @@ loadScores();
 
 loadUsers();
 
+loadBlocks();
+
 
 });
+
+
+
+
+
+
+
+
+
+// =====================
+// ブロック取得
+// =====================
+
+async function loadBlocks(){
+
+
+const select =
+document.getElementById(
+"block"
+);
+
+
+
+if(!select)return;
+
+
+
+const snap =
+await getDocs(
+collection(db,"blocks")
+);
+
+
+
+select.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+if(data.enabled !== false){
+
+
+const option =
+document.createElement(
+"option"
+);
+
+
+option.value =
+data.name;
+
+
+option.textContent =
+data.name;
+
+
+select.appendChild(
+option
+);
+
+
+}
+
+
+
+});
+
+
+}
 
 
 
@@ -159,30 +246,48 @@ document.getElementById(
 
 
 
-document
-.getElementById("blockArea")
-.style.display = "none";
+document.getElementById(
+"blockArea"
+).style.display="none";
 
 
-document
-.getElementById("gradeArea")
-.style.display = "none";
+document.getElementById(
+"gradeArea"
+).style.display="none";
 
 
-document
-.getElementById("userArea")
-.style.display = "none";
+document.getElementById(
+"userArea"
+).style.display="none";
 
 
 
 
 
-if(type === "block"){
+if(type==="block"){
 
 
-document
-.getElementById("blockArea")
-.style.display = "block";
+document.getElementById(
+"blockArea"
+).style.display="block";
+
+
+}
+
+
+
+
+if(type==="block_grade"){
+
+
+document.getElementById(
+"blockArea"
+).style.display="block";
+
+
+document.getElementById(
+"gradeArea"
+).style.display="block";
 
 
 }
@@ -191,34 +296,16 @@ document
 
 
 
-if(type === "block_grade"){
+if(type==="individual"){
 
 
-document
-.getElementById("blockArea")
-.style.display = "block";
-
-
-document
-.getElementById("gradeArea")
-.style.display = "block";
+document.getElementById(
+"userArea"
+).style.display="block";
 
 
 }
 
-
-
-
-
-if(type === "individual"){
-
-
-document
-.getElementById("userArea")
-.style.display = "block";
-
-
-}
 
 
 };
@@ -236,7 +323,6 @@ document
 // =====================
 
 window.createNotice = async function(){
-
 
 
 const targetType =
@@ -294,8 +380,8 @@ serverTimestamp()
 
 
 if(
-targetType === "block" ||
-targetType === "block_grade"
+targetType==="block" ||
+targetType==="block_grade"
 ){
 
 
@@ -312,7 +398,7 @@ document.getElementById(
 
 
 if(
-targetType === "block_grade"
+targetType==="block_grade"
 ){
 
 
@@ -329,7 +415,7 @@ document.getElementById(
 
 
 if(
-targetType === "individual"
+targetType==="individual"
 ){
 
 
@@ -346,17 +432,14 @@ document.getElementById(
 
 
 await addDoc(
-collection(
-db,
-"notices"
-),
+collection(db,"notices"),
 notice
 );
 
 
 
 alert(
-"お知らせを公開しました"
+"公開しました"
 );
 
 
@@ -372,70 +455,35 @@ alert(
 
 
 // =====================
-// 連絡管理
+// 配布文書 PDFアップロード
 // =====================
 
-async function loadMessages(){
+window.addDocument = async function(){
 
 
-const area =
+
+const file =
 document.getElementById(
-"messageList"
+"documentFile"
+).files[0];
+
+
+
+const title =
+document.getElementById(
+"documentTitle"
+).value;
+
+
+
+
+if(!file){
+
+alert(
+"PDFを選択してください"
 );
 
-
-
-if(!area)return;
-
-
-
-const snap =
-await getDocs(
-query(
-collection(db,"messages"),
-orderBy(
-"createdAt",
-"desc"
-)
-)
-);
-
-
-
-area.innerHTML="";
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-<p>
-${data.senderName || ""}
-</p>
-
-
-<p>
-${data.body}
-</p>
-
-
-</div>
-
-`;
-
-
-
-});
-
+return;
 
 }
 
@@ -443,15 +491,32 @@ ${data.body}
 
 
 
+const storageRef =
+ref(
+storage,
+"documents/" + file.name
+);
 
 
 
 
-// =====================
-// 配布文書登録
-// =====================
 
-window.addDocument = async function(){
+await uploadBytes(
+storageRef,
+file
+);
+
+
+
+
+
+const url =
+await getDownloadURL(
+storageRef
+);
+
+
+
 
 
 await addDoc(
@@ -459,16 +524,13 @@ collection(db,"documents"),
 {
 
 
-title:
-document.getElementById(
-"documentTitle"
-).value,
+title:title,
 
 
-fileUrl:
-document.getElementById(
-"documentUrl"
-).value,
+fileUrl:url,
+
+
+fileName:file.name,
 
 
 createdAt:
@@ -482,8 +544,9 @@ serverTimestamp()
 
 
 alert(
-"登録しました"
+"アップロードしました"
 );
+
 
 
 };
@@ -537,11 +600,85 @@ serverTimestamp()
 
 
 alert(
-"予定を登録しました"
+"登録しました"
 );
 
 
 };
+
+
+
+
+
+
+
+
+
+// =====================
+// 連絡確認
+// =====================
+
+async function loadMessages(){
+
+
+const area =
+document.getElementById(
+"messageList"
+);
+
+
+
+if(!area)return;
+
+
+
+const snap =
+await getDocs(
+query(
+collection(db,"messages"),
+orderBy(
+"createdAt",
+"desc"
+)
+)
+);
+
+
+
+area.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+area.innerHTML += `
+
+<div class="card">
+
+<p>
+${data.senderName || ""}
+</p>
+
+<p>
+${data.body}
+</p>
+
+</div>
+
+`;
+
+
+
+});
+
+
+}
 
 
 
@@ -572,7 +709,8 @@ if(!area)return;
 const snap =
 await getDocs(
 collection(db,"scores")
-);
+)
+;
 
 
 
@@ -592,20 +730,12 @@ area.innerHTML += `
 
 <div class="card">
 
-<p>
-${data.name}
-</p>
+${data.name}<br>
 
-<p>
-${data.testName}
-</p>
+${data.testName}<br>
 
-<p>
-${data.subject}
-：
+${data.subject}：
 ${data.score}点
-</p>
-
 
 </div>
 
@@ -667,15 +797,11 @@ area.innerHTML += `
 
 <div class="card">
 
-${data.name}
+${data.name}<br>
 
-<br>
+${data.block || ""}<br>
 
-${data.block}
-
-<br>
-
-${data.grade}
+${data.grade || ""}
 
 </div>
 
