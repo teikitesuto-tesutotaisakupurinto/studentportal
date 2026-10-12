@@ -6,7 +6,7 @@ import {
 
 import {
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
 import {
@@ -15,7 +15,7 @@ import {
   addDoc,
   collection,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 import {
@@ -85,17 +85,17 @@ alert(
 );
 
 
+
 location.href="admin.html";
 
 
 return;
 
-
 }
 
 
 
-currentUser = user;
+currentUser=user;
 
 
 
@@ -179,6 +179,7 @@ formData.title;
 
 
 
+
 const area =
 document.getElementById(
 "subjectArea"
@@ -209,9 +210,9 @@ ${subject}
 
 <input
 
-class="scoreInput"
-
 type="number"
+
+class="scoreInput"
 
 data-subject="${subject}"
 
@@ -238,7 +239,7 @@ placeholder="点数">
 
 
 // =====================
-// 提出
+// 成績提出
 // =====================
 
 window.submitScore = async function(){
@@ -246,9 +247,12 @@ window.submitScore = async function(){
 
 const subjects = {};
 
+
+
 let total = 0;
 
 let count = 0;
+
 
 
 
@@ -261,7 +265,7 @@ document
 .forEach(input=>{
 
 
-const score =
+const value =
 Number(
 input.value
 );
@@ -269,18 +273,21 @@ input.value
 
 
 if(
-!isNaN(score)
+!isNaN(value)
+&&
+input.value !== ""
 ){
+
 
 subjects[
 input.dataset.subject
 ]
 =
-score;
+value;
 
 
 
-total += score;
+total += value;
 
 
 count++;
@@ -315,6 +322,8 @@ return;
 
 
 
+
+
 const average =
 Number(
 (
@@ -322,6 +331,7 @@ total / count
 )
 .toFixed(1)
 );
+
 
 
 
@@ -366,7 +376,6 @@ serverTimestamp()
 }
 
 );
-
 
 
 
