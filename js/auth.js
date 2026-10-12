@@ -22,7 +22,7 @@ import {
 
 
 // =====================
-// ユーザー権限取得
+// 権限取得
 // =====================
 
 export async function getUserRole(user){
@@ -51,7 +51,6 @@ return snap.data().role;
 
 
 }
-
 
 
 
@@ -283,10 +282,12 @@ auth,
 
 if(user){
 
+
 console.log(
 "ログイン中:",
 user.email
 );
+
 
 }
 
