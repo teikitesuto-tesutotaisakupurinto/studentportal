@@ -30,46 +30,36 @@ import {
 
 
 
-
-
 // =====================
 // ページ切替
 // =====================
 
 window.showAdminPage = function(page){
 
-
-const sections =
-document.querySelectorAll(
-".content > section"
-);
-
+  const sections =
+  document.querySelectorAll(
+    ".content > section"
+  );
 
 
-sections.forEach(section=>{
+  sections.forEach(section=>{
 
-section.style.display="none";
+    section.style.display = "none";
 
-});
-
-
-
-const target =
-document.getElementById(page);
+  });
 
 
+  const target =
+  document.getElementById(page);
 
-if(target){
 
-target.style.display="block";
+  if(target){
 
-}
+    target.style.display = "block";
 
+  }
 
 };
-
-
-
 
 
 
@@ -132,18 +122,17 @@ location.href="student.html";
 
 return;
 
-
 }
 
 
+
+loadBlocksFromUsers();
 
 loadMessages();
 
 loadScores();
 
 loadUsers();
-
-loadBlocks();
 
 
 });
@@ -154,13 +143,11 @@ loadBlocks();
 
 
 
-
-
 // =====================
-// ブロック取得
+// usersからブロック取得
 // =====================
 
-async function loadBlocks(){
+async function loadBlocksFromUsers(){
 
 
 const select =
@@ -170,18 +157,23 @@ document.getElementById(
 
 
 
-if(!select)return;
+if(!select){
+
+return;
+
+}
 
 
 
 const snap =
 await getDocs(
-collection(db,"blocks")
+collection(db,"users")
 );
 
 
 
-select.innerHTML="";
+const blocks =
+new Set();
 
 
 
@@ -193,7 +185,24 @@ item.data();
 
 
 
-if(data.enabled !== false){
+if(data.block){
+
+blocks.add(
+data.block
+);
+
+}
+
+
+});
+
+
+
+select.innerHTML="";
+
+
+
+blocks.forEach(block=>{
 
 
 const option =
@@ -202,21 +211,18 @@ document.createElement(
 );
 
 
+
 option.value =
-data.name;
+block;
 
 
 option.textContent =
-data.name;
+block;
 
 
 select.appendChild(
 option
 );
-
-
-}
-
 
 
 });
@@ -439,7 +445,7 @@ notice
 
 
 alert(
-"公開しました"
+"お知らせを公開しました"
 );
 
 
@@ -455,11 +461,10 @@ alert(
 
 
 // =====================
-// 配布文書 PDFアップロード
+// PDFアップロード
 // =====================
 
 window.addDocument = async function(){
-
 
 
 const file =
@@ -476,7 +481,6 @@ document.getElementById(
 
 
 
-
 if(!file){
 
 alert(
@@ -489,8 +493,6 @@ return;
 
 
 
-
-
 const storageRef =
 ref(
 storage,
@@ -499,14 +501,10 @@ storage,
 
 
 
-
-
 await uploadBytes(
 storageRef,
 file
 );
-
-
 
 
 
@@ -628,7 +626,11 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
@@ -665,9 +667,11 @@ area.innerHTML += `
 ${data.senderName || ""}
 </p>
 
+
 <p>
 ${data.body}
 </p>
+
 
 </div>
 
@@ -702,15 +706,18 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
 const snap =
 await getDocs(
 collection(db,"scores")
-)
-;
+);
 
 
 
@@ -770,7 +777,11 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
@@ -797,9 +808,13 @@ area.innerHTML += `
 
 <div class="card">
 
-${data.name}<br>
+${data.name || ""}
 
-${data.block || ""}<br>
+<br>
+
+${data.block || ""}
+
+<br>
 
 ${data.grade || ""}
 
