@@ -11,6 +11,7 @@ import {
 
 
 
+
 // URLからID取得
 
 const params =
@@ -19,8 +20,13 @@ location.search
 );
 
 
+
 const noticeId =
 params.get("id");
+
+
+
+
 
 
 
@@ -90,7 +96,61 @@ snap.data();
 
 
 
-let important = "";
+
+
+// 公開期間確認
+
+const today =
+new Date();
+
+
+
+
+if(data.startDate){
+
+
+if(
+today < new Date(data.startDate)
+){
+
+area.innerHTML =
+"公開前のお知らせです";
+
+
+return;
+
+}
+
+}
+
+
+
+
+
+if(data.endDate){
+
+
+if(
+today > new Date(data.endDate)
+){
+
+area.innerHTML =
+"公開終了したお知らせです";
+
+
+return;
+
+}
+
+}
+
+
+
+
+
+
+
+let tag = "";
 
 
 
@@ -99,7 +159,7 @@ data.importance === "important"
 ){
 
 
-important = `
+tag = `
 
 <span class="important">
 
@@ -113,13 +173,17 @@ important = `
 
 
 
+
+
+
 area.innerHTML = `
 
 
 <div class="card">
 
 
-${important}
+${tag}
+
 
 
 <h1>
@@ -127,6 +191,7 @@ ${important}
 ${data.title}
 
 </h1>
+
 
 
 
@@ -145,7 +210,7 @@ ${data.body}
 
 ${data.startDate || ""}
 
-〜
+～
 
 ${data.endDate || ""}
 
@@ -161,6 +226,7 @@ ${data.endDate || ""}
 
 
 }
+
 
 
 loadNotice();
