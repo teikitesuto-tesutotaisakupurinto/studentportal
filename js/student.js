@@ -36,8 +36,6 @@ let userData = null;
 
 
 
-
-
 // =====================
 // ページ切替
 // =====================
@@ -49,9 +47,7 @@ document
 .querySelectorAll(".content > section")
 .forEach(section=>{
 
-
 section.style.display="none";
-
 
 });
 
@@ -121,7 +117,7 @@ return;
 
 
 
-currentUser=user;
+currentUser = user;
 
 
 
@@ -138,6 +134,8 @@ user.uid
 
 userData =
 snap.data();
+
+
 
 
 
@@ -203,7 +201,6 @@ ${userData.grade || ""}
 
 `;
 
-
 }
 
 
@@ -227,6 +224,20 @@ async function loadNotices(){
 const area =
 document.getElementById(
 "noticeList"
+);
+
+
+
+const latest =
+document.getElementById(
+"latestNotice"
+);
+
+
+
+const important =
+document.getElementById(
+"importantNotice"
 );
 
 
@@ -256,6 +267,18 @@ area.innerHTML="";
 
 
 
+latest.innerHTML="";
+
+
+
+important.innerHTML="";
+
+
+
+let count = 0;
+
+
+
 snap.forEach(item=>{
 
 
@@ -264,13 +287,46 @@ item.data();
 
 
 
-area.innerHTML += `
+if(!canViewNotice(data)){
+
+return;
+
+}
+
+
+
+let tag = "";
+
+
+
+if(
+data.importance==="important"
+){
+
+
+tag = `
+
+<span class="important">
+
+重要
+
+</span>
+
+`;
+
+}
+
+
+
+const html = `
 
 <div class="notice-card">
 
 
 <a href="notice.html?id=${item.id}">
 
+
+${tag}
 
 <h3>
 
@@ -295,6 +351,33 @@ ${data.body.substring(0,50)}
 
 
 
+area.innerHTML += html;
+
+
+
+if(
+data.importance==="important"
+&&
+count < 3
+){
+
+important.innerHTML += html;
+
+
+}
+else if(count < 3){
+
+
+latest.innerHTML += html;
+
+
+}
+
+
+
+count++;
+
+
 });
 
 
@@ -308,6 +391,98 @@ ${data.body.substring(0,50)}
 
 
 
+function canViewNotice(data){
+
+
+const today =
+new Date();
+
+
+
+if(data.startDate){
+
+if(
+today < new Date(data.startDate)
+){
+
+return false;
+
+}
+
+}
+
+
+
+if(data.endDate){
+
+if(
+today > new Date(data.endDate)
+){
+
+return false;
+
+}
+
+}
+
+
+
+
+
+if(data.targetType==="all"){
+
+return true;
+
+}
+
+
+
+if(data.targetType==="block"){
+
+
+return (
+data.block === userData.block
+);
+
+
+}
+
+
+
+if(data.targetType==="block_grade"){
+
+
+return (
+
+data.block === userData.block
+
+&&
+
+data.grade === userData.grade
+
+);
+
+
+}
+
+
+
+if(data.targetType==="individual"){
+
+
+return (
+data.uid === currentUser.uid
+);
+
+
+}
+
+
+
+return false;
+
+
+}
 // =====================
 // 連絡送信
 // =====================
@@ -331,6 +506,7 @@ alert(
 return;
 
 }
+
 
 
 
@@ -378,6 +554,7 @@ alert(
 );
 
 
+
 };
 
 
@@ -390,6 +567,7 @@ alert(
 
 // =====================
 // 配布文書
+// URL方式
 // =====================
 
 async function loadDocuments(){
@@ -480,7 +658,7 @@ ${data.body || ""}
 
 
 // =====================
-// カレンダー
+// カレンダー表示
 // =====================
 
 async function loadCalendar(){
@@ -524,11 +702,20 @@ area.innerHTML += `
 
 <div class="card">
 
+<h3>
 ${data.date}
+</h3>
 
-<br>
 
+<p>
 ${data.title}
+</p>
+
+
+<p>
+${data.description || ""}
+</p>
+
 
 </div>
 
@@ -582,11 +769,78 @@ area.innerHTML="";
 
 
 
+const today =
+new Date();
+
+
+
 snap.forEach(item=>{
 
 
 const data =
 item.data();
+
+
+
+if(
+data.published === false
+){
+
+return;
+
+}
+
+
+
+
+
+// 公開期間確認
+
+if(data.startDate){
+
+
+if(
+today < new Date(data.startDate)
+){
+
+return;
+
+}
+
+}
+
+
+
+if(data.endDate){
+
+
+if(
+today > new Date(data.endDate)
+){
+
+return;
+
+}
+
+}
+
+
+
+
+
+
+
+// 対象確認
+
+if(
+!canViewScoreForm(data)
+){
+
+return;
+
+}
+
+
 
 
 
@@ -602,11 +856,26 @@ ${data.title}
 </h3>
 
 
+<p>
+
+${data.testType || ""}
+
+</p>
+
+
+
+<a href="scoreForm.html?id=${item.id}">
+
+
 <button>
 
 入力する
 
 </button>
+
+
+</a>
+
 
 
 </div>
@@ -616,6 +885,74 @@ ${data.title}
 
 
 });
+
+
+}
+
+
+
+
+
+
+
+
+
+function canViewScoreForm(data){
+
+
+
+if(
+data.targetType === "all"
+||
+!data.targetType
+){
+
+return true;
+
+}
+
+
+
+
+if(
+data.targetType === "block"
+){
+
+
+return (
+data.block === userData.block
+);
+
+
+}
+
+
+
+
+
+if(
+data.targetType === "block_grade"
+){
+
+
+return (
+
+data.block === userData.block
+
+&&
+
+data.grade === userData.grade
+
+);
+
+
+}
+
+
+
+
+
+return false;
 
 
 }
