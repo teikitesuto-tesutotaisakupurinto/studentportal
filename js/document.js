@@ -11,7 +11,7 @@ import {
 
 
 
-// URLからID取得
+// URLから文書ID取得
 
 const params =
 new URLSearchParams(
@@ -19,8 +19,13 @@ location.search
 );
 
 
+
 const documentId =
 params.get("id");
+
+
+
+
 
 
 
@@ -40,6 +45,7 @@ if(!documentId){
 
 
 area.innerHTML =
+
 "文書が見つかりません";
 
 
@@ -69,6 +75,7 @@ if(!snap.exists()){
 
 
 area.innerHTML =
+
 "文書が存在しません";
 
 
@@ -88,6 +95,8 @@ snap.data();
 
 
 
+
+
 area.innerHTML = `
 
 
@@ -96,7 +105,7 @@ area.innerHTML = `
 
 <h1>
 
-${data.title}
+${data.title || ""}
 
 </h1>
 
@@ -112,9 +121,9 @@ ${data.body || ""}
 
 
 
-<a href="${data.fileUrl}">
+<a href="${data.url || '#'}">
 
-PDFを開く
+文書を開く
 
 </a>
 
@@ -128,6 +137,7 @@ PDFを開く
 
 
 }
+
 
 
 loadDocument();
