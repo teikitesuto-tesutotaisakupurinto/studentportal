@@ -1,20 +1,20 @@
-// Firebase SDK
-
+// Firebase App
 import {
   initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
 
+// Firebase Authentication
 import {
   getAuth,
   GoogleAuthProvider
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
+// Firestore
 import {
   getFirestore
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
@@ -23,13 +23,17 @@ import {
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyDmXjXpibfIfejGsXj0xQ0x9UzklG4WhEmw",
+  apiKey:
+  "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
 
   authDomain:
   "aitera-83486.firebaseapp.com",
 
   projectId:
   "aitera-83486",
+
+  storageBucket:
+  "aitera-83486.firebasestorage.app",
 
   messagingSenderId:
   "79405334766",
@@ -42,12 +46,10 @@ const firebaseConfig = {
 
 
 
-
-// 初期化
+// Firebase初期化
 
 const app =
 initializeApp(firebaseConfig);
-
 
 
 
@@ -60,12 +62,10 @@ getAuth(app);
 
 
 
-
-// Googleログイン
+// Googleログイン用
 
 const googleProvider =
 new GoogleAuthProvider();
-
 
 
 
@@ -79,15 +79,14 @@ getFirestore(app);
 
 
 
-
 export {
 
   app,
 
   auth,
 
-  googleProvider,
+  db,
 
-  db
+  googleProvider
 
 };
