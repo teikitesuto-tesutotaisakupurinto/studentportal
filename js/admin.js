@@ -30,6 +30,7 @@ import {
 
 
 
+
 // =====================
 // ページ切替
 // =====================
@@ -49,8 +50,10 @@ window.showAdminPage = function(page){
   });
 
 
+
   const target =
   document.getElementById(page);
+
 
 
   if(target){
@@ -60,6 +63,7 @@ window.showAdminPage = function(page){
   }
 
 };
+
 
 
 
@@ -86,11 +90,7 @@ return;
 
 const snap =
 await getDoc(
-doc(
-db,
-"users",
-user.uid
-)
+doc(db,"users",user.uid)
 );
 
 
@@ -112,11 +112,7 @@ snap.data();
 
 if(data.role !== "admin"){
 
-
-alert(
-"管理者権限がありません"
-);
-
+alert("管理者権限がありません");
 
 location.href="student.html";
 
@@ -128,6 +124,8 @@ return;
 
 loadBlocksFromUsers();
 
+loadStudentsForNotice();
+
 loadMessages();
 
 loadScores();
@@ -136,6 +134,7 @@ loadUsers();
 
 
 });
+
 
 
 
@@ -172,7 +171,7 @@ collection(db,"users")
 
 
 
-const blocks =
+const blockSet =
 new Set();
 
 
@@ -187,7 +186,7 @@ item.data();
 
 if(data.block){
 
-blocks.add(
+blockSet.add(
 data.block
 );
 
@@ -202,14 +201,30 @@ select.innerHTML="";
 
 
 
-blocks.forEach(block=>{
+if(blockSet.size===0){
+
+
+select.innerHTML=`
+
+<option>
+登録なし
+</option>
+
+`;
+
+return;
+
+}
+
+
+
+blockSet.forEach(block=>{
 
 
 const option =
 document.createElement(
 "option"
 );
-
 
 
 option.value =
@@ -223,6 +238,86 @@ block;
 select.appendChild(
 option
 );
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================
+// 個別送信用 生徒取得
+// =====================
+
+async function loadStudentsForNotice(){
+
+
+const select =
+document.getElementById(
+"targetUser"
+);
+
+
+
+if(!select){
+
+return;
+
+}
+
+
+
+const snap =
+await getDocs(
+collection(db,"users")
+);
+
+
+
+select.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+if(data.role === "student"){
+
+
+const option =
+document.createElement(
+"option"
+);
+
+
+option.value =
+item.id;
+
+
+option.textContent =
+data.name;
+
+
+select.appendChild(
+option
+);
+
+
+}
+
 
 
 });
@@ -282,7 +377,6 @@ document.getElementById(
 
 
 
-
 if(type==="block_grade"){
 
 
@@ -297,8 +391,6 @@ document.getElementById(
 
 
 }
-
-
 
 
 
@@ -402,7 +494,6 @@ document.getElementById(
 
 
 
-
 if(
 targetType==="block_grade"
 ){
@@ -427,7 +518,7 @@ targetType==="individual"
 
 notice.uid =
 document.getElementById(
-"targetUid"
+"targetUser"
 ).value;
 
 
@@ -445,9 +536,8 @@ notice
 
 
 alert(
-"お知らせを公開しました"
+"公開しました"
 );
-
 
 
 };
@@ -496,7 +586,7 @@ return;
 const storageRef =
 ref(
 storage,
-"documents/" + file.name
+"documents/"+file.name
 );
 
 
@@ -512,8 +602,6 @@ const url =
 await getDownloadURL(
 storageRef
 );
-
-
 
 
 
@@ -544,7 +632,6 @@ serverTimestamp()
 alert(
 "アップロードしました"
 );
-
 
 
 };
@@ -672,7 +759,6 @@ ${data.senderName || ""}
 ${data.body}
 </p>
 
-
 </div>
 
 `;
@@ -737,12 +823,12 @@ area.innerHTML += `
 
 <div class="card">
 
-${data.name}<br>
+${data.name || ""}<br>
 
-${data.testName}<br>
+${data.testName || ""}<br>
 
-${data.subject}：
-${data.score}点
+${data.subject || ""}：
+${data.score || ""}点
 
 </div>
 
