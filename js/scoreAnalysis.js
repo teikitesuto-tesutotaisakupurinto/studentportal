@@ -6,7 +6,7 @@ import {
 import {
   collection,
   getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
@@ -30,6 +30,7 @@ if(!area){
 return;
 
 }
+
 
 
 
@@ -67,7 +68,6 @@ item.data();
 
 
 
-
 let totalScore = 0;
 
 let count = 0;
@@ -79,6 +79,8 @@ const subjects = {};
 const grades = {};
 
 const blocks = {};
+
+
 
 
 
@@ -156,9 +158,6 @@ subjects[subject].count++;
 
 
 
-
-// 学年・ブロック
-
 const user =
 users[data.uid];
 
@@ -167,6 +166,8 @@ users[data.uid];
 if(user){
 
 
+
+// 学年別
 
 if(!grades[user.grade]){
 
@@ -196,6 +197,9 @@ grades[user.grade].count++;
 
 
 
+
+// ブロック別
+
 if(!blocks[user.block]){
 
 
@@ -221,6 +225,7 @@ blocks[user.block].count++;
 
 
 }
+
 
 
 });
@@ -298,10 +303,7 @@ html += `
 ${name}：
 
 ${
-(
-data.total /
-data.count
-)
+(data.total / data.count)
 .toFixed(1)
 }点
 
@@ -348,10 +350,7 @@ html += `
 ${name}：
 
 ${
-(
-data.total /
-data.count
-)
+(data.total / data.count)
 .toFixed(1)
 }点
 
@@ -398,10 +397,7 @@ html += `
 ${name}：
 
 ${
-(
-data.total /
-data.count
-)
+(data.total / data.count)
 .toFixed(1)
 }点
 
