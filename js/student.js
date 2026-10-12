@@ -6,7 +6,7 @@ import {
 
 import {
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
 import {
@@ -18,7 +18,7 @@ import {
   doc,
   getDoc,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 import {
@@ -39,14 +39,16 @@ let userData = null;
 // ページ切替
 // =====================
 
-window.showPage=function(page){
+window.showPage = function(page){
 
 
 document
 .querySelectorAll(".content > section")
 .forEach(section=>{
 
+
 section.style.display="none";
+
 
 });
 
@@ -111,11 +113,12 @@ location.href="admin.html";
 
 return;
 
+
 }
 
 
 
-currentUser=user;
+currentUser = user;
 
 
 
@@ -214,7 +217,7 @@ ${userData.grade || ""}
 
 
 // =====================
-// お知らせ一覧
+// お知らせ
 // =====================
 
 async function loadNotices(){
@@ -223,20 +226,6 @@ async function loadNotices(){
 const area =
 document.getElementById(
 "noticeList"
-);
-
-
-
-const latest =
-document.getElementById(
-"latestNotice"
-);
-
-
-
-const important =
-document.getElementById(
-"importantNotice"
 );
 
 
@@ -264,14 +253,6 @@ orderBy(
 
 area.innerHTML="";
 
-latest.innerHTML="";
-
-important.innerHTML="";
-
-
-
-let count=0;
-
 
 
 snap.forEach(item=>{
@@ -290,42 +271,30 @@ return;
 
 
 
-let tag="";
 
 
-
-if(data.importance==="important"){
-
-
-tag=
-
-`
-<span class="important">
-重要
-</span>
-`;
-
-}
-
-
-
-const html = `
+area.innerHTML += `
 
 <div class="notice-card">
 
+
 <a href="notice.html?id=${item.id}">
 
-${tag}
 
 <h3>
+
 ${data.title}
+
 </h3>
+
 
 </a>
 
 
 <p>
-${data.body.substring(0,50)}
+
+${data.body || ""}
+
 </p>
 
 
@@ -333,32 +302,6 @@ ${data.body.substring(0,50)}
 
 `;
 
-
-
-area.innerHTML += html;
-
-
-
-if(
-data.importance==="important"
-&&
-count<3
-){
-
-important.innerHTML += html;
-
-
-}
-else if(count<3){
-
-latest.innerHTML += html;
-
-
-}
-
-
-
-count++;
 
 
 });
@@ -382,7 +325,8 @@ new Date();
 
 
 
-if(data.startDate &&
+if(
+data.startDate &&
 today < new Date(data.startDate)
 ){
 
@@ -392,14 +336,14 @@ return false;
 
 
 
-if(data.endDate &&
+if(
+data.endDate &&
 today > new Date(data.endDate)
 ){
 
 return false;
 
 }
-
 
 
 
@@ -538,7 +482,7 @@ alert(
 
 
 // =====================
-// 配布文書一覧
+// 配布文書
 // =====================
 
 async function loadDocuments(){
@@ -593,20 +537,15 @@ area.innerHTML += `
 
 
 <h3>
-
 ${data.title || ""}
-
 </h3>
 
 
 </a>
 
 
-
 <p>
-
 ${data.body || ""}
-
 </p>
 
 
@@ -676,23 +615,17 @@ area.innerHTML += `
 
 
 <h3>
-
 ${data.date || ""}
-
 </h3>
 
 
 <p>
-
 ${data.title || ""}
-
 </p>
 
 
 <p>
-
 ${data.description || ""}
-
 </p>
 
 
@@ -753,6 +686,7 @@ new Date();
 
 
 
+
 snap.forEach(item=>{
 
 
@@ -774,8 +708,7 @@ return;
 
 
 if(
-data.startDate
-&&
+data.startDate &&
 today < new Date(data.startDate)
 ){
 
@@ -788,14 +721,14 @@ return;
 
 
 if(
-data.endDate
-&&
+data.endDate &&
 today > new Date(data.endDate)
 ){
 
 return;
 
 }
+
 
 
 
@@ -828,13 +761,11 @@ ${data.title || ""}
 </h3>
 
 
-
 <p>
 
 ${data.testType || ""}
 
 </p>
-
 
 
 
@@ -872,7 +803,7 @@ ${data.testType || ""}
 
 
 // =====================
-// 成績フォーム表示判定
+// 成績フォーム公開範囲
 // =====================
 
 function canViewScoreForm(data){
@@ -890,6 +821,7 @@ return true;
 
 
 
+
 if(
 data.targetType==="block"
 ){
@@ -899,6 +831,7 @@ data.block === userData.block
 );
 
 }
+
 
 
 
@@ -917,6 +850,8 @@ data.grade === userData.grade
 );
 
 }
+
+
 
 
 
