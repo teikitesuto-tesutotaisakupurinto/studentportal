@@ -49,10 +49,12 @@ const firebaseConfig = {
 
 
 
+
 // Firebase初期化
 
 const app =
 initializeApp(firebaseConfig);
+
 
 
 
@@ -65,6 +67,7 @@ getAuth(app);
 
 
 
+
 // Googleログイン
 
 const googleProvider =
@@ -73,10 +76,12 @@ new GoogleAuthProvider();
 
 
 
+
 // Firestore
 
 const db =
 getFirestore(app);
+
 
 
 
