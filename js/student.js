@@ -46,9 +46,7 @@ document
 .querySelectorAll(".content > section")
 .forEach(section=>{
 
-
 section.style.display="none";
-
 
 });
 
@@ -111,14 +109,14 @@ alert(
 
 location.href="admin.html";
 
-return;
 
+return;
 
 }
 
 
 
-currentUser = user;
+currentUser=user;
 
 
 
@@ -133,8 +131,22 @@ user.uid
 
 
 
+if(!snap.exists()){
+
+alert(
+"ユーザー情報がありません"
+);
+
+return;
+
+}
+
+
+
 userData =
 snap.data();
+
+
 
 
 
@@ -186,7 +198,7 @@ ${userData.name || ""}
 
 <p>
 メール：
-${currentUser.email}
+${currentUser.email || ""}
 </p>
 
 
@@ -230,6 +242,20 @@ document.getElementById(
 
 
 
+const latest =
+document.getElementById(
+"latestNotice"
+);
+
+
+
+const important =
+document.getElementById(
+"importantNotice"
+);
+
+
+
 if(!area){
 
 return;
@@ -255,6 +281,25 @@ area.innerHTML="";
 
 
 
+if(latest){
+
+latest.innerHTML="";
+
+}
+
+
+if(important){
+
+important.innerHTML="";
+
+}
+
+
+
+let count=0;
+
+
+
 snap.forEach(item=>{
 
 
@@ -271,9 +316,26 @@ return;
 
 
 
+let tag="";
 
 
-area.innerHTML += `
+
+if(data.importance==="important"){
+
+
+tag=`
+
+<span class="important">
+重要
+</span>
+
+`;
+
+}
+
+
+
+const html=`
 
 <div class="notice-card">
 
@@ -281,10 +343,11 @@ area.innerHTML += `
 <a href="notice.html?id=${item.id}">
 
 
+${tag}
+
+
 <h3>
-
-${data.title}
-
+${data.title || ""}
 </h3>
 
 
@@ -292,9 +355,7 @@ ${data.title}
 
 
 <p>
-
-${data.body || ""}
-
+${(data.body || "").substring(0,50)}
 </p>
 
 
@@ -302,6 +363,25 @@ ${data.body || ""}
 
 `;
 
+
+
+area.innerHTML += html;
+
+
+
+if(count < 3 && important && data.importance==="important"){
+
+important.innerHTML += html;
+
+
+}else if(count < 3 && latest){
+
+latest.innerHTML += html;
+
+}
+
+
+count++;
 
 
 });
@@ -348,7 +428,9 @@ return false;
 
 
 
+
 if(
+!data.targetType ||
 data.targetType==="all"
 ){
 
@@ -459,6 +541,8 @@ serverTimestamp()
 
 
 
+
+
 document.getElementById(
 "messageText"
 ).value="";
@@ -537,7 +621,9 @@ area.innerHTML += `
 
 
 <h3>
+
 ${data.title || ""}
+
 </h3>
 
 
@@ -545,7 +631,9 @@ ${data.title || ""}
 
 
 <p>
+
 ${data.body || ""}
+
 </p>
 
 
@@ -569,7 +657,7 @@ ${data.body || ""}
 
 
 // =====================
-// カレンダー表示
+// カレンダー
 // =====================
 
 async function loadCalendar(){
@@ -687,6 +775,7 @@ new Date();
 
 
 
+
 snap.forEach(item=>{
 
 
@@ -695,9 +784,9 @@ item.data();
 
 
 
-
-
-if(data.published === false){
+if(
+data.published === false
+){
 
 return;
 
@@ -733,8 +822,6 @@ return;
 
 
 
-
-
 if(
 !canViewScoreForm(data)
 ){
@@ -742,8 +829,6 @@ if(
 return;
 
 }
-
-
 
 
 
@@ -782,7 +867,6 @@ ${data.testType || ""}
 </a>
 
 
-
 </div>
 
 `;
@@ -803,21 +887,21 @@ ${data.testType || ""}
 
 
 // =====================
-// 成績フォーム公開範囲
+// 成績フォーム対象判定
 // =====================
 
 function canViewScoreForm(data){
 
 
 if(
-!data.targetType
-||
+!data.targetType ||
 data.targetType==="all"
 ){
 
 return true;
 
 }
+
 
 
 
@@ -831,6 +915,7 @@ data.block === userData.block
 );
 
 }
+
 
 
 
