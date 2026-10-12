@@ -23,13 +23,8 @@ import {
 
 
 let currentUser = null;
+
 let userData = null;
-
-let documents = [];
-
-let documentPage = 1;
-
-const documentPerPage = 10;
 
 
 
@@ -40,30 +35,31 @@ const documentPerPage = 10;
 window.showPage = function(page){
 
 
-  const sections =
-  document.querySelectorAll(
-    ".content > section"
-  );
-
-
-  sections.forEach(section=>{
-
-    section.style.display = "none";
-
-  });
+const sections =
+document.querySelectorAll(
+".content > section"
+);
 
 
 
-  const target =
-  document.getElementById(page);
+sections.forEach(section=>{
+
+section.style.display="none";
+
+});
 
 
 
-  if(target){
+const target =
+document.getElementById(page);
 
-    target.style.display = "block";
 
-  }
+
+if(target){
+
+target.style.display="block";
+
+}
 
 
 };
@@ -73,8 +69,11 @@ window.showPage = function(page){
 
 
 
+
+
+
 // =====================
-// ログイン確認
+// 認証確認
 // =====================
 
 onAuthStateChanged(
@@ -91,7 +90,8 @@ return;
 }
 
 
-currentUser = user;
+
+currentUser=user;
 
 
 
@@ -140,6 +140,8 @@ loadMessages();
 
 
 
+
+
 // =====================
 // ユーザー情報
 // =====================
@@ -159,13 +161,25 @@ if(area){
 
 area.innerHTML = `
 
-<p>名前：${userData.name || ""}</p>
+<p>
+名前：
+${userData.name || ""}
+</p>
 
-<p>メール：${currentUser.email}</p>
+<p>
+メール：
+${currentUser.email}
+</p>
 
-<p>地方：${userData.block || ""}</p>
+<p>
+地方：
+${userData.block || ""}
+</p>
 
-<p>学年：${userData.grade || ""}</p>
+<p>
+学年：
+${userData.grade || ""}
+</p>
 
 `;
 
@@ -173,6 +187,8 @@ area.innerHTML = `
 
 
 }
+
+
 
 
 
@@ -206,10 +222,12 @@ document.getElementById(
 );
 
 
+
 const latest =
 document.getElementById(
 "latestNotice"
 );
+
 
 
 const important =
@@ -219,17 +237,23 @@ document.getElementById(
 
 
 
-if(!list)return;
+if(!list){
+
+return;
+
+}
 
 
 
 list.innerHTML="";
+
 latest.innerHTML="";
+
 important.innerHTML="";
 
 
 
-let count = 0;
+let count=0;
 
 
 
@@ -249,36 +273,49 @@ return;
 
 
 
-let tag = "";
+
+let tag="";
 
 
 
-if(data.importance === "important"){
+if(
+data.importance==="important"
+){
 
+tag=`
 
-tag = `
 <span class="important">
+
 重要
+
 </span>
+
 `;
 
 }
 
 
 
-const html = `
+
+const html=`
 
 <div class="notice-card">
 
 ${tag}
 
 <h3>
+
 ${data.title}
+
 </h3>
 
+
 <p>
+
 ${data.body}
+
 </p>
+
 
 </div>
 
@@ -291,21 +328,23 @@ list.innerHTML += html;
 
 
 if(
-data.importance === "important"
+data.importance==="important"
 &&
-count < 3
+count<3
 ){
 
 important.innerHTML += html;
 
 
-}else if(count < 3){
+}
+else if(count<3){
 
 
 latest.innerHTML += html;
 
 
 }
+
 
 
 count++;
@@ -315,6 +354,7 @@ count++;
 
 
 }
+
 
 
 
@@ -334,7 +374,9 @@ new Date();
 if(notice.startDate){
 
 
-if(today < new Date(notice.startDate)){
+if(
+today < new Date(notice.startDate)
+){
 
 return false;
 
@@ -347,7 +389,9 @@ return false;
 if(notice.endDate){
 
 
-if(today > new Date(notice.endDate)){
+if(
+today > new Date(notice.endDate)
+){
 
 return false;
 
@@ -359,8 +403,9 @@ return false;
 
 
 
-
-if(notice.targetType === "all"){
+if(
+notice.targetType==="all"
+){
 
 return true;
 
@@ -368,19 +413,25 @@ return true;
 
 
 
-if(notice.targetType === "block"){
 
 
-return notice.block === userData.block;
+if(
+notice.targetType==="block"
+){
 
+return (
+notice.block === userData.block
+);
 
 }
 
 
 
 
-if(notice.targetType === "block_grade"){
 
+if(
+notice.targetType==="block_grade"
+){
 
 return (
 
@@ -392,18 +443,19 @@ notice.grade === userData.grade
 
 );
 
-
 }
 
 
 
 
 
-if(notice.targetType === "individual"){
+if(
+notice.targetType==="individual"
+){
 
-
-return notice.uid === currentUser.uid;
-
+return (
+notice.uid === currentUser.uid
+);
 
 }
 
@@ -415,6 +467,7 @@ return false;
 
 
 }
+
 
 
 
@@ -449,25 +502,43 @@ return;
 
 
 
+
+
 await addDoc(
 collection(db,"messages"),
 {
 
+
 senderUid:
+
 currentUser.uid,
 
 
 senderName:
+
 userData.name,
 
 
-body:text,
+senderEmail:
+
+currentUser.email,
 
 
-status:"unread",
+
+body:
+
+text,
+
+
+
+status:
+
+"unread",
+
 
 
 createdAt:
+
 serverTimestamp()
 
 
@@ -512,7 +583,11 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
@@ -574,6 +649,21 @@ ${data.body}
 async function loadDocuments(){
 
 
+const area =
+document.getElementById(
+"documentList"
+);
+
+
+
+if(!area){
+
+return;
+
+}
+
+
+
 const snap =
 await getDocs(
 query(
@@ -587,81 +677,25 @@ orderBy(
 
 
 
-documents = [];
+area.innerHTML="";
 
 
 
 snap.forEach(item=>{
 
-documents.push(
-item.data()
-);
 
-});
+const data =
+item.data();
 
-
-
-showDocuments();
-
-
-}
-
-
-
-
-
-
-
-
-function showDocuments(){
-
-
-const area =
-document.getElementById(
-"documentList"
-);
-
-
-const pager =
-document.getElementById(
-"documentPagination"
-);
-
-
-
-if(!area)return;
-
-
-
-area.innerHTML="";
-
-
-
-const start =
-(documentPage - 1)
-*
-documentPerPage;
-
-
-
-const display =
-documents.slice(
-start,
-start + documentPerPage
-);
-
-
-
-display.forEach(doc=>{
 
 
 area.innerHTML += `
 
 <div class="card">
 
-<a href="${doc.fileUrl}" target="_blank">
+<a href="${data.fileUrl}" target="_blank">
 
-${doc.title}
+${data.title}
 
 </a>
 
@@ -669,69 +703,9 @@ ${doc.title}
 
 `;
 
+
+
 });
-
-
-
-
-
-// 10件以下はページ表示なし
-
-if(documents.length <= documentPerPage){
-
-pager.innerHTML="";
-
-return;
-
-}
-
-
-
-const pages =
-Math.ceil(
-documents.length / documentPerPage
-);
-
-
-
-pager.innerHTML="";
-
-
-
-for(
-let i=1;
-i<=pages;
-i++
-){
-
-
-const button =
-document.createElement(
-"button"
-);
-
-
-
-button.textContent=i;
-
-
-button.onclick=()=>{
-
-
-documentPage=i;
-
-
-showDocuments();
-
-
-};
-
-
-
-pager.appendChild(button);
-
-
-}
 
 
 }
@@ -755,27 +729,33 @@ await addDoc(
 collection(db,"scores"),
 {
 
+
 uid:
+
 currentUser.uid,
 
 
 name:
+
 userData.name,
 
 
 testName:
+
 document.getElementById(
 "testName"
 ).value,
 
 
 subject:
+
 document.getElementById(
 "subject"
 ).value,
 
 
 score:
+
 Number(
 document.getElementById(
 "score"
@@ -784,7 +764,9 @@ document.getElementById(
 
 
 createdAt:
+
 serverTimestamp()
+
 
 }
 
