@@ -9,19 +9,19 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
 import {
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
 
 // =====================
-// ユーザー情報取得
+// 設定情報取得
 // =====================
 
 async function loadSettings(user){
@@ -196,6 +196,9 @@ alert(
 
 
 }catch(error){
+
+
+console.error(error);
 
 
 alert(
