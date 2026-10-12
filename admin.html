@@ -7,11 +7,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <title>
 定期テスト対策ポータル 管理画面
 </title>
-
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -33,7 +31,6 @@
 管理画面
 
 </div>
-
 
 
 <nav>
@@ -96,8 +93,6 @@
 
 
 
-
-
 <main class="content">
 
 
@@ -128,7 +123,7 @@
 <div class="card">
 
 <h3>
-成績提出状況
+提出状況
 </h3>
 
 <div id="scoreCount">
@@ -156,13 +151,11 @@
 </h1>
 
 
-
 <label>
 タイトル
 </label>
 
 <input id="noticeTitle">
-
 
 
 <label>
@@ -177,7 +170,6 @@
 <label>
 重要タグ
 </label>
-
 
 <select id="importance">
 
@@ -194,11 +186,9 @@
 
 
 
-
 <label>
 公開開始日
 </label>
-
 
 <input
 id="startDate"
@@ -206,12 +196,9 @@ type="date">
 
 
 
-
-
 <label>
 公開終了日
 </label>
-
 
 <input
 id="endDate"
@@ -224,7 +211,6 @@ type="date">
 <label>
 送信範囲
 </label>
-
 
 <select
 id="targetType"
@@ -257,14 +243,12 @@ onchange="changeTarget()">
 
 
 
-<div id="blockArea"
-style="display:none;">
+<div id="blockArea" style="display:none;">
 
 
 <label>
 ブロック
 </label>
-
 
 <select id="block">
 
@@ -277,14 +261,12 @@ style="display:none;">
 
 
 
-<div id="gradeArea"
-style="display:none;">
+<div id="gradeArea" style="display:none;">
 
 
 <label>
 学年
 </label>
-
 
 <select id="grade">
 
@@ -300,7 +282,6 @@ style="display:none;">
 中学3年
 </option>
 
-
 </select>
 
 
@@ -310,14 +291,12 @@ style="display:none;">
 
 
 
-<div id="userArea"
-style="display:none;">
+<div id="userArea" style="display:none;">
 
 
 <label>
 生徒
 </label>
-
 
 <select id="targetUser">
 
@@ -374,14 +353,13 @@ style="display:none;">
 
 
 <h1>
-配布文書作成
+配布文書管理
 </h1>
 
 
 <label>
 タイトル
 </label>
-
 
 <input id="documentTitle">
 
@@ -390,7 +368,6 @@ style="display:none;">
 <label>
 本文
 </label>
-
 
 <textarea id="documentBody"></textarea>
 
@@ -401,13 +378,10 @@ style="display:none;">
 PDFファイル
 </label>
 
-
 <input
 type="file"
 id="documentFile"
 accept=".pdf">
-
-
 
 
 
@@ -440,26 +414,21 @@ accept=".pdf">
 予定名
 </label>
 
-
 <input id="calendarTitle">
-
 
 
 <label>
 日付
 </label>
 
-
 <input
-type="date"
-id="calendarDate">
-
+id="calendarDate"
+type="date">
 
 
 <label>
 内容
 </label>
-
 
 <textarea id="calendarDescription"></textarea>
 
@@ -471,6 +440,7 @@ id="calendarDate">
 登録
 
 </button>
+
 
 
 <div id="adminCalendar">
@@ -496,10 +466,10 @@ id="calendarDate">
 </h1>
 
 
+
 <label>
 フォーム名
 </label>
-
 
 <input id="formTitle">
 
@@ -512,23 +482,21 @@ id="calendarDate">
 
 <select id="testType">
 
-
 <option>
 中間テスト
 </option>
-
 
 <option>
 期末テスト
 </option>
 
-
 <option>
 その他
 </option>
 
-
 </select>
+
+
 
 
 
@@ -537,36 +505,117 @@ id="calendarDate">
 </label>
 
 
-<div>
+<div id="subjectList">
 
+
+<label>
 <input type="checkbox" value="国語">
 国語
+</label>
 
+
+<label>
 <input type="checkbox" value="数学">
 数学
+</label>
 
+
+<label>
 <input type="checkbox" value="英語">
 英語
+</label>
 
+
+<label>
 <input type="checkbox" value="理科">
 理科
+</label>
 
+
+<label>
 <input type="checkbox" value="社会">
 社会
+</label>
 
+
+<label>
 <input type="checkbox" value="音楽">
 音楽
+</label>
 
+
+<label>
 <input type="checkbox" value="美術">
 美術
+</label>
 
+
+<label>
 <input type="checkbox" value="保健体育">
 保健体育
+</label>
 
+
+<label>
 <input type="checkbox" value="技術家庭">
 技術家庭
+</label>
+
 
 </div>
+
+
+
+
+
+
+<label>
+公開開始日
+</label>
+
+<input
+id="formStartDate"
+type="date">
+
+
+
+<label>
+公開終了日
+</label>
+
+<input
+id="formEndDate"
+type="date">
+
+
+
+
+
+<label>
+公開範囲
+</label>
+
+
+<select id="formTargetType">
+
+
+<option value="all">
+全生徒
+</option>
+
+
+<option value="block">
+ブロック
+</option>
+
+
+<option value="block_grade">
+ブロック＋学年
+</option>
+
+
+</select>
+
 
 
 
@@ -630,11 +679,11 @@ id="calendarDate">
 
 
 
+
 </main>
 
 
 </div>
-
 
 
 
