@@ -6,8 +6,7 @@ import {
 import {
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
@@ -32,6 +31,10 @@ params.get("id");
 
 
 
+// =====================
+// お知らせ取得
+// =====================
+
 async function loadNotice(){
 
 
@@ -52,7 +55,6 @@ area.innerHTML =
 
 return;
 
-
 }
 
 
@@ -70,8 +72,6 @@ noticeId
 
 
 
-
-
 if(!snap.exists()){
 
 
@@ -81,7 +81,6 @@ area.innerHTML =
 
 
 return;
-
 
 }
 
@@ -97,7 +96,6 @@ snap.data();
 
 
 
-
 // 公開期間確認
 
 const today =
@@ -105,15 +103,13 @@ new Date();
 
 
 
-
-if(data.startDate){
-
-
 if(
+data.startDate &&
 today < new Date(data.startDate)
 ){
 
 area.innerHTML =
+
 "公開前のお知らせです";
 
 
@@ -121,26 +117,21 @@ return;
 
 }
 
-}
 
 
-
-
-
-if(data.endDate){
 
 
 if(
+data.endDate &&
 today > new Date(data.endDate)
 ){
 
 area.innerHTML =
+
 "公開終了したお知らせです";
 
 
 return;
-
-}
 
 }
 
@@ -176,6 +167,7 @@ tag = `
 
 
 
+
 area.innerHTML = `
 
 
@@ -188,7 +180,7 @@ ${tag}
 
 <h1>
 
-${data.title}
+${data.title || ""}
 
 </h1>
 
@@ -197,7 +189,7 @@ ${data.title}
 
 <p>
 
-${data.body}
+${data.body || ""}
 
 </p>
 
