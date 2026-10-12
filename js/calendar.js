@@ -8,11 +8,13 @@ import {
   getDocs,
   query,
   orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
-let currentDate = new Date();
+let currentDate =
+new Date();
+
 
 let events = [];
 
@@ -90,7 +92,7 @@ renderCalendar();
 
 
 // =====================
-// カレンダー表示
+// 表示
 // =====================
 
 function renderCalendar(){
@@ -121,7 +123,7 @@ currentDate.getMonth();
 
 
 
-const firstDay =
+const first =
 new Date(
 year,
 month,
@@ -130,7 +132,7 @@ month,
 
 
 
-const lastDate =
+const last =
 new Date(
 year,
 month+1,
@@ -176,7 +178,6 @@ ${year}年${month+1}月
 
 
 
-
 <table class="calendar">
 
 
@@ -207,11 +208,10 @@ ${year}年${month+1}月
 
 
 
-// 月初空白
 
 for(
 let i=0;
-i<firstDay.getDay();
+i<first.getDay();
 i++
 ){
 
@@ -226,7 +226,7 @@ html += "<td></td>";
 
 for(
 let day=1;
-day<=lastDate;
+day<=last;
 day++
 ){
 
@@ -238,10 +238,10 @@ const date =
 
 
 
-
 html += `
 
 <td>
+
 
 <div class="day">
 
@@ -250,7 +250,6 @@ ${day}
 </div>
 
 `;
-
 
 
 
@@ -273,8 +272,8 @@ ${event.title}
 `;
 
 
-
 }
+
 
 
 });
@@ -289,14 +288,14 @@ html += "</td>";
 
 
 
+
 if(
-(firstDay.getDay()+day)%7===0
+(first.getDay()+day)%7===0
 ){
 
 html += "</tr><tr>";
 
 }
-
 
 
 }
@@ -315,7 +314,8 @@ html += `
 
 
 
-area.innerHTML = html;
+area.innerHTML =
+html;
 
 
 }
@@ -340,11 +340,11 @@ currentDate.getMonth()-1
 );
 
 
-
 renderCalendar();
 
 
 };
+
 
 
 
@@ -358,12 +358,10 @@ currentDate.getMonth()+1
 );
 
 
-
 renderCalendar();
 
 
 };
-
 
 
 
