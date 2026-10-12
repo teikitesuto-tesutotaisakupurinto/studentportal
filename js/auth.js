@@ -22,7 +22,7 @@ import {
 
 
 // =====================
-// 権限取得
+// ユーザー権限取得
 // =====================
 
 export async function getUserRole(user){
@@ -57,6 +57,7 @@ return snap.data().role;
 
 
 
+
 // =====================
 // ログイン後振り分け
 // =====================
@@ -69,11 +70,14 @@ await getUserRole(user);
 
 
 
+
+
 if(role === "admin"){
 
 
 location.href =
 "admin.html";
+
 
 
 }
@@ -84,6 +88,7 @@ location.href =
 "student.html";
 
 
+
 }
 else{
 
@@ -91,6 +96,7 @@ else{
 alert(
 "権限が設定されていません"
 );
+
 
 
 }
@@ -114,7 +120,6 @@ alert(
 window.login = async function(){
 
 
-
 const email =
 document.getElementById(
 "email"
@@ -126,7 +131,6 @@ const password =
 document.getElementById(
 "password"
 ).value;
-
 
 
 
@@ -151,9 +155,8 @@ result.user
 }catch(error){
 
 
-
 alert(
-"ログインできませんでした\n"
+"ログイン失敗\n"
 +
 error.message
 );
@@ -161,7 +164,6 @@ error.message
 
 
 }
-
 
 
 };
@@ -179,7 +181,6 @@ error.message
 // =====================
 
 window.googleLogin = async function(){
-
 
 
 try{
@@ -202,9 +203,8 @@ result.user
 }catch(error){
 
 
-
 alert(
-"Googleログインできませんでした\n"
+"Googleログイン失敗\n"
 +
 error.message
 );
@@ -212,7 +212,6 @@ error.message
 
 
 }
-
 
 
 };
@@ -248,13 +247,14 @@ location.href =
 
 
 alert(
-"ログアウトできませんでした"
+"ログアウト失敗\n"
++
+error.message
 );
 
 
 
 }
-
 
 
 };
@@ -268,7 +268,7 @@ alert(
 
 
 // =====================
-// ログイン状態確認
+// 状態確認
 // =====================
 
 onAuthStateChanged(
@@ -285,8 +285,8 @@ user.email
 );
 
 
-
 }
+
 
 
 });
