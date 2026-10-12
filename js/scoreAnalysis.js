@@ -11,8 +11,11 @@ import {
 
 
 
+// =====================
+// 成績分析
+// =====================
 
-async function loadAnalysis(){
+async function loadScoreAnalysis(){
 
 
 const area =
@@ -27,7 +30,6 @@ if(!area){
 return;
 
 }
-
 
 
 
@@ -51,11 +53,11 @@ const users = {};
 
 
 
-userSnap.forEach(doc=>{
+userSnap.forEach(item=>{
 
 
-users[doc.id] =
-doc.data();
+users[item.id] =
+item.data();
 
 
 });
@@ -65,9 +67,11 @@ doc.data();
 
 
 
-let count = 0;
 
 let totalScore = 0;
+
+let count = 0;
+
 
 
 const subjects = {};
@@ -80,19 +84,29 @@ const blocks = {};
 
 
 
-scoreSnap.forEach(doc=>{
+
+
+scoreSnap.forEach(item=>{
 
 
 const data =
-doc.data();
+item.data();
 
+
+
+if(
+typeof data.total === "number"
+){
+
+
+totalScore += data.total;
 
 
 count++;
 
 
-totalScore +=
-data.total || 0;
+}
+
 
 
 
@@ -106,23 +120,29 @@ if(data.subjects){
 Object.entries(
 data.subjects
 )
-.forEach(([name,score])=>{
+.forEach(([subject,score])=>{
 
 
-if(!subjects[name]){
+if(!subjects[subject]){
 
-subjects[name]={
+
+subjects[subject]={
+
 total:0,
+
 count:0
+
 };
+
 
 }
 
 
 
-subjects[name].total += score;
+subjects[subject].total += score;
 
-subjects[name].count++;
+
+subjects[subject].count++;
 
 
 
@@ -134,6 +154,10 @@ subjects[name].count++;
 
 
 
+
+
+
+// 学年・ブロック
 
 const user =
 users[data.uid];
@@ -144,22 +168,24 @@ if(user){
 
 
 
-// 学年
-
 if(!grades[user.grade]){
 
 
 grades[user.grade]={
+
 total:0,
+
 count:0
+
 };
 
 
 }
 
 
+
 grades[user.grade].total +=
-data.total;
+data.total || 0;
 
 
 grades[user.grade].count++;
@@ -168,32 +194,38 @@ grades[user.grade].count++;
 
 
 
-// ブロック
+
 
 if(!blocks[user.block]){
 
 
 blocks[user.block]={
+
 total:0,
+
 count:0
+
 };
 
 
 }
 
 
+
 blocks[user.block].total +=
-data.total;
+data.total || 0;
 
 
 blocks[user.block].count++;
 
 
+
 }
 
 
-
 });
+
+
 
 
 
@@ -213,23 +245,20 @@ let html = `
 
 
 <p>
-
 提出人数：
 ${count}人
-
 </p>
 
 
 <p>
-
 平均点：
-
-${count ? 
-(totalScore/count).toFixed(1)
+${
+count
+?
+(totalScore / count).toFixed(1)
 :
 0
 }
-
 </p>
 
 
@@ -237,6 +266,8 @@ ${count ?
 
 
 `;
+
+
 
 
 
@@ -266,13 +297,18 @@ html += `
 
 ${name}：
 
-${(
-data.total/data.count
-).toFixed(1)}点
+${
+(
+data.total /
+data.count
+)
+.toFixed(1)
+}点
 
 </p>
 
 `;
+
 
 
 });
@@ -311,9 +347,13 @@ html += `
 
 ${name}：
 
-${(
-data.total/data.count
-).toFixed(1)}点
+${
+(
+data.total /
+data.count
+)
+.toFixed(1)
+}点
 
 </p>
 
@@ -322,6 +362,7 @@ data.total/data.count
 
 
 });
+
 
 
 html += "</div>";
@@ -356,9 +397,13 @@ html += `
 
 ${name}：
 
-${(
-data.total/data.count
-).toFixed(1)}点
+${
+(
+data.total /
+data.count
+)
+.toFixed(1)
+}点
 
 </p>
 
@@ -377,7 +422,9 @@ html += "</div>";
 
 
 
-area.innerHTML = html;
+
+area.innerHTML =
+html;
 
 
 }
@@ -386,4 +433,4 @@ area.innerHTML = html;
 
 
 
-loadAnalysis();
+loadScoreAnalysis();
