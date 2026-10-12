@@ -21,56 +21,87 @@ import {
 
 
 
-// ユーザー振り分け
+// 権限判定
 
 async function redirectUser(user){
 
-  const userRef =
-  doc(
-    db,
-    "users",
-    user.uid
-  );
 
-
-  const userSnap =
-  await getDoc(userRef);
+const userRef =
+doc(
+db,
+"users",
+user.uid
+);
 
 
 
-  if(!userSnap.exists()){
-
-    alert(
-      "ユーザー情報が登録されていません"
-    );
-
-    return;
-
-  }
+const userSnap =
+await getDoc(userRef);
 
 
 
-  const data =
-  userSnap.data();
 
 
-
-  if(data.role === "admin"){
-
-    window.location.href =
-    "admin.html";
-
-  }else{
+if(!userSnap.exists()){
 
 
-    window.location.href =
-    "student.html";
+alert(
+"ユーザー情報が登録されていません"
+);
 
 
-  }
+return;
 
 
 }
+
+
+
+
+
+const data =
+userSnap.data();
+
+
+
+
+
+if(data.role === "admin"){
+
+
+location.href =
+"admin.html";
+
+
+
+}
+
+else if(data.role === "student"){
+
+
+location.href =
+"student.html";
+
+
+
+}
+
+else{
+
+
+alert(
+"権限設定がありません"
+);
+
+
+
+}
+
+
+
+}
+
+
 
 
 
@@ -83,52 +114,59 @@ async function redirectUser(user){
 window.login = async function(){
 
 
-  const email =
-  document
-  .getElementById("email")
-  .value;
+
+const email =
+document.getElementById(
+"email"
+).value;
 
 
 
-  const password =
-  document
-  .getElementById("password")
-  .value;
+const password =
+document.getElementById(
+"password"
+).value;
 
 
 
-  try{
 
 
-    const result =
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+try{
 
 
-
-    await redirectUser(
-      result.user
-    );
+const result =
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
 
 
 
-  }catch(error){
+await redirectUser(
+result.user
+);
 
 
-    alert(
-      "ログインに失敗しました\n"
-      +
-      error.message
-    );
+
+}
+
+catch(error){
 
 
-  }
+alert(
+"ログイン失敗\n"
++
+error.message
+);
+
+
+}
+
 
 
 };
+
 
 
 
@@ -147,29 +185,33 @@ try{
 
 const result =
 await signInWithPopup(
-  auth,
-  googleProvider
+auth,
+googleProvider
 );
 
 
 
 await redirectUser(
-  result.user
+result.user
 );
 
 
 
-}catch(error){
+}
+
+catch(error){
 
 
 alert(
-"Googleログインに失敗しました\n"
+"Googleログイン失敗\n"
 +
 error.message
 );
 
 
+
 }
+
 
 
 };
@@ -194,23 +236,25 @@ await signOut(auth);
 
 
 
-window.location.replace(
-"index.html"
-);
+location.href =
+"index.html";
 
 
 
-}catch(error){
+}
+
+catch(error){
 
 
 alert(
-"ログアウトに失敗しました\n"
+"ログアウト失敗\n"
 +
 error.message
 );
 
 
 }
+
 
 
 };
@@ -232,13 +276,16 @@ auth,
 
 if(user){
 
+
 console.log(
-"ログイン中:",
+"ログイン中",
 user.email
 );
 
 
+
 }
+
 
 
 });
