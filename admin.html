@@ -104,6 +104,8 @@
 
 
 
+<!-- 初期表示 -->
+
 <section id="dashboard" style="display:block;">
 
 
@@ -112,17 +114,39 @@
 </h1>
 
 
+
 <div class="card">
+
 
 <h3>
 生徒数
 </h3>
 
+
 <div id="studentCount">
 
 </div>
 
+
 </div>
+
+
+
+<div class="card">
+
+
+<h3>
+成績提出状況
+</h3>
+
+
+<div id="scoreCount">
+
+</div>
+
+
+</div>
+
 
 
 </section>
@@ -135,11 +159,11 @@
 
 
 
-<section id="notice">
+<section id="notice" style="display:none;">
 
 
 <h1>
-お知らせ作成
+お知らせ管理
 </h1>
 
 
@@ -165,7 +189,9 @@
 重要タグ
 </label>
 
+
 <select id="importance">
+
 
 <option value="normal">
 通常
@@ -199,8 +225,6 @@ type="date">
 <input
 id="endDate"
 type="date">
-
-
 
 
 
@@ -238,30 +262,16 @@ onchange="changeTarget()">
 
 
 
+
 <div id="blockArea" style="display:none;">
 
-<label>
-ブロック
-</label>
-
-
-<select id="block">
-
-</select>
+<select id="block"></select>
 
 </div>
 
 
 
-
-
 <div id="gradeArea" style="display:none;">
-
-
-<label>
-学年
-</label>
-
 
 <select id="grade">
 
@@ -277,32 +287,17 @@ onchange="changeTarget()">
 中学3年
 </option>
 
-
 </select>
 
-
 </div>
-
-
 
 
 
 <div id="userArea" style="display:none;">
 
-
-<label>
-生徒
-</label>
-
-
-<select id="targetUser">
-
-</select>
-
+<select id="targetUser"></select>
 
 </div>
-
-
 
 
 
@@ -323,7 +318,7 @@ onchange="changeTarget()">
 
 
 
-<section id="messages">
+<section id="messages" style="display:none;">
 
 
 <h1>
@@ -346,7 +341,7 @@ onchange="changeTarget()">
 
 
 
-<section id="documents">
+<section id="documents" style="display:none;">
 
 
 <h1>
@@ -355,39 +350,22 @@ onchange="changeTarget()">
 
 
 
-<label>
-タイトル
-</label>
-
-
-<input id="documentTitle">
+<input
+id="documentTitle"
+placeholder="タイトル">
 
 
 
+<textarea
+id="documentBody"
+placeholder="本文">
+</textarea>
 
-
-<label>
-本文
-</label>
-
-
-<textarea id="documentBody"></textarea>
-
-
-
-
-
-<label>
-URL
-</label>
 
 
 <input
 id="documentUrl"
-placeholder="PDF URL">
-
-
-
+placeholder="URL">
 
 
 <button onclick="addDocument()">
@@ -407,7 +385,7 @@ placeholder="PDF URL">
 
 
 
-<section id="calendar">
+<section id="calendar" style="display:none;">
 
 
 <h1>
@@ -441,6 +419,11 @@ placeholder="内容">
 </button>
 
 
+<div id="adminCalendar">
+
+</div>
+
+
 </section>
 
 
@@ -451,11 +434,11 @@ placeholder="内容">
 
 
 
-<section id="scoreForms">
+<section id="scoreForms" style="display:none;">
 
 
 <h1>
-テスト成績フォーム作成
+成績フォーム作成
 </h1>
 
 
@@ -468,17 +451,21 @@ placeholder="フォーム名">
 
 <select id="testType">
 
+
 <option>
 中間テスト
 </option>
+
 
 <option>
 期末テスト
 </option>
 
+
 <option>
 その他
 </option>
+
 
 </select>
 
@@ -551,6 +538,7 @@ id="formStartDate"
 type="date">
 
 
+
 <input
 id="formEndDate"
 type="date">
@@ -578,6 +566,7 @@ type="date">
 
 
 
+
 <button onclick="createScoreForm()">
 
 作成
@@ -595,7 +584,7 @@ type="date">
 
 
 
-<section id="scores">
+<section id="scores" style="display:none;">
 
 
 <h1>
@@ -618,7 +607,7 @@ type="date">
 
 
 
-<section id="users">
+<section id="users" style="display:none;">
 
 
 <h1>
@@ -638,11 +627,11 @@ type="date">
 
 
 
-
 </main>
 
 
 </div>
+
 
 
 
