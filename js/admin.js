@@ -36,7 +36,6 @@ import {
 
 
 
-
 // =====================
 // ページ切替
 // =====================
@@ -44,26 +43,26 @@ import {
 window.showAdminPage = function(page){
 
 
-document
-.querySelectorAll(".content > section")
-.forEach(section=>{
+  document
+  .querySelectorAll(".content > section")
+  .forEach(section=>{
 
-section.style.display="none";
+    section.style.display = "none";
 
-});
-
-
-
-const target =
-document.getElementById(page);
+  });
 
 
 
-if(target){
+  const target =
+  document.getElementById(page);
 
-target.style.display="block";
 
-}
+
+  if(target){
+
+    target.style.display = "block";
+
+  }
 
 
 };
@@ -77,7 +76,7 @@ target.style.display="block";
 
 
 // =====================
-// 管理者確認
+// 管理者認証確認
 // =====================
 
 onAuthStateChanged(
@@ -108,6 +107,7 @@ alert(
 );
 
 
+
 location.href="student.html";
 
 
@@ -126,7 +126,7 @@ loadMessages();
 
 loadUsers();
 
-loadScores();
+loadAnalysis();
 
 
 });
@@ -141,7 +141,7 @@ loadScores();
 
 // =====================
 // ブロック取得
-// usersから取得
+// users.blockから取得
 // =====================
 
 async function loadBlocks(){
@@ -195,7 +195,7 @@ data.block
 
 
 
-select.innerHTML="";
+select.innerHTML = "";
 
 
 
@@ -203,18 +203,30 @@ blocks.forEach(block=>{
 
 
 const option =
-document.createElement("option");
+document.createElement(
+"option"
+);
 
 
-option.value=block;
 
-option.textContent=block;
+option.value =
+block;
 
 
-select.appendChild(option);
+
+option.textContent =
+block;
+
+
+
+select.appendChild(
+option
+);
+
 
 
 });
+
 
 
 }
@@ -268,20 +280,30 @@ item.data();
 
 
 
-if(data.role==="student"){
+if(data.role === "student"){
 
 
 const option =
-document.createElement("option");
+document.createElement(
+"option"
+);
 
 
-option.value=item.id;
+
+option.value =
+item.id;
 
 
-option.textContent=data.name;
+
+option.textContent =
+data.name;
 
 
-select.appendChild(option);
+
+select.appendChild(
+option
+);
+
 
 
 }
@@ -342,6 +364,7 @@ document.getElementById(
 }
 
 
+
 if(type==="block_grade"){
 
 document.getElementById(
@@ -356,6 +379,7 @@ document.getElementById(
 }
 
 
+
 if(type==="individual"){
 
 document.getElementById(
@@ -363,23 +387,11 @@ document.getElementById(
 ).style.display="block";
 
 }
-
-
-};
-
-
-
-
-
-
-
-
-
 // =====================
 // お知らせ作成
 // =====================
 
-window.createNotice=async function(){
+window.createNotice = async function(){
 
 
 const targetType =
@@ -389,7 +401,7 @@ document.getElementById(
 
 
 
-const data={
+const data = {
 
 
 title:
@@ -422,12 +434,14 @@ document.getElementById(
 ).value,
 
 
+targetType:
+
+
 targetType,
 
 
 createdAt:
 serverTimestamp()
-
 
 };
 
@@ -436,42 +450,53 @@ serverTimestamp()
 
 
 if(
-targetType==="block" ||
-targetType==="block_grade"
+targetType === "block" ||
+targetType === "block_grade"
 ){
+
 
 data.block =
 document.getElementById(
 "block"
 ).value;
 
+
 }
 
 
 
+
 if(
-targetType==="block_grade"
+targetType === "block_grade"
 ){
+
 
 data.grade =
 document.getElementById(
 "grade"
 ).value;
 
+
 }
 
 
 
+
+
 if(
-targetType==="individual"
+targetType === "individual"
 ){
+
 
 data.uid =
 document.getElementById(
 "targetUser"
 ).value;
 
+
 }
+
+
 
 
 
@@ -482,19 +507,37 @@ data
 
 
 
-document
-.getElementById("noticeTitle")
-.value="";
 
 
-document
-.getElementById("noticeBody")
-.value="";
+
+// 入力クリア
+
+document.getElementById(
+"noticeTitle"
+).value="";
+
+
+document.getElementById(
+"noticeBody"
+).value="";
+
+
+
+document.getElementById(
+"startDate"
+).value="";
+
+
+document.getElementById(
+"endDate"
+).value="";
+
 
 
 alert(
-"公開しました"
+"お知らせを公開しました"
 );
+
 
 
 };
@@ -511,7 +554,8 @@ alert(
 // 配布文書アップロード
 // =====================
 
-window.addDocument=async function(){
+window.addDocument = async function(){
+
 
 
 const file =
@@ -527,10 +571,12 @@ document.getElementById(
 ).value;
 
 
+
 const body =
 document.getElementById(
 "documentBody"
 ).value;
+
 
 
 
@@ -546,11 +592,15 @@ return;
 
 
 
+
+
 const storageRef =
 ref(
 storage,
-"documents/"+file.name
+"documents/" + file.name
 );
+
+
 
 
 
@@ -561,10 +611,14 @@ file
 
 
 
+
+
 const url =
 await getDownloadURL(
 storageRef
 );
+
+
 
 
 
@@ -573,13 +627,17 @@ collection(db,"documents"),
 {
 
 
-title,
+title:title,
 
-body,
+
+body:body,
+
 
 fileUrl:url,
 
+
 fileName:file.name,
+
 
 createdAt:
 serverTimestamp()
@@ -588,6 +646,8 @@ serverTimestamp()
 }
 
 );
+
+
 
 
 
@@ -601,9 +661,16 @@ document.getElementById(
 ).value="";
 
 
+document.getElementById(
+"documentFile"
+).value="";
+
+
+
 alert(
-"アップロードしました"
+"配布文書を登録しました"
 );
+
 
 
 };
@@ -620,7 +687,8 @@ alert(
 // カレンダー登録
 // =====================
 
-window.addCalendar=async function(){
+window.addCalendar = async function(){
+
 
 
 await addDoc(
@@ -656,34 +724,45 @@ serverTimestamp()
 
 
 
+
+
+document.getElementById(
+"calendarTitle"
+).value="";
+
+
+document.getElementById(
+"calendarDate"
+).value="";
+
+
+document.getElementById(
+"calendarDescription"
+).value="";
+
+
+
 alert(
-"登録しました"
+"予定を登録しました"
 );
 
 
+
 };
-
-
-
-
-
-
-
-
-
-// =====================
+  // =====================
 // 成績フォーム作成
 // =====================
 
-window.createScoreForm=async function(){
+window.createScoreForm = async function(){
 
 
-const subjects=[];
+const subjects = [];
+
 
 
 document
 .querySelectorAll(
-"#scoreForms input[type=checkbox]:checked"
+"#subjectList input[type='checkbox']:checked"
 )
 .forEach(item=>{
 
@@ -692,6 +771,8 @@ item.value
 );
 
 });
+
+
 
 
 
@@ -712,7 +793,32 @@ document.getElementById(
 ).value,
 
 
-subjects,
+subjects:subjects,
+
+
+startDate:
+document.getElementById(
+"formStartDate"
+).value,
+
+
+endDate:
+document.getElementById(
+"formEndDate"
+).value,
+
+
+targetType:
+document.getElementById(
+"formTargetType"
+).value,
+
+
+published:true,
+
+
+createdBy:
+auth.currentUser.uid,
 
 
 createdAt:
@@ -725,9 +831,19 @@ serverTimestamp()
 
 
 
+
+
+
+document.getElementById(
+"formTitle"
+).value="";
+
+
+
 alert(
-"フォームを作成しました"
+"成績フォームを作成しました"
 );
+
 
 
 };
@@ -741,7 +857,7 @@ alert(
 
 
 // =====================
-// 連絡確認
+// 連絡管理
 // =====================
 
 async function loadMessages(){
@@ -754,13 +870,23 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
 const snap =
 await getDocs(
-collection(db,"messages")
+query(
+collection(db,"messages"),
+orderBy(
+"createdAt",
+"desc"
+)
+)
 );
 
 
@@ -772,21 +898,44 @@ area.innerHTML="";
 snap.forEach(item=>{
 
 
-const data=item.data();
+const data =
+item.data();
 
 
 
-area.innerHTML+=`
+area.innerHTML += `
 
 <div class="card">
 
-${data.senderName}<br>
 
-${data.body}
+<p>
+送信者：
+${data.senderName || ""}
+</p>
+
+
+<p>
+メール：
+${data.senderEmail || ""}
+</p>
+
+
+<p>
+内容：
+${data.body || ""}
+</p>
+
+
+<p>
+状態：
+${data.status || "unread"}
+</p>
+
 
 </div>
 
 `;
+
 
 
 });
@@ -816,7 +965,11 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
@@ -831,28 +984,77 @@ area.innerHTML="";
 
 
 
+let count = 0;
+
+
+
 snap.forEach(item=>{
 
 
-const data=item.data();
+const data =
+item.data();
 
 
 
-area.innerHTML+=`
+if(data.role === "student"){
+
+
+count++;
+
+
+
+area.innerHTML += `
 
 <div class="card">
 
-${data.name}<br>
 
-${data.block || ""}<br>
+名前：
+${data.name || ""}
 
+
+<br>
+
+
+地方：
+${data.block || ""}
+
+
+<br>
+
+
+学年：
 ${data.grade || ""}
+
 
 </div>
 
 `;
 
+
+
+}
+
+
 });
+
+
+
+
+
+const countArea =
+document.getElementById(
+"studentCount"
+);
+
+
+
+if(countArea){
+
+countArea.textContent =
+count + "人";
+
+}
+
 
 
 }
@@ -866,10 +1068,10 @@ ${data.grade || ""}
 
 
 // =====================
-// 成績確認
+// 成績分析
 // =====================
 
-async function loadScores(){
+async function loadAnalysis(){
 
 
 const area =
@@ -879,7 +1081,11 @@ document.getElementById(
 
 
 
-if(!area)return;
+if(!area){
+
+return;
+
+}
 
 
 
@@ -890,7 +1096,69 @@ collection(db,"scores")
 
 
 
-area.innerHTML =
-`提出件数：${snap.size}件`;
+let total = 0;
+
+let count = 0;
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+if(data.total){
+
+
+total += data.total;
+
+
+count++;
+
 
 }
+
+
+
+});
+
+
+
+
+
+
+area.innerHTML = `
+
+<div class="card">
+
+<p>
+提出人数：
+${count}人
+</p>
+
+
+<p>
+平均点：
+${
+count
+?
+(total / count).toFixed(1)
+:
+0
+}
+
+</p>
+
+
+</div>
+
+`;
+
+
+
+}
+
+};
