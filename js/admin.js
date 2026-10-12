@@ -6,7 +6,7 @@ import {
 
 import {
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
 import {
@@ -16,11 +16,10 @@ import {
   doc,
   getDoc,
   deleteDoc,
-  updateDoc,
   serverTimestamp,
   query,
   orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 import {
@@ -30,11 +29,12 @@ import {
 
 
 
+
 // =====================
 // ページ切替
 // =====================
 
-window.showAdminPage = function(page){
+window.showAdminPage=function(page){
 
 
 document
@@ -182,7 +182,9 @@ item.data();
 
 if(data.block){
 
-blocks.add(data.block);
+blocks.add(
+data.block
+);
 
 }
 
@@ -204,6 +206,7 @@ document.createElement(
 );
 
 
+
 option.value =
 block;
 
@@ -212,7 +215,10 @@ option.textContent =
 block;
 
 
-select.appendChild(option);
+select.appendChild(
+option
+);
+
 
 
 });
@@ -229,7 +235,7 @@ select.appendChild(option);
 
 
 // =====================
-// 個別送信用 生徒取得
+// 個別送信用生徒取得
 // =====================
 
 async function loadStudents(){
@@ -283,14 +289,18 @@ option.value =
 item.id;
 
 
+
 option.textContent =
 data.name;
 
 
-select.appendChild(option);
+select.appendChild(
+option
+);
 
 
 }
+
 
 
 });
@@ -370,6 +380,7 @@ document.getElementById(
 ).style.display="block";
 
 }
+
 
 
 };
@@ -467,8 +478,6 @@ document.getElementById(
 
 
 
-
-
 if(
 targetType==="individual"
 ){
@@ -493,8 +502,6 @@ data
 
 
 
-
-
 document.getElementById(
 "noticeTitle"
 ).value="";
@@ -503,6 +510,7 @@ document.getElementById(
 document.getElementById(
 "noticeBody"
 ).value="";
+
 
 
 alert(
@@ -590,8 +598,6 @@ serverTimestamp()
 
 
 
-
-
 document.getElementById(
 "documentTitle"
 ).value="";
@@ -665,8 +671,6 @@ serverTimestamp()
 }
 
 );
-
-
 
 
 
@@ -754,14 +758,14 @@ area.innerHTML += `
 <div class="card">
 
 
+<p>
 ${data.date}
+</p>
 
-<br>
 
+<p>
 ${data.title}
-
-
-<br>
+</p>
 
 
 <button onclick="deleteCalendar('${item.id}')">
@@ -898,8 +902,6 @@ serverTimestamp()
 }
 
 );
-
-
 
 
 
@@ -1179,7 +1181,9 @@ item.data();
 
 
 
-if(data.total){
+if(
+typeof data.total === "number"
+){
 
 
 total += data.total;
@@ -1201,6 +1205,7 @@ count++;
 area.innerHTML = `
 
 <div class="card">
+
 
 <h3>
 成績分析
