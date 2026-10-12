@@ -15,6 +15,7 @@
 
 <link rel="stylesheet" href="css/style.css">
 
+
 </head>
 
 
@@ -22,6 +23,7 @@
 
 
 <div class="layout">
+
 
 
 <aside class="sidebar">
@@ -79,11 +81,14 @@
 </button>
 
 
+
 <hr>
 
 
 <button onclick="logout()">
+
 ログアウト
+
 </button>
 
 
@@ -104,7 +109,7 @@
 
 
 
-<!-- 初期表示 -->
+<!-- ダッシュボード -->
 
 <section id="dashboard" style="display:block;">
 
@@ -148,7 +153,6 @@
 </div>
 
 
-
 </section>
 
 
@@ -158,6 +162,8 @@
 
 
 
+
+<!-- お知らせ -->
 
 <section id="notice" style="display:none;">
 
@@ -172,7 +178,10 @@
 タイトル
 </label>
 
+
 <input id="noticeTitle">
+
+
 
 
 
@@ -180,7 +189,9 @@
 本文
 </label>
 
+
 <textarea id="noticeBody"></textarea>
+
 
 
 
@@ -208,9 +219,11 @@
 
 
 
+
 <label>
 公開開始日
 </label>
+
 
 <input
 id="startDate"
@@ -218,9 +231,12 @@ type="date">
 
 
 
+
+
 <label>
 公開終了日
 </label>
+
 
 <input
 id="endDate"
@@ -228,13 +244,17 @@ type="date">
 
 
 
+
+
 <label>
 送信範囲
 </label>
 
+
 <select
 id="targetType"
 onchange="changeTarget()">
+
 
 
 <option value="all">
@@ -265,39 +285,69 @@ onchange="changeTarget()">
 
 <div id="blockArea" style="display:none;">
 
+
+<label>
+ブロック
+</label>
+
+
 <select id="block"></select>
 
+
 </div>
+
+
 
 
 
 <div id="gradeArea" style="display:none;">
 
+
+<label>
+学年
+</label>
+
+
 <select id="grade">
+
 
 <option>
 中学1年
 </option>
 
+
 <option>
 中学2年
 </option>
+
 
 <option>
 中学3年
 </option>
 
+
 </select>
 
+
 </div>
+
+
 
 
 
 <div id="userArea" style="display:none;">
 
+
+<label>
+生徒
+</label>
+
+
 <select id="targetUser"></select>
 
+
 </div>
+
 
 
 
@@ -317,6 +367,8 @@ onchange="changeTarget()">
 
 
 
+
+<!-- 連絡 -->
 
 <section id="messages" style="display:none;">
 
@@ -341,6 +393,8 @@ onchange="changeTarget()">
 
 
 
+<!-- 配布文書 -->
+
 <section id="documents" style="display:none;">
 
 
@@ -350,22 +404,42 @@ onchange="changeTarget()">
 
 
 
-<input
-id="documentTitle"
-placeholder="タイトル">
+<label>
+タイトル
+</label>
 
+
+<input
+id="documentTitle">
+
+
+
+
+
+<label>
+本文
+</label>
 
 
 <textarea
-id="documentBody"
-placeholder="本文">
+id="documentBody">
 </textarea>
 
 
 
+
+
+<label>
+URL
+</label>
+
+
 <input
 id="documentUrl"
-placeholder="URL">
+placeholder="PDF URL">
+
+
+
 
 
 <button onclick="addDocument()">
@@ -376,14 +450,7 @@ placeholder="URL">
 
 
 </section>
-
-
-
-
-
-
-
-
+<!-- カレンダー -->
 
 <section id="calendar" style="display:none;">
 
@@ -393,16 +460,36 @@ placeholder="URL">
 </h1>
 
 
+
+<label>
+予定名
+</label>
+
+
 <input
 id="calendarTitle"
 placeholder="予定名">
 
 
 
+
+
+<label>
+日付
+</label>
+
+
 <input
 id="calendarDate"
 type="date">
 
+
+
+
+
+<label>
+内容
+</label>
 
 
 <textarea
@@ -412,11 +499,21 @@ placeholder="内容">
 
 
 
+
+
 <button onclick="addCalendar()">
 
 登録
 
 </button>
+
+
+
+
+
+<h2>
+登録済み予定
+</h2>
 
 
 <div id="adminCalendar">
@@ -434,6 +531,8 @@ placeholder="内容">
 
 
 
+<!-- 成績フォーム作成 -->
+
 <section id="scoreForms" style="display:none;">
 
 
@@ -443,10 +542,22 @@ placeholder="内容">
 
 
 
-<input
-id="formTitle"
-placeholder="フォーム名">
 
+<label>
+フォーム名
+</label>
+
+
+<input
+id="formTitle">
+
+
+
+
+
+<label>
+テスト種類
+</label>
 
 
 <select id="testType">
@@ -472,6 +583,13 @@ placeholder="フォーム名">
 
 
 
+
+<h3>
+科目
+</h3>
+
+
+
 <div id="subjectList">
 
 
@@ -481,10 +599,12 @@ placeholder="フォーム名">
 </label>
 
 
+
 <label>
 <input type="checkbox" value="数学">
 数学
 </label>
+
 
 
 <label>
@@ -493,10 +613,12 @@ placeholder="フォーム名">
 </label>
 
 
+
 <label>
 <input type="checkbox" value="理科">
 理科
 </label>
+
 
 
 <label>
@@ -505,10 +627,12 @@ placeholder="フォーム名">
 </label>
 
 
+
 <label>
 <input type="checkbox" value="音楽">
 音楽
 </label>
+
 
 
 <label>
@@ -517,10 +641,12 @@ placeholder="フォーム名">
 </label>
 
 
+
 <label>
 <input type="checkbox" value="保健体育">
 保健体育
 </label>
+
 
 
 <label>
@@ -529,8 +655,16 @@ placeholder="フォーム名">
 </label>
 
 
+
 </div>
 
+
+
+
+
+<label>
+公開開始日
+</label>
 
 
 <input
@@ -539,13 +673,28 @@ type="date">
 
 
 
+
+
+<label>
+公開終了日
+</label>
+
+
 <input
 id="formEndDate"
 type="date">
 
 
 
+
+
+<label>
+公開範囲
+</label>
+
+
 <select id="formTargetType">
+
 
 <option value="all">
 全生徒
@@ -567,6 +716,7 @@ type="date">
 
 
 
+
 <button onclick="createScoreForm()">
 
 作成
@@ -583,6 +733,8 @@ type="date">
 
 
 
+
+<!-- 成績分析 -->
 
 <section id="scores" style="display:none;">
 
@@ -607,6 +759,8 @@ type="date">
 
 
 
+<!-- 生徒管理 -->
+
 <section id="users" style="display:none;">
 
 
@@ -621,6 +775,7 @@ type="date">
 
 
 </section>
+
 
 
 
