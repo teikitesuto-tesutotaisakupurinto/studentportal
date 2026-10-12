@@ -15,6 +15,8 @@ import {
   getDocs,
   doc,
   getDoc,
+  deleteDoc,
+  updateDoc,
   serverTimestamp,
   query,
   orderBy
@@ -39,13 +41,17 @@ document
 .querySelectorAll(".content > section")
 .forEach(section=>{
 
+
 section.style.display="none";
+
 
 });
 
 
+
 const target =
 document.getElementById(page);
+
 
 
 if(target){
@@ -97,6 +103,7 @@ alert(
 );
 
 
+
 location.href="student.html";
 
 
@@ -114,6 +121,8 @@ loadStudents();
 loadMessages();
 
 loadUsers();
+
+loadCalendarAdmin();
 
 loadAnalysis();
 
@@ -173,9 +182,7 @@ item.data();
 
 if(data.block){
 
-blocks.add(
-data.block
-);
+blocks.add(data.block);
 
 }
 
@@ -205,9 +212,7 @@ option.textContent =
 block;
 
 
-select.appendChild(
-option
-);
+select.appendChild(option);
 
 
 });
@@ -224,7 +229,7 @@ option
 
 
 // =====================
-// 個別送信用生徒取得
+// 個別送信用 生徒取得
 // =====================
 
 async function loadStudents(){
@@ -273,6 +278,7 @@ document.createElement(
 );
 
 
+
 option.value =
 item.id;
 
@@ -281,13 +287,10 @@ option.textContent =
 data.name;
 
 
-select.appendChild(
-option
-);
+select.appendChild(option);
 
 
 }
-
 
 
 });
@@ -369,17 +372,7 @@ document.getElementById(
 }
 
 
-
 };
-
-
-
-
-
-
-
-
-
 // =====================
 // お知らせ作成
 // =====================
@@ -394,7 +387,7 @@ document.getElementById(
 
 
 
-const data={
+const data = {
 
 
 title:
@@ -427,7 +420,10 @@ document.getElementById(
 ).value,
 
 
-targetType:targetType,
+targetType:
+
+
+targetType,
 
 
 createdAt:
@@ -453,7 +449,6 @@ document.getElementById(
 
 
 }
-
 
 
 
@@ -498,6 +493,8 @@ data
 
 
 
+
+
 document.getElementById(
 "noticeTitle"
 ).value="";
@@ -508,10 +505,10 @@ document.getElementById(
 ).value="";
 
 
-
 alert(
 "お知らせを公開しました"
 );
+
 
 
 };
@@ -525,7 +522,8 @@ alert(
 
 
 // =====================
-// 配布文書登録 URL方式
+// 配布文書登録
+// URL方式
 // =====================
 
 window.addDocument = async function(){
@@ -592,6 +590,8 @@ serverTimestamp()
 
 
 
+
+
 document.getElementById(
 "documentTitle"
 ).value="";
@@ -613,7 +613,17 @@ alert(
 );
 
 
+
 };
+
+
+
+
+
+
+
+
+
 // =====================
 // カレンダー登録
 // =====================
@@ -621,42 +631,42 @@ alert(
 window.addCalendar = async function(){
 
 
-const title =
-document.getElementById(
-"calendarTitle"
-).value;
-
-
-const date =
-document.getElementById(
-"calendarDate"
-).value;
-
-
-const description =
-document.getElementById(
-"calendarDescription"
-).value;
-
-
-
-
 await addDoc(
 collection(db,"calendar"),
 {
 
-title:title,
 
-date:date,
+title:
+document.getElementById(
+"calendarTitle"
+).value,
 
-description:description,
+
+date:
+document.getElementById(
+"calendarDate"
+).value,
+
+
+description:
+document.getElementById(
+"calendarDescription"
+).value,
+
 
 createdAt:
+serverTimestamp(),
+
+
+updatedAt:
 serverTimestamp()
+
 
 }
 
 );
+
+
 
 
 
@@ -681,6 +691,7 @@ alert(
 );
 
 
+
 };
 
 
@@ -691,6 +702,121 @@ alert(
 
 
 
+// =====================
+// カレンダー管理一覧
+// =====================
+
+async function loadCalendarAdmin(){
+
+
+const area =
+document.getElementById(
+"adminCalendar"
+);
+
+
+
+if(!area){
+
+return;
+
+}
+
+
+
+const snap =
+await getDocs(
+query(
+collection(db,"calendar"),
+orderBy(
+"date",
+"asc"
+)
+)
+);
+
+
+
+area.innerHTML="";
+
+
+
+snap.forEach(item=>{
+
+
+const data =
+item.data();
+
+
+
+area.innerHTML += `
+
+<div class="card">
+
+
+${data.date}
+
+<br>
+
+${data.title}
+
+
+<br>
+
+
+<button onclick="deleteCalendar('${item.id}')">
+
+削除
+
+</button>
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================
+// カレンダー削除
+// =====================
+
+window.deleteCalendar = async function(id){
+
+
+await deleteDoc(
+doc(
+db,
+"calendar",
+id
+)
+);
+
+
+
+alert(
+"削除しました"
+);
+
+
+
+loadCalendarAdmin();
+
+
+};
 // =====================
 // 成績フォーム作成
 // =====================
@@ -788,6 +914,7 @@ alert(
 );
 
 
+
 };
 
 
@@ -848,6 +975,7 @@ item.data();
 area.innerHTML += `
 
 <div class="card">
+
 
 <p>
 送信者：
@@ -947,6 +1075,7 @@ count++;
 area.innerHTML += `
 
 <div class="card">
+
 
 <p>
 名前：
@@ -1055,6 +1184,7 @@ if(data.total){
 
 total += data.total;
 
+
 count++;
 
 
@@ -1071,6 +1201,11 @@ count++;
 area.innerHTML = `
 
 <div class="card">
+
+<h3>
+成績分析
+</h3>
+
 
 <p>
 提出人数：
