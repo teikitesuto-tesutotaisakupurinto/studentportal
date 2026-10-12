@@ -9,12 +9,11 @@
 
 
 <title>
-生徒ポータル
+定期テスト対策ポータル
 </title>
 
 
 <link rel="stylesheet" href="css/style.css">
-
 
 </head>
 
@@ -25,8 +24,6 @@
 <div class="layout">
 
 
-
-<!-- 左メニュー -->
 
 <aside class="sidebar">
 
@@ -86,7 +83,6 @@
 </button>
 
 
-
 </nav>
 
 
@@ -97,17 +93,11 @@
 
 
 
-
-<!-- メイン -->
-
 <main class="content">
 
 
 
 
-
-
-<!-- ホーム -->
 
 <section id="home">
 
@@ -120,10 +110,9 @@
 
 <div class="card">
 
-
-<h3>
+<h2>
 重要なお知らせ
-</h3>
+</h2>
 
 
 <div id="importantNotice">
@@ -139,10 +128,9 @@
 
 <div class="card">
 
-
-<h3>
+<h2>
 最新のお知らせ
-</h3>
+</h2>
 
 
 <div id="latestNotice">
@@ -162,8 +150,6 @@
 
 
 
-
-<!-- お知らせ -->
 
 <section id="notice">
 
@@ -188,8 +174,6 @@
 
 
 
-<!-- 連絡 -->
-
 <section id="message">
 
 
@@ -198,12 +182,10 @@
 </h1>
 
 
-
 <textarea
 id="messageText"
-placeholder="運営への連絡内容を入力してください">
+placeholder="運営への連絡内容">
 </textarea>
-
 
 
 <button onclick="sendMessage()">
@@ -211,13 +193,6 @@ placeholder="運営への連絡内容を入力してください">
 送信
 
 </button>
-
-
-
-
-<h3>
-送信履歴
-</h3>
 
 
 
@@ -236,8 +211,6 @@ placeholder="運営への連絡内容を入力してください">
 
 
 
-<!-- 配布文書 -->
-
 <section id="documents">
 
 
@@ -246,18 +219,14 @@ placeholder="運営への連絡内容を入力してください">
 </h1>
 
 
-
-
 <div id="documentList">
 
 </div>
 
 
-
 <div id="documentPagination">
 
 </div>
-
 
 
 </section>
@@ -270,15 +239,12 @@ placeholder="運営への連絡内容を入力してください">
 
 
 
-<!-- カレンダー -->
-
 <section id="calendar">
 
 
 <h1>
 カレンダー
 </h1>
-
 
 
 <div id="calendarArea">
@@ -296,8 +262,6 @@ placeholder="運営への連絡内容を入力してください">
 
 
 
-<!-- テスト成績 -->
-
 <section id="scores">
 
 
@@ -306,54 +270,9 @@ placeholder="運営への連絡内容を入力してください">
 </h1>
 
 
+<div id="scoreFormList">
 
-
-<label>
-テスト名
-</label>
-
-
-<input
-id="testName"
-placeholder="例：2学期期末テスト">
-
-
-
-
-
-<label>
-教科
-</label>
-
-
-<input
-id="subject"
-placeholder="例：数学">
-
-
-
-
-
-<label>
-点数
-</label>
-
-
-<input
-id="score"
-type="number"
-placeholder="点数">
-
-
-
-
-
-<button onclick="sendScore()">
-
-提出
-
-</button>
-
+</div>
 
 
 </section>
@@ -366,8 +285,6 @@ placeholder="点数">
 
 
 
-<!-- 各種設定 -->
-
 <section id="settings">
 
 
@@ -376,21 +293,12 @@ placeholder="点数">
 </h1>
 
 
-
-
 <div class="card">
 
 
 <div id="userInfo">
 
-読み込み中...
-
 </div>
-
-
-
-
-<br>
 
 
 
@@ -401,13 +309,10 @@ placeholder="点数">
 </button>
 
 
-
 </div>
 
 
-
 </section>
-
 
 
 
@@ -431,24 +336,6 @@ placeholder="点数">
 <script type="module" src="js/settings.js"></script>
 
 <script type="module" src="js/calendar.js"></script>
-
-
-
-<script>
-
-// 初期表示
-
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
-
-document.getElementById("home")
-.style.display="block";
-
-});
-
-</script>
-
 
 
 </body>
