@@ -21,36 +21,33 @@ import {
 
 
 
-// 権限判定
+// =====================
+// 権限取得
+// =====================
 
-async function redirectUser(user){
+export async function getUserRole(user){
 
 
-const userRef =
+const snap =
+await getDoc(
 doc(
 db,
 "users",
 user.uid
+)
 );
 
 
 
-const userSnap =
-await getDoc(userRef);
+if(!snap.exists()){
+
+return null;
+
+}
 
 
 
-
-
-if(!userSnap.exists()){
-
-
-alert(
-"ユーザー情報が登録されていません"
-);
-
-
-return;
+return snap.data().role;
 
 
 }
@@ -59,42 +56,43 @@ return;
 
 
 
-const data =
-userSnap.data();
+
+// =====================
+// ログイン後振り分け
+// =====================
+
+async function redirectUser(user){
+
+
+const role =
+await getUserRole(user);
 
 
 
-
-
-if(data.role === "admin"){
+if(role === "admin"){
 
 
 location.href =
 "admin.html";
 
 
-
 }
-
-else if(data.role === "student"){
+else if(role === "student"){
 
 
 location.href =
 "student.html";
 
 
-
 }
-
 else{
 
 
 alert(
-"権限設定がありません"
+"権限が設定されていません"
 );
 
 
-
 }
 
 
@@ -109,7 +107,9 @@ alert(
 
 
 
+// =====================
 // メールログイン
+// =====================
 
 window.login = async function(){
 
@@ -126,7 +126,6 @@ const password =
 document.getElementById(
 "password"
 ).value;
-
 
 
 
@@ -149,16 +148,16 @@ result.user
 
 
 
-}
+}catch(error){
 
-catch(error){
 
 
 alert(
-"ログイン失敗\n"
+"ログインできませんでした\n"
 +
 error.message
 );
+
 
 
 }
@@ -175,9 +174,12 @@ error.message
 
 
 
+// =====================
 // Googleログイン
+// =====================
 
 window.googleLogin = async function(){
+
 
 
 try{
@@ -197,13 +199,12 @@ result.user
 
 
 
-}
+}catch(error){
 
-catch(error){
 
 
 alert(
-"Googleログイン失敗\n"
+"Googleログインできませんでした\n"
 +
 error.message
 );
@@ -224,7 +225,9 @@ error.message
 
 
 
+// =====================
 // ログアウト
+// =====================
 
 window.logout = async function(){
 
@@ -241,16 +244,13 @@ location.href =
 
 
 
-}
-
-catch(error){
+}catch(error){
 
 
 alert(
-"ログアウト失敗\n"
-+
-error.message
+"ログアウトできませんでした"
 );
+
 
 
 }
@@ -267,7 +267,9 @@ error.message
 
 
 
-// 認証状態確認
+// =====================
+// ログイン状態確認
+// =====================
 
 onAuthStateChanged(
 auth,
@@ -278,14 +280,13 @@ if(user){
 
 
 console.log(
-"ログイン中",
+"ログイン中:",
 user.email
 );
 
 
 
 }
-
 
 
 });
