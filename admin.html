@@ -7,9 +7,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
 <title>
 定期テスト対策ポータル 管理画面
 </title>
+
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -31,6 +33,7 @@
 管理画面
 
 </div>
+
 
 
 <nav>
@@ -93,6 +96,8 @@
 
 
 
+
+
 <main class="content">
 
 
@@ -120,19 +125,6 @@
 </div>
 
 
-<div class="card">
-
-<h3>
-提出状況
-</h3>
-
-<div id="scoreCount">
-
-</div>
-
-</div>
-
-
 </section>
 
 
@@ -151,11 +143,13 @@
 </h1>
 
 
+
 <label>
 タイトル
 </label>
 
 <input id="noticeTitle">
+
 
 
 <label>
@@ -177,9 +171,11 @@
 通常
 </option>
 
+
 <option value="important">
 重要
 </option>
+
 
 </select>
 
@@ -242,18 +238,16 @@ onchange="changeTarget()">
 
 
 
-
 <div id="blockArea" style="display:none;">
-
 
 <label>
 ブロック
 </label>
 
+
 <select id="block">
 
 </select>
-
 
 </div>
 
@@ -268,6 +262,7 @@ onchange="changeTarget()">
 学年
 </label>
 
+
 <select id="grade">
 
 <option>
@@ -281,6 +276,7 @@ onchange="changeTarget()">
 <option>
 中学3年
 </option>
+
 
 </select>
 
@@ -297,6 +293,7 @@ onchange="changeTarget()">
 <label>
 生徒
 </label>
+
 
 <select id="targetUser">
 
@@ -357,11 +354,15 @@ onchange="changeTarget()">
 </h1>
 
 
+
 <label>
 タイトル
 </label>
 
+
 <input id="documentTitle">
+
+
 
 
 
@@ -369,25 +370,29 @@ onchange="changeTarget()">
 本文
 </label>
 
+
 <textarea id="documentBody"></textarea>
 
 
 
 
+
 <label>
-PDFファイル
+URL
 </label>
 
+
 <input
-type="file"
-id="documentFile"
-accept=".pdf">
+id="documentUrl"
+placeholder="PDF URL">
+
+
 
 
 
 <button onclick="addDocument()">
 
-アップロード
+登録
 
 </button>
 
@@ -410,28 +415,22 @@ accept=".pdf">
 </h1>
 
 
-<label>
-予定名
-</label>
-
-<input id="calendarTitle">
+<input
+id="calendarTitle"
+placeholder="予定名">
 
 
-<label>
-日付
-</label>
 
 <input
 id="calendarDate"
 type="date">
 
 
-<label>
-内容
-</label>
 
-<textarea id="calendarDescription"></textarea>
-
+<textarea
+id="calendarDescription"
+placeholder="内容">
+</textarea>
 
 
 
@@ -440,12 +439,6 @@ type="date">
 登録
 
 </button>
-
-
-
-<div id="adminCalendar">
-
-</div>
 
 
 </section>
@@ -467,17 +460,10 @@ type="date">
 
 
 
-<label>
-フォーム名
-</label>
+<input
+id="formTitle"
+placeholder="フォーム名">
 
-<input id="formTitle">
-
-
-
-<label>
-テスト種類
-</label>
 
 
 <select id="testType">
@@ -497,12 +483,6 @@ type="date">
 </select>
 
 
-
-
-
-<label>
-科目
-</label>
 
 
 <div id="subjectList">
@@ -566,22 +546,10 @@ type="date">
 
 
 
-
-
-
-<label>
-公開開始日
-</label>
-
 <input
 id="formStartDate"
 type="date">
 
-
-
-<label>
-公開終了日
-</label>
 
 <input
 id="formEndDate"
@@ -589,15 +557,7 @@ type="date">
 
 
 
-
-
-<label>
-公開範囲
-</label>
-
-
 <select id="formTargetType">
-
 
 <option value="all">
 全生徒
@@ -615,7 +575,6 @@ type="date">
 
 
 </select>
-
 
 
 
@@ -684,6 +643,7 @@ type="date">
 
 
 </div>
+
 
 
 
