@@ -1,25 +1,19 @@
-// Firebase App
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
 
-// Firebase Authentication
 import {
   getAuth,
   GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 
-// Firestore
 import {
   getFirestore
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
-
-
-// Firebase設定
 
 const firebaseConfig = {
 
@@ -39,43 +33,29 @@ const firebaseConfig = {
   "79405334766",
 
   appId:
-  "1:79405334766:web:d06e917d5b3deff90c73ff"
+  "1:79405334766:web:694c02a7abb407b50c73ff"
 
 };
 
 
-
-
-// Firebase初期化
 
 const app =
 initializeApp(firebaseConfig);
 
 
 
-
-// Authentication
-
 const auth =
 getAuth(app);
 
 
-
-
-// Googleログイン用
 
 const googleProvider =
 new GoogleAuthProvider();
 
 
 
-
-// Firestore
-
 const db =
 getFirestore(app);
-
-
 
 
 
@@ -85,8 +65,8 @@ export {
 
   auth,
 
-  db,
+  googleProvider,
 
-  googleProvider
+  db
 
 };
