@@ -26,7 +26,7 @@ body {
 
 
 /* =====================
-   ログイン画面
+   ログイン
 ===================== */
 
 
@@ -36,15 +36,11 @@ body {
 
   height:100vh;
 
-  min-height:100vh;
-
   display:flex;
 
   justify-content:center;
 
   align-items:center;
-
-  background:#f5f6f8;
 
 }
 
@@ -56,13 +52,12 @@ body {
 
   padding:55px;
 
-  background:#fff;
+  background:white;
 
   border-radius:18px;
 
   box-shadow:
-
-  0 10px 40px rgba(0,0,0,0.15);
+  0 10px 40px rgba(0,0,0,.15);
 
 }
 
@@ -74,8 +69,6 @@ body {
 
   font-size:30px;
 
-  margin:0 0 20px;
-
 }
 
 
@@ -86,20 +79,6 @@ body {
 
   color:#666;
 
-  margin-bottom:35px;
-
-}
-
-
-
-.login-box label {
-
-  display:block;
-
-  font-weight:bold;
-
-  margin-bottom:8px;
-
 }
 
 
@@ -108,23 +87,17 @@ body {
 
   width:100%;
 
-  height:52px;
+  height:50px;
 
   padding:12px;
 
-  font-size:16px;
-
-  border:
-
-  1px solid #ddd;
+  border:1px solid #ddd;
 
   border-radius:8px;
 
-  margin-bottom:18px;
+  margin-bottom:15px;
 
 }
-
-
 
 
 
@@ -132,9 +105,7 @@ body {
 
   width:100%;
 
-  height:52px;
-
-  font-size:16px;
+  height:50px;
 
   border:none;
 
@@ -146,9 +117,7 @@ body {
 
 
 
-
-
-.login-box > button:not(.google-btn){
+.login-box button:not(.google-btn){
 
   background:#2563eb;
 
@@ -156,6 +125,33 @@ body {
 
 }
 
+
+
+.google-btn {
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  gap:12px;
+
+  background:white;
+
+  border:1px solid #ddd !important;
+
+  color:#333;
+
+}
+
+
+
+.google-btn img {
+
+  width:22px;
+
+}
 
 
 
@@ -167,11 +163,9 @@ body {
 
   align-items:center;
 
-  justify-content:center;
-
   gap:15px;
 
-  margin:30px 0;
+  margin:25px 0;
 
   color:#777;
 
@@ -184,45 +178,11 @@ body {
 
   content:"";
 
+  flex:1;
+
   height:1px;
 
   background:#ddd;
-
-  flex:1;
-
-}
-
-
-
-
-
-.google-btn {
-
-  display:flex !important;
-
-  justify-content:center !important;
-
-  align-items:center !important;
-
-  gap:12px;
-
-  background:white !important;
-
-  color:#333 !important;
-
-  border:
-
-  1px solid #ddd !important;
-
-}
-
-
-
-.google-btn img {
-
-  width:24px;
-
-  height:24px;
 
 }
 
@@ -233,7 +193,7 @@ body {
 
 
 /* =====================
-   ポータル共通
+   ポータル
 ===================== */
 
 
@@ -249,14 +209,13 @@ body {
 
 
 
-
 .sidebar {
 
   position:fixed;
 
-  top:0;
-
   left:0;
+
+  top:0;
 
   width:250px;
 
@@ -298,13 +257,11 @@ body {
 
 
 
-
-
 .sidebar button {
 
   width:100%;
 
-  height:45px;
+  padding:12px;
 
   background:white;
 
@@ -315,8 +272,6 @@ body {
   border-radius:8px;
 
   text-align:left;
-
-  padding:0 15px;
 
   cursor:pointer;
 
@@ -347,12 +302,7 @@ body {
 
 
 
-
-
-
-.content > section {
-
-  display:none;
+.content section {
 
   background:white;
 
@@ -376,26 +326,25 @@ body {
 
   background:white;
 
-  padding:20px;
-
   border-radius:12px;
+
+  padding:20px;
 
   margin-bottom:20px;
 
   box-shadow:
 
-  0 2px 8px rgba(0,0,0,0.05);
+  0 2px 8px rgba(0,0,0,.05);
 
 }
 
 
 
 
+
 .notice-card {
 
-  border:
-
-  1px solid #ddd;
+  border:1px solid #ddd;
 
   border-radius:10px;
 
@@ -430,6 +379,7 @@ body {
 
 
 
+
 /* =====================
    フォーム
 ===================== */
@@ -443,9 +393,7 @@ select {
 
   padding:12px;
 
-  border:
-
-  1px solid #ddd;
+  border:1px solid #ddd;
 
   border-radius:8px;
 
@@ -476,8 +424,6 @@ button {
   border:none;
 
   border-radius:8px;
-
-  cursor:pointer;
 
 }
 
@@ -516,9 +462,7 @@ button {
 .calendar th,
 .calendar td {
 
-  border:
-
-  1px solid #ddd;
+  border:1px solid #ddd;
 
   height:90px;
 
@@ -542,8 +486,6 @@ button {
 
   font-size:12px;
 
-  margin-top:5px;
-
 }
 
 
@@ -552,7 +494,7 @@ button {
 
 
 /* =====================
-   配布文書
+   ページング
 ===================== */
 
 
@@ -562,7 +504,25 @@ button {
 
   gap:8px;
 
-  margin-top:20px;
+}
+
+
+
+
+
+
+/* =====================
+   詳細ページ
+===================== */
+
+
+.detail-box {
+
+  background:white;
+
+  padding:30px;
+
+  border-radius:12px;
 
 }
 
@@ -576,16 +536,6 @@ button {
 
 
 @media(max-width:768px){
-
-
-.login-box {
-
-  width:90%;
-
-  padding:35px;
-
-}
-
 
 
 .layout {
@@ -615,6 +565,14 @@ button {
   width:100%;
 
   padding:15px;
+
+}
+
+
+
+.login-box {
+
+  width:90%;
 
 }
 
