@@ -15,6 +15,7 @@
 
 <link rel="stylesheet" href="css/style.css">
 
+
 </head>
 
 
@@ -33,7 +34,6 @@
 定期テスト対策ポータル
 
 </div>
-
 
 
 
@@ -75,6 +75,7 @@
 </button>
 
 
+
 <hr>
 
 
@@ -93,13 +94,16 @@
 
 
 
+
 <main class="content">
 
 
 
 
 
-<section id="home">
+<!-- 初期表示 -->
+
+<section id="home" style="display:block;">
 
 
 <h1>
@@ -109,6 +113,7 @@
 
 
 <div class="card">
+
 
 <h2>
 重要なお知らせ
@@ -125,8 +130,8 @@
 
 
 
-
 <div class="card">
+
 
 <h2>
 最新のお知らせ
@@ -151,7 +156,10 @@
 
 
 
-<section id="notice">
+<!-- 非表示スタート -->
+
+
+<section id="notice" style="display:none;">
 
 
 <h1>
@@ -174,7 +182,7 @@
 
 
 
-<section id="message">
+<section id="message" style="display:none;">
 
 
 <h1>
@@ -188,11 +196,13 @@ placeholder="運営への連絡内容">
 </textarea>
 
 
+
 <button onclick="sendMessage()">
 
 送信
 
 </button>
+
 
 
 
@@ -211,7 +221,7 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="documents">
+<section id="documents" style="display:none;">
 
 
 <h1>
@@ -222,6 +232,7 @@ placeholder="運営への連絡内容">
 <div id="documentList">
 
 </div>
+
 
 
 <div id="documentPagination">
@@ -239,7 +250,7 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="calendar">
+<section id="calendar" style="display:none;">
 
 
 <h1>
@@ -262,7 +273,7 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="scores">
+<section id="scores" style="display:none;">
 
 
 <h1>
@@ -285,7 +296,7 @@ placeholder="運営への連絡内容">
 
 
 
-<section id="settings">
+<section id="settings" style="display:none;">
 
 
 <h1>
@@ -329,6 +340,7 @@ placeholder="運営への連絡内容">
 
 
 
+
 <script type="module" src="js/auth.js"></script>
 
 <script type="module" src="js/student.js"></script>
@@ -336,6 +348,7 @@ placeholder="運営への連絡内容">
 <script type="module" src="js/settings.js"></script>
 
 <script type="module" src="js/calendar.js"></script>
+
 
 
 </body>
