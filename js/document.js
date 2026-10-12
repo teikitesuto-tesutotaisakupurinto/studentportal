@@ -6,7 +6,7 @@ import {
 import {
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
 
@@ -31,6 +31,10 @@ params.get("id");
 
 
 
+// =====================
+// 配布文書取得
+// =====================
+
 async function loadDocument(){
 
 
@@ -50,7 +54,6 @@ area.innerHTML =
 
 
 return;
-
 
 }
 
@@ -81,7 +84,6 @@ area.innerHTML =
 
 return;
 
-
 }
 
 
@@ -90,6 +92,7 @@ return;
 
 const data =
 snap.data();
+
 
 
 
