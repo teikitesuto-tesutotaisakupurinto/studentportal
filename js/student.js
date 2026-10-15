@@ -3,11 +3,9 @@ import {
   db
 } from "./firebase.js";
 
-
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-
 
 import {
   collection,
@@ -20,19 +18,13 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-
 import {
   getUserRole
 } from "./auth.js";
 
 
-
 let currentUser = null;
-
 let userData = null;
-
-
-
 
 
 // =====================
@@ -41,134 +33,71 @@ let userData = null;
 
 window.showPage = function(page){
 
+  document
+    .querySelectorAll(".content > section")
+    .forEach(section => {
+      section.style.display = "none";
+    });
 
-document
-.querySelectorAll(".content > section")
-.forEach(section=>{
+  const target = document.getElementById(page);
 
-section.style.display="none";
-
-});
-
-
-
-const target =
-document.getElementById(page);
-
-
-
-if(target){
-
-target.style.display="block";
-
-}
-
+  if(target){
+    target.style.display = "block";
+  }
 
 };
 
 
-
-
-
-
-
-
-
 // =====================
-// 認証確認
+// 認証
 // =====================
 
 onAuthStateChanged(
-auth,
-async(user)=>{
+  auth,
+  async(user) => {
 
+    if(!user){
+      location.href = "index.html";
+      return;
+    }
 
-if(!user){
+    const role = await getUserRole(user);
 
-location.href="index.html";
+    if(role !== "student"){
 
-return;
+      alert("アクセス権限がありません");
 
-}
+      location.href = "admin.html";
 
+      return;
+    }
 
+    currentUser = user;
 
-const role =
-await getUserRole(user);
+    const snap = await getDoc(
+      doc(
+        db,
+        "users",
+        user.uid
+      )
+    );
 
+    if(!snap.exists()){
 
+      alert("ユーザー情報がありません");
 
-if(role !== "student"){
+      return;
+    }
 
+    userData = snap.data();
 
-alert(
-"アクセス権限がありません"
+    loadUserInfo();
+    loadNotices();
+    loadDocuments();
+    loadScoreForms();
+
+  }
 );
-
-
-
-location.href="admin.html";
-
-
-return;
-
-}
-
-
-
-currentUser=user;
-
-
-
-const snap =
-await getDoc(
-doc(
-db,
-"users",
-user.uid
-)
-);
-
-
-
-if(!snap.exists()){
-
-alert(
-"ユーザー情報がありません"
-);
-
-return;
-
-}
-
-
-
-userData =
-snap.data();
-
-
-
-
-
-loadUserInfo();
-
-loadNotices();
-
-loadDocuments();
-
-loadCalendar();
-
-loadScoreForms();
-
-
-});
-
-
-
-
-
-
-
 
 
 // =====================
@@ -177,55 +106,38 @@ loadScoreForms();
 
 function loadUserInfo(){
 
+  const area =
+    document.getElementById("userInfo");
 
-const area =
-document.getElementById(
-"userInfo"
-);
+  if(!area){
+    return;
+  }
 
+  area.innerHTML = `
 
+    <p>
+      名前：
+      ${escapeHtml(userData.name || "")}
+    </p>
 
-if(area){
+    <p>
+      メール：
+      ${escapeHtml(currentUser.email || "")}
+    </p>
 
+    <p>
+      ブロック：
+      ${escapeHtml(userData.block || "")}
+    </p>
 
-area.innerHTML = `
+    <p>
+      学年：
+      ${escapeHtml(userData.grade || "")}
+    </p>
 
-<p>
-名前：
-${userData.name || ""}
-</p>
-
-
-<p>
-メール：
-${currentUser.email || ""}
-</p>
-
-
-<p>
-地方：
-${userData.block || ""}
-</p>
-
-
-<p>
-学年：
-${userData.grade || ""}
-</p>
-
-`;
+  `;
 
 }
-
-
-}
-
-
-
-
-
-
-
 
 
 // =====================
@@ -234,335 +146,185 @@ ${userData.grade || ""}
 
 async function loadNotices(){
 
+  const area =
+    document.getElementById("noticeList");
 
-const area =
-document.getElementById(
-"noticeList"
-);
+  const homeArea =
+    document.getElementById("homeNoticeList");
+
+  if(!area){
+    return;
+  }
+
+  try{
+
+    const snap = await getDocs(
+      query(
+        collection(db, "notices"),
+        orderBy("createdAt", "desc")
+      )
+    );
+
+    area.innerHTML = "";
+
+    if(homeArea){
+      homeArea.innerHTML = "";
+    }
+
+    let visibleNotices = [];
+
+    snap.forEach(item => {
+
+      const data = item.data();
+
+      if(!canViewNotice(data)){
+        return;
+      }
+
+      visibleNotices.push({
+        id: item.id,
+        ...data
+      });
+
+    });
 
 
+    // 全お知らせ
 
-const latest =
-document.getElementById(
-"latestNotice"
-);
+    if(visibleNotices.length === 0){
+
+      area.innerHTML = `
+        <div class="empty-message">
+          現在表示できるお知らせはありません。
+        </div>
+      `;
+
+    }else{
+
+      visibleNotices.forEach(data => {
+
+        area.innerHTML += createNoticeCard(
+          data
+        );
+
+      });
+
+    }
 
 
+    // ホーム
 
-const important =
-document.getElementById(
-"importantNotice"
-);
+    if(homeArea){
 
+      if(visibleNotices.length === 0){
 
+        homeArea.innerHTML = `
+          <div class="empty-message">
+            現在表示できるお知らせはありません。
+          </div>
+        `;
 
-if(!area){
+      }else{
 
-return;
+        visibleNotices
+          .slice(0, 5)
+          .forEach(data => {
+
+            homeArea.innerHTML +=
+              createNoticeCard(data);
+
+          });
+
+      }
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "お知らせ取得エラー:",
+      error
+    );
+
+    area.innerHTML = `
+      <div class="error-message">
+        お知らせを読み込めませんでした。
+      </div>
+    `;
+
+  }
 
 }
 
 
+// =====================
+// お知らせカード
+// =====================
 
-const snap =
-await getDocs(
-query(
-collection(db,"notices"),
-orderBy(
-"createdAt",
-"desc"
-)
-)
-);
+function createNoticeCard(data){
 
+  const tag =
+    data.importance === "important"
+      ? `<span class="important">重要</span>`
+      : "";
 
+  return `
 
-area.innerHTML="";
+    <div class="notice-card">
 
+      ${tag}
 
+      <a
+        href="notice.html?id=${encodeURIComponent(data.id)}">
 
-if(latest){
+        <h3>
+          ${escapeHtml(data.title || "")}
+        </h3>
 
-latest.innerHTML="";
+      </a>
 
-}
+      <p>
+        ${escapeHtml(
+          (data.body || "").substring(0, 100)
+        )}
+      </p>
 
+      <small>
+        ${formatDate(data.startDate)}
+        ${
+          data.endDate
+            ? " ～ " + formatDate(data.endDate)
+            : ""
+        }
+      </small>
 
-if(important){
+    </div>
 
-important.innerHTML="";
-
-}
-
-
-
-let count=0;
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-if(!canViewNotice(data)){
-
-return;
+  `;
 
 }
 
 
-
-let tag="";
-
-
-
-if(data.importance==="important"){
-
-
-tag=`
-
-<span class="important">
-重要
-</span>
-
-`;
-
-}
-
-
-
-const html=`
-
-<div class="notice-card">
-
-
-<a href="notice.html?id=${item.id}">
-
-
-${tag}
-
-
-<h3>
-${data.title || ""}
-</h3>
-
-
-</a>
-
-
-<p>
-${(data.body || "").substring(0,50)}
-</p>
-
-
-</div>
-
-`;
-
-
-
-area.innerHTML += html;
-
-
-
-if(count < 3 && important && data.importance==="important"){
-
-important.innerHTML += html;
-
-
-}else if(count < 3 && latest){
-
-latest.innerHTML += html;
-
-}
-
-
-count++;
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-
+// =====================
+// お知らせ配信範囲
+// =====================
 
 function canViewNotice(data){
 
+  if(!isWithinPeriod(
+    data.startDate,
+    data.endDate
+  )){
+    return false;
+  }
 
-const today =
-new Date();
-
-
-
-if(
-data.startDate &&
-today < new Date(data.startDate)
-){
-
-return false;
-
-}
-
-
-
-if(
-data.endDate &&
-today > new Date(data.endDate)
-){
-
-return false;
+  return canViewByTarget(
+    data,
+    userData,
+    currentUser.uid
+  );
 
 }
-
-
-
-
-
-if(
-!data.targetType ||
-data.targetType==="all"
-){
-
-return true;
-
-}
-
-
-
-if(
-data.targetType==="block"
-){
-
-return data.block === userData.block;
-
-}
-
-
-
-if(
-data.targetType==="block_grade"
-){
-
-return (
-
-data.block === userData.block
-
-&&
-
-data.grade === userData.grade
-
-);
-
-}
-
-
-
-if(
-data.targetType==="individual"
-){
-
-return data.uid === currentUser.uid;
-
-}
-
-
-
-return false;
-
-
-}
-// =====================
-// 連絡送信
-// =====================
-
-window.sendMessage = async function(){
-
-
-const text =
-document.getElementById(
-"messageText"
-).value;
-
-
-
-if(!text){
-
-alert(
-"内容を入力してください"
-);
-
-return;
-
-}
-
-
-
-await addDoc(
-collection(db,"messages"),
-{
-
-
-senderUid:
-currentUser.uid,
-
-
-senderName:
-userData.name,
-
-
-senderEmail:
-currentUser.email,
-
-
-body:text,
-
-
-status:"unread",
-
-
-createdAt:
-serverTimestamp()
-
-
-}
-
-);
-
-
-
-
-
-document.getElementById(
-"messageText"
-).value="";
-
-
-
-alert(
-"送信しました"
-);
-
-
-
-};
-
-
-
-
-
-
-
 
 
 // =====================
@@ -571,376 +333,530 @@ alert(
 
 async function loadDocuments(){
 
+  const area =
+    document.getElementById("documentList");
 
-const area =
-document.getElementById(
-"documentList"
-);
+  if(!area){
+    return;
+  }
+
+  try{
+
+    const snap = await getDocs(
+      query(
+        collection(db, "documents"),
+        orderBy("createdAt", "desc")
+      )
+    );
+
+    area.innerHTML = "";
+
+    let count = 0;
+
+    snap.forEach(item => {
+
+      const data = item.data();
+
+      if(!isWithinPeriod(
+        data.startDate,
+        data.endDate
+      )){
+        return;
+      }
+
+      if(!canViewByTarget(
+        data,
+        userData,
+        currentUser.uid
+      )){
+        return;
+      }
+
+      count++;
+
+      area.innerHTML += `
+
+        <div class="card">
+
+          <h3>
+
+            <a
+              href="document.html?id=${encodeURIComponent(item.id)}">
+
+              ${escapeHtml(data.title || "")}
+
+            </a>
+
+          </h3>
+
+          <p>
+            ${escapeHtml(data.body || "")}
+          </p>
+
+          <p class="muted">
+
+            公開期間：
+            ${formatDate(data.startDate)}
+
+            ${
+              data.endDate
+                ? " ～ " + formatDate(data.endDate)
+                : ""
+            }
+
+          </p>
+
+        </div>
+
+      `;
+
+    });
 
 
+    if(count === 0){
 
-if(!area){
+      area.innerHTML = `
+        <div class="empty-message">
+          現在表示できる配布文書はありません。
+        </div>
+      `;
 
-return;
+    }
+
+  }catch(error){
+
+    console.error(
+      "配布文書取得エラー:",
+      error
+    );
+
+    area.innerHTML = `
+      <div class="error-message">
+        配布文書を読み込めませんでした。
+      </div>
+    `;
+
+  }
 
 }
-
-
-
-const snap =
-await getDocs(
-query(
-collection(db,"documents"),
-orderBy(
-"createdAt",
-"desc"
-)
-)
-);
-
-
-
-area.innerHTML="";
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-
-<a href="document.html?id=${item.id}">
-
-
-<h3>
-
-${data.title || ""}
-
-</h3>
-
-
-</a>
-
-
-<p>
-
-${data.body || ""}
-
-</p>
-
-
-</div>
-
-`;
-
-
-
-});
-
-
-}
-
-
-
-
-
-
-
 
 
 // =====================
-// カレンダー
-// =====================
-
-async function loadCalendar(){
-
-
-const area =
-document.getElementById(
-"calendarArea"
-);
-
-
-
-if(!area){
-
-return;
-
-}
-
-
-
-const snap =
-await getDocs(
-collection(db,"calendar")
-);
-
-
-
-area.innerHTML="";
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-
-<h3>
-${data.date || ""}
-</h3>
-
-
-<p>
-${data.title || ""}
-</p>
-
-
-<p>
-${data.description || ""}
-</p>
-
-
-</div>
-
-`;
-
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-
-// =====================
-// 成績フォーム一覧
+// 成績フォーム
 // =====================
 
 async function loadScoreForms(){
 
+  const area =
+    document.getElementById("scoreFormList");
 
-const area =
-document.getElementById(
-"scoreFormList"
-);
+  if(!area){
+    return;
+  }
+
+  try{
+
+    const snap =
+      await getDocs(
+        collection(db, "scoreForms")
+      );
+
+    area.innerHTML = "";
+
+    let count = 0;
+
+    for(const item of snap.docs){
+
+      const data = item.data();
+
+      if(data.published === false){
+        continue;
+      }
+
+      if(!isWithinPeriod(
+        data.startDate,
+        data.endDate
+      )){
+        continue;
+      }
+
+      if(!canViewByTarget(
+        data,
+        userData,
+        currentUser.uid
+      )){
+        continue;
+      }
+
+      count++;
+
+      const scoreState =
+        await getSubmissionState(
+          item.id,
+          currentUser.uid
+        );
+
+      let actionHtml = "";
+
+      if(scoreState.submitted){
+
+        actionHtml = `
+
+          <div class="submission-complete">
+
+            <strong>
+              提出しました。
+            </strong>
+
+            <p>
+              ${
+                scoreState.resubmitAllowed
+                  ? "管理者から再提出が許可されています。"
+                  : "管理者の許可がない限り、再度の解答はできません。"
+              }
+            </p>
+
+            <a
+              href="scoreForm.html?id=${encodeURIComponent(item.id)}">
+
+              <button class="secondary-button">
+
+                ${
+                  scoreState.resubmitAllowed
+                    ? "再提出・内容確認"
+                    : "提出内容を確認"
+                }
+
+              </button>
+
+            </a>
+
+          </div>
+
+        `;
+
+      }else{
+
+        actionHtml = `
+
+          <a
+            href="scoreForm.html?id=${encodeURIComponent(item.id)}">
+
+            <button>
+              入力する
+            </button>
+
+          </a>
+
+        `;
+
+      }
+
+      area.innerHTML += `
+
+        <div class="card">
+
+          <h3>
+            ${escapeHtml(data.title || "")}
+          </h3>
+
+          <p>
+            ${
+              escapeHtml(data.testType || "")
+            }
+          </p>
+
+          <p>
+            教科：
+            ${
+              escapeHtml(
+                (data.subjects || []).join("・")
+              )
+            }
+          </p>
+
+          ${actionHtml}
+
+        </div>
+
+      `;
+
+    }
 
 
+    if(count === 0){
 
-if(!area){
+      area.innerHTML = `
+        <div class="empty-message">
+          現在提出できるテスト成績はありません。
+        </div>
+      `;
 
-return;
+    }
+
+  }catch(error){
+
+    console.error(
+      "成績フォーム取得エラー:",
+      error
+    );
+
+    area.innerHTML = `
+      <div class="error-message">
+        成績フォームを読み込めませんでした。
+      </div>
+    `;
+
+  }
 
 }
-
-
-
-const snap =
-await getDocs(
-collection(db,"scoreForms")
-);
-
-
-
-area.innerHTML="";
-
-
-
-const today =
-new Date();
-
-
-
-
-
-snap.forEach(item=>{
-
-
-const data =
-item.data();
-
-
-
-if(
-data.published === false
-){
-
-return;
-
-}
-
-
-
-
-
-if(
-data.startDate &&
-today < new Date(data.startDate)
-){
-
-return;
-
-}
-
-
-
-
-
-if(
-data.endDate &&
-today > new Date(data.endDate)
-){
-
-return;
-
-}
-
-
-
-
-
-if(
-!canViewScoreForm(data)
-){
-
-return;
-
-}
-
-
-
-
-
-area.innerHTML += `
-
-<div class="card">
-
-
-<h3>
-
-${data.title || ""}
-
-</h3>
-
-
-<p>
-
-${data.testType || ""}
-
-</p>
-
-
-
-<a href="scoreForm.html?id=${item.id}">
-
-
-<button>
-
-入力する
-
-</button>
-
-
-</a>
-
-
-</div>
-
-`;
-
-
-
-});
-
-
-}
-
-
-
-
-
-
-
 
 
 // =====================
-// 成績フォーム対象判定
+// 提出状態
 // =====================
 
-function canViewScoreForm(data){
-
-
-if(
-!data.targetType ||
-data.targetType==="all"
+async function getSubmissionState(
+  formId,
+  uid
 ){
 
-return true;
+  const snap =
+    await getDocs(
+      query(
+        collection(db, "scores")
+      )
+    );
+
+  let found = null;
+
+  snap.forEach(item => {
+
+    const data = item.data();
+
+    if(
+      data.formId === formId &&
+      data.uid === uid
+    ){
+
+      if(!found){
+        found = {
+          id: item.id,
+          ...data
+        };
+      }
+
+    }
+
+  });
+
+
+  if(!found){
+
+    return {
+      submitted: false,
+      resubmitAllowed: false
+    };
+
+  }
+
+
+  return {
+    submitted: true,
+    resubmitAllowed:
+      found.resubmitAllowed === true
+  };
 
 }
 
 
+// =====================
+// 連絡
+// =====================
+
+window.sendMessage = async function(){
+
+  const input =
+    document.getElementById("messageText");
+
+  const text =
+    input.value.trim();
+
+  if(!text){
+
+    alert("内容を入力してください");
+
+    return;
+  }
+
+  try{
+
+    await addDoc(
+      collection(db, "messages"),
+      {
+
+        senderUid:
+          currentUser.uid,
+
+        senderName:
+          userData.name || "",
+
+        senderEmail:
+          currentUser.email || "",
+
+        body:text,
+
+        status:"unread",
+
+        createdAt:
+          serverTimestamp()
+
+      }
+    );
+
+    input.value = "";
+
+    alert("送信しました");
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "送信できませんでした。\n" +
+      error.message
+    );
+
+  }
+
+};
 
 
+// =====================
+// 共通：配信対象
+// =====================
 
-if(
-data.targetType==="block"
+function canViewByTarget(
+  data,
+  user,
+  uid
 ){
 
-return (
-data.block === userData.block
-);
+  const targetType =
+    data.targetType || "all";
+
+  if(targetType === "all"){
+    return true;
+  }
+
+  if(targetType === "block"){
+
+    return (
+      data.block === user.block
+    );
+
+  }
+
+  if(targetType === "block_grade"){
+
+    return (
+      data.block === user.block &&
+      data.grade === user.grade
+    );
+
+  }
+
+  if(targetType === "individual"){
+
+    return data.uid === uid;
+
+  }
+
+  return false;
 
 }
 
 
+// =====================
+// 公開期間
+// =====================
 
-
-
-if(
-data.targetType==="block_grade"
+function isWithinPeriod(
+  startDate,
+  endDate
 ){
 
-return (
+  const today =
+    new Date();
 
-data.block === userData.block
+  today.setHours(
+    0,0,0,0
+  );
 
-&&
 
-data.grade === userData.grade
+  if(startDate){
 
-);
+    const start =
+      new Date(startDate);
+
+    start.setHours(
+      0,0,0,0
+    );
+
+    if(today < start){
+      return false;
+    }
+
+  }
+
+
+  if(endDate){
+
+    const end =
+      new Date(endDate);
+
+    end.setHours(
+      23,59,59,999
+    );
+
+    if(today > end){
+      return false;
+    }
+
+  }
+
+  return true;
 
 }
 
 
+// =====================
+// 日付表示
+// =====================
+
+function formatDate(value){
+
+  if(!value){
+    return "";
+  }
+
+  return value
+    .replaceAll("-", "/");
+
+}
 
 
+// =====================
+// XSS対策
+// =====================
 
-return false;
+function escapeHtml(value){
 
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
 }
