@@ -4,7 +4,6 @@ import {
   db
 } from "./firebase.js";
 
-
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -12,13 +11,10 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-
 import {
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-
-
 
 
 // =====================
@@ -27,36 +23,24 @@ import {
 
 export async function getUserRole(user){
 
-
-const snap =
-await getDoc(
-doc(
-db,
-"users",
-user.uid
-)
-);
-
+  const snap =
+    await getDoc(
+      doc(
+        db,
+        "users",
+        user.uid
+      )
+    );
 
 
-if(!snap.exists()){
-
-return null;
-
-}
+  if(!snap.exists()){
+    return null;
+  }
 
 
-
-return snap.data().role;
-
+  return snap.data().role;
 
 }
-
-
-
-
-
-
 
 
 // =====================
@@ -65,231 +49,171 @@ return snap.data().role;
 
 async function redirectUser(user){
 
-
-const role =
-await getUserRole(user);
-
+  const role =
+    await getUserRole(user);
 
 
-if(role === "admin"){
+  if(role === "admin"){
 
+    location.href =
+      "admin.html";
 
-location.href =
-"admin.html";
+  }
+  else if(role === "student"){
 
+    location.href =
+      "student.html";
 
-}
-else if(role === "student"){
+  }
+  else{
 
+    alert(
+      "権限が設定されていません"
+    );
 
-location.href =
-"student.html";
-
-
-}
-else{
-
-
-alert(
-"権限が設定されていません"
-);
-
+  }
 
 }
-
-
-}
-
-
-
-
-
-
-
 
 
 // =====================
 // メールログイン
 // =====================
 
-window.login = async function(){
+window.login =
+async function(){
+
+  const email =
+    document.getElementById(
+      "email"
+    ).value.trim();
 
 
-const email =
-document.getElementById(
-"email"
-).value;
+  const password =
+    document.getElementById(
+      "password"
+    ).value;
 
 
+  if(!email || !password){
 
-const password =
-document.getElementById(
-"password"
-).value;
+    alert(
+      "メールアドレスとパスワードを入力してください。"
+    );
 
+    return;
 
-
-try{
-
-
-const result =
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
+  }
 
 
+  try{
 
-await redirectUser(
-result.user
-);
-
-
-
-}catch(error){
-
-
-console.error(error);
+    const result =
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
 
-alert(
-"ログイン失敗\n"
-+
-error.message
-);
+    await redirectUser(
+      result.user
+    );
 
 
+  }catch(error){
 
-}
+    console.error(error);
 
+    alert(
+      "ログイン失敗\n" +
+      error.message
+    );
+
+  }
 
 };
-
-
-
-
-
-
-
 
 
 // =====================
 // Googleログイン
 // =====================
 
-window.googleLogin = async function(){
+window.googleLogin =
+async function(){
+
+  try{
+
+    const result =
+      await signInWithPopup(
+        auth,
+        googleProvider
+      );
 
 
-try{
+    await redirectUser(
+      result.user
+    );
 
 
-const result =
-await signInWithPopup(
-auth,
-googleProvider
-);
+  }catch(error){
 
+    console.error(error);
 
+    alert(
+      "Googleログイン失敗\n" +
+      error.message
+    );
 
-await redirectUser(
-result.user
-);
-
-
-
-}catch(error){
-
-
-console.error(error);
-
-
-alert(
-"Googleログイン失敗\n"
-+
-error.message
-);
-
-
-
-}
-
+  }
 
 };
-
-
-
-
-
-
-
 
 
 // =====================
 // ログアウト
 // =====================
 
-window.logout = async function(){
+window.logout =
+async function(){
 
+  try{
 
-try{
+    await signOut(auth);
 
+    location.href =
+      "index.html";
 
-await signOut(auth);
+  }catch(error){
 
+    console.error(error);
 
+    alert(
+      "ログアウト失敗\n" +
+      error.message
+    );
 
-location.href =
-"index.html";
-
-
-
-}catch(error){
-
-
-console.error(error);
-
-
-alert(
-"ログアウト失敗\n"
-+
-error.message
-);
-
-
-
-}
-
+  }
 
 };
 
 
-
-
-
-
-
-
-
 // =====================
-// 状態確認
+// 認証状態
 // =====================
 
 onAuthStateChanged(
-auth,
-(user)=>{
+  auth,
+  user => {
 
+    if(user){
 
-if(user){
+      console.log(
+        "ログイン中:",
+        user.email
+      );
 
+    }
 
-console.log(
-"ログイン中:",
-user.email
+  }
 );
-
-
-}
-
-
-});
