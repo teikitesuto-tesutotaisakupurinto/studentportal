@@ -2,802 +2,600 @@
 <html lang="ja">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<title>
-定期テスト対策ポータル 管理画面
-</title>
-
+<title>定期テスト対策ポータル 管理画面</title>
 
 <link rel="stylesheet" href="css/style.css">
-
-
 </head>
-
 
 <body>
 
-
 <div class="layout">
-
-
 
 <aside class="sidebar">
 
-
 <div class="logo">
-
 定期テスト対策ポータル<br>
 管理画面
-
 </div>
 
-
-
 <nav>
-
 
 <button onclick="showAdminPage('dashboard')">
 ダッシュボード
 </button>
 
-
 <button onclick="showAdminPage('notice')">
 お知らせ管理
 </button>
-
 
 <button onclick="showAdminPage('messages')">
 連絡管理
 </button>
 
-
 <button onclick="showAdminPage('documents')">
 配布文書管理
 </button>
-
 
 <button onclick="showAdminPage('calendar')">
 カレンダー管理
 </button>
 
-
 <button onclick="showAdminPage('scoreForms')">
 成績フォーム作成
 </button>
-
 
 <button onclick="showAdminPage('scores')">
 成績分析
 </button>
 
-
 <button onclick="showAdminPage('users')">
 生徒管理
 </button>
 
-
-
 <hr>
 
-
 <button onclick="logout()">
-
 ログアウト
-
 </button>
-
 
 </nav>
 
-
 </aside>
-
-
-
-
-
-
 
 <main class="content">
 
-
-
-
-
-<!-- ダッシュボード -->
-
 <section id="dashboard" style="display:block;">
-
 
 <h1>
 ダッシュボード
 </h1>
 
+<div class="stats-grid">
 
-
-<div class="card">
-
+<div class="card stat-card">
 
 <h3>
 生徒数
 </h3>
 
-
 <div id="studentCount">
+0人
+</div>
 
 </div>
 
-
-</div>
-
-
-
-<div class="card">
-
+<div class="card stat-card">
 
 <h3>
-成績提出状況
+成績提出件数
 </h3>
 
-
 <div id="scoreCount">
+0件
+</div>
 
 </div>
 
+<div class="card stat-card">
+
+<h3>
+公開中のお知らせ
+</h3>
+
+<div id="noticeCount">
+0件
+</div>
 
 </div>
 
+<div class="card stat-card">
+
+<h3>
+公開中の配布文書
+</h3>
+
+<div id="documentCount">
+0件
+</div>
+
+</div>
+
+</div>
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- お知らせ -->
-
 <section id="notice" style="display:none;">
-
 
 <h1>
 お知らせ管理
 </h1>
 
-
-
 <label>
 タイトル
 </label>
 
-
 <input id="noticeTitle">
-
-
-
-
 
 <label>
 本文
 </label>
 
-
 <textarea id="noticeBody"></textarea>
-
-
-
-
 
 <label>
 重要タグ
 </label>
 
-
 <select id="importance">
-
 
 <option value="normal">
 通常
 </option>
 
-
 <option value="important">
 重要
 </option>
 
-
 </select>
-
-
-
-
 
 <label>
 公開開始日
 </label>
 
-
 <input
 id="startDate"
 type="date">
-
-
-
-
 
 <label>
 公開終了日
 </label>
 
-
 <input
 id="endDate"
 type="date">
-
-
-
-
 
 <label>
 送信範囲
 </label>
 
-
 <select
 id="targetType"
 onchange="changeTarget()">
-
-
 
 <option value="all">
 全生徒
 </option>
 
-
 <option value="block">
 ブロック
 </option>
-
 
 <option value="block_grade">
 ブロック＋学年
 </option>
 
-
 <option value="individual">
 個別
 </option>
 
-
 </select>
 
-
-
-
-
 <div id="blockArea" style="display:none;">
-
 
 <label>
 ブロック
 </label>
 
-
 <select id="block"></select>
-
 
 </div>
 
-
-
-
-
 <div id="gradeArea" style="display:none;">
-
 
 <label>
 学年
 </label>
 
-
 <select id="grade">
 
-
-<option>
+<option value="中学1年">
 中学1年
 </option>
 
-
-<option>
+<option value="中学2年">
 中学2年
 </option>
 
-
-<option>
+<option value="中学3年">
 中学3年
 </option>
 
-
 </select>
-
 
 </div>
 
-
-
-
-
 <div id="userArea" style="display:none;">
-
 
 <label>
 生徒
 </label>
 
-
 <select id="targetUser"></select>
-
 
 </div>
 
-
-
-
 <button onclick="createNotice()">
-
 公開
-
 </button>
-
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 連絡 -->
-
 <section id="messages" style="display:none;">
-
 
 <h1>
 連絡管理
 </h1>
 
-
 <div id="messageList">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 配布文書 -->
-
 <section id="documents" style="display:none;">
-
 
 <h1>
 配布文書管理
 </h1>
 
-
-
 <label>
 タイトル
 </label>
 
-
-<input
-id="documentTitle">
-
-
-
-
+<input id="documentTitle">
 
 <label>
 本文
 </label>
 
-
-<textarea
-id="documentBody">
-</textarea>
-
-
-
-
+<textarea id="documentBody"></textarea>
 
 <label>
 URL
 </label>
 
-
 <input
 id="documentUrl"
-placeholder="PDF URL">
+placeholder="PDFなどのURL">
 
+<label>
+公開開始日
+</label>
 
+<input
+id="documentStartDate"
+type="date">
 
+<label>
+公開終了日
+</label>
 
+<input
+id="documentEndDate"
+type="date">
+
+<label>
+配信範囲
+</label>
+
+<select
+id="documentTargetType"
+onchange="changeDocumentTarget()">
+
+<option value="all">
+全生徒
+</option>
+
+<option value="block">
+ブロック
+</option>
+
+<option value="block_grade">
+ブロック＋学年
+</option>
+
+<option value="individual">
+個別
+</option>
+
+</select>
+
+<div id="documentBlockArea" style="display:none;">
+
+<label>
+ブロック
+</label>
+
+<select id="documentBlock"></select>
+
+</div>
+
+<div id="documentGradeArea" style="display:none;">
+
+<label>
+学年
+</label>
+
+<select id="documentGrade">
+
+<option value="中学1年">
+中学1年
+</option>
+
+<option value="中学2年">
+中学2年
+</option>
+
+<option value="中学3年">
+中学3年
+</option>
+
+</select>
+
+</div>
+
+<div id="documentUserArea" style="display:none;">
+
+<label>
+生徒
+</label>
+
+<select id="documentTargetUser"></select>
+
+</div>
 
 <button onclick="addDocument()">
-
 登録
-
 </button>
 
-
 </section>
-<!-- カレンダー -->
 
 <section id="calendar" style="display:none;">
-
 
 <h1>
 カレンダー管理
 </h1>
 
-
-
 <label>
 予定名
 </label>
-
 
 <input
 id="calendarTitle"
 placeholder="予定名">
 
-
-
-
-
 <label>
-日付
+開始日
 </label>
 
-
 <input
-id="calendarDate"
+id="calendarStartDate"
 type="date">
 
+<label>
+終了日
+</label>
 
-
-
+<input
+id="calendarEndDate"
+type="date">
 
 <label>
 内容
 </label>
-
 
 <textarea
 id="calendarDescription"
 placeholder="内容">
 </textarea>
 
-
-
-
-
 <button onclick="addCalendar()">
-
 登録
-
 </button>
-
-
-
-
 
 <h2>
 登録済み予定
 </h2>
 
-
 <div id="adminCalendar">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 成績フォーム作成 -->
-
 <section id="scoreForms" style="display:none;">
-
 
 <h1>
 成績フォーム作成
 </h1>
 
-
-
-
 <label>
 フォーム名
 </label>
 
-
-<input
-id="formTitle">
-
-
-
-
+<input id="formTitle">
 
 <label>
 テスト種類
 </label>
 
-
 <select id="testType">
-
 
 <option>
 中間テスト
 </option>
 
-
 <option>
 期末テスト
 </option>
 
+<option>
+学年末テスト
+</option>
+
+<option>
+実力テスト
+</option>
 
 <option>
 その他
 </option>
 
-
 </select>
-
-
-
-
 
 <h3>
 科目
 </h3>
 
-
-
 <div id="subjectList">
-
 
 <label>
 <input type="checkbox" value="国語">
 国語
 </label>
 
-
-
 <label>
 <input type="checkbox" value="数学">
 数学
 </label>
-
-
 
 <label>
 <input type="checkbox" value="英語">
 英語
 </label>
 
-
-
 <label>
 <input type="checkbox" value="理科">
 理科
 </label>
-
-
 
 <label>
 <input type="checkbox" value="社会">
 社会
 </label>
 
-
-
 <label>
 <input type="checkbox" value="音楽">
 音楽
 </label>
-
-
 
 <label>
 <input type="checkbox" value="美術">
 美術
 </label>
 
-
-
 <label>
 <input type="checkbox" value="保健体育">
 保健体育
 </label>
-
-
 
 <label>
 <input type="checkbox" value="技術家庭">
 技術家庭
 </label>
 
-
-
 </div>
-
-
-
-
 
 <label>
 公開開始日
 </label>
 
-
 <input
 id="formStartDate"
 type="date">
-
-
-
-
 
 <label>
 公開終了日
 </label>
 
-
 <input
 id="formEndDate"
 type="date">
-
-
-
-
 
 <label>
 公開範囲
 </label>
 
-
 <select id="formTargetType">
-
 
 <option value="all">
 全生徒
 </option>
 
-
 <option value="block">
 ブロック
 </option>
-
 
 <option value="block_grade">
 ブロック＋学年
 </option>
 
-
 </select>
 
-
-
-
-
 <button onclick="createScoreForm()">
-
 作成
-
 </button>
-
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 成績分析 -->
-
 <section id="scores" style="display:none;">
-
 
 <h1>
 成績分析
 </h1>
 
-
 <div id="analysisArea">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 生徒管理 -->
-
 <section id="users" style="display:none;">
-
 
 <h1>
 生徒管理
 </h1>
 
-
 <div id="userList">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
 </main>
-
-
 </div>
 
-
-
-
-
-
-
 <script type="module" src="js/auth.js"></script>
-
 <script type="module" src="js/admin.js"></script>
 
-
 </body>
-
 </html>
