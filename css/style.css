@@ -1,25 +1,20 @@
 * {
-  box-sizing: border-box;
+  box-sizing:border-box;
 }
-
 
 html,
 body {
 
   width:100%;
-
-  height:100%;
-
+  min-height:100%;
   margin:0;
-
   padding:0;
 
   font-family:
-  "Noto Sans JP",
-  sans-serif;
+    "Noto Sans JP",
+    sans-serif;
 
   background:#f5f6f8;
-
   color:#333;
 
 }
@@ -29,21 +24,17 @@ body {
    ログイン
 ===================== */
 
-
 .login-container {
 
   width:100vw;
-
-  height:100vh;
+  min-height:100vh;
 
   display:flex;
 
   justify-content:center;
-
   align-items:center;
 
 }
-
 
 
 .login-box {
@@ -57,42 +48,35 @@ body {
   border-radius:18px;
 
   box-shadow:
-  0 10px 40px rgba(0,0,0,.15);
+    0 10px 40px rgba(0,0,0,.15);
 
 }
-
 
 
 .login-box h1 {
 
   text-align:center;
-
   font-size:30px;
 
 }
 
 
-
 .login-box p {
 
   text-align:center;
-
   color:#666;
 
 }
 
 
-
 .login-box input {
 
   width:100%;
-
   height:50px;
 
   padding:12px;
 
   border:1px solid #ddd;
-
   border-radius:8px;
 
   margin-bottom:15px;
@@ -100,15 +84,12 @@ body {
 }
 
 
-
 .login-box button {
 
   width:100%;
-
   height:50px;
 
   border:none;
-
   border-radius:8px;
 
   cursor:pointer;
@@ -116,15 +97,12 @@ body {
 }
 
 
-
 .login-box button:not(.google-btn){
 
   background:#2563eb;
-
   color:white;
 
 }
-
 
 
 .google-btn {
@@ -132,7 +110,6 @@ body {
   display:flex;
 
   justify-content:center;
-
   align-items:center;
 
   gap:12px;
@@ -146,15 +123,11 @@ body {
 }
 
 
-
 .google-btn img {
 
   width:22px;
 
 }
-
-
-
 
 
 .separator {
@@ -172,7 +145,6 @@ body {
 }
 
 
-
 .separator::before,
 .separator::after {
 
@@ -187,26 +159,16 @@ body {
 }
 
 
-
-
-
-
-
 /* =====================
-   ポータル
+   レイアウト
 ===================== */
-
 
 .layout {
 
   display:flex;
-
   min-height:100vh;
 
 }
-
-
-
 
 
 .sidebar {
@@ -214,11 +176,9 @@ body {
   position:fixed;
 
   left:0;
-
   top:0;
 
   width:250px;
-
   height:100vh;
 
   background:white;
@@ -228,7 +188,6 @@ body {
   padding:20px;
 
 }
-
 
 
 .logo {
@@ -242,9 +201,6 @@ body {
 }
 
 
-
-
-
 .sidebar nav {
 
   display:flex;
@@ -254,7 +210,6 @@ body {
   gap:8px;
 
 }
-
 
 
 .sidebar button {
@@ -278,16 +233,11 @@ body {
 }
 
 
-
 .sidebar button:hover {
 
   background:#eef2ff;
 
 }
-
-
-
-
 
 
 .content {
@@ -301,7 +251,6 @@ body {
 }
 
 
-
 .content section {
 
   background:white;
@@ -313,14 +262,9 @@ body {
 }
 
 
-
-
-
-
 /* =====================
    カード
 ===================== */
-
 
 .card {
 
@@ -333,13 +277,9 @@ body {
   margin-bottom:20px;
 
   box-shadow:
-
-  0 2px 8px rgba(0,0,0,.05);
+    0 2px 8px rgba(0,0,0,.05);
 
 }
-
-
-
 
 
 .notice-card {
@@ -355,7 +295,12 @@ body {
 }
 
 
+.notice-card a {
 
+  color:#2563eb;
+  text-decoration:none;
+
+}
 
 
 .important {
@@ -372,18 +317,14 @@ body {
 
   font-size:12px;
 
+  margin-bottom:8px;
+
 }
-
-
-
-
-
 
 
 /* =====================
    フォーム
 ===================== */
-
 
 input,
 textarea,
@@ -402,15 +343,11 @@ select {
 }
 
 
-
 textarea {
 
   min-height:120px;
 
 }
-
-
-
 
 
 button {
@@ -425,62 +362,163 @@ button {
 
   border-radius:8px;
 
+  cursor:pointer;
+
 }
 
 
+button:disabled {
+
+  background:#aaa;
+
+  cursor:not-allowed;
+
+}
 
 
+.secondary-button {
+
+  background:#64748b;
+
+}
 
 
 /* =====================
    カレンダー
 ===================== */
 
-
 .calendar-header {
 
-  display:flex;
+  display:grid;
 
-  justify-content:space-between;
+  grid-template-columns:
+    100px
+    1fr
+    100px;
 
   align-items:center;
 
+  gap:10px;
+
+  margin-bottom:15px;
+
 }
 
 
+.calendar-header h2 {
 
-.calendar {
+  text-align:center;
+  margin:0;
+
+}
+
+
+.calendar-header button {
 
   width:100%;
 
-  border-collapse:collapse;
+}
+
+
+.calendar-weekdays {
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  border-left:1px solid #ddd;
+
+  border-top:1px solid #ddd;
 
 }
 
 
+.calendar-weekdays div {
 
-.calendar th,
-.calendar td {
+  padding:10px;
 
-  border:1px solid #ddd;
+  text-align:center;
 
-  height:90px;
+  font-weight:bold;
+
+  background:#f1f5f9;
+
+  border-right:1px solid #ddd;
+
+  border-bottom:1px solid #ddd;
+
+}
+
+
+.calendar-grid {
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  border-left:1px solid #ddd;
+
+}
+
+
+.calendar-cell {
+
+  min-height:130px;
 
   padding:8px;
 
-  vertical-align:top;
+  border-right:1px solid #ddd;
+
+  border-bottom:1px solid #ddd;
+
+  background:white;
 
 }
 
 
+.calendar-cell.empty {
 
-.event {
+  background:#f8fafc;
+
+}
+
+
+.calendar-cell.today {
+
+  background:#eff6ff;
+
+}
+
+
+.calendar-day {
+
+  font-weight:bold;
+
+  margin-bottom:8px;
+
+}
+
+
+.calendar-events {
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:5px;
+
+}
+
+
+.calendar-event {
+
+  padding:6px;
 
   background:#2563eb;
 
   color:white;
-
-  padding:4px;
 
   border-radius:5px;
 
@@ -489,32 +527,238 @@ button {
 }
 
 
+.calendar-event strong {
 
-
-
-
-/* =====================
-   ページング
-===================== */
-
-
-#documentPagination {
-
-  display:flex;
-
-  gap:8px;
+  display:block;
 
 }
 
 
+.calendar-event small {
 
+  display:block;
 
+  margin-top:3px;
+
+}
 
 
 /* =====================
-   詳細ページ
+   分析
 ===================== */
 
+.stats-grid {
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,1fr);
+
+  gap:15px;
+
+}
+
+
+.stat-card {
+
+  text-align:center;
+
+}
+
+
+.stat-card h3 {
+
+  color:#666;
+
+}
+
+
+.stat-card > div {
+
+  font-size:28px;
+
+  font-weight:bold;
+
+}
+
+
+.analysis-grid {
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:15px;
+
+}
+
+
+.analysis-grid > div {
+
+  padding:15px;
+
+  background:#f8fafc;
+
+  border-radius:8px;
+
+}
+
+
+.analysis-grid span {
+
+  display:block;
+
+  color:#666;
+
+  font-size:13px;
+
+}
+
+
+.analysis-grid strong {
+
+  display:block;
+
+  font-size:22px;
+
+  margin-top:5px;
+
+}
+
+
+.analysis-subcard {
+
+  padding:15px;
+
+  border:1px solid #ddd;
+
+  border-radius:10px;
+
+  margin-bottom:15px;
+
+}
+
+
+.analysis-table {
+
+  overflow-x:auto;
+
+}
+
+
+.analysis-table table {
+
+  width:100%;
+
+  border-collapse:collapse;
+
+}
+
+
+.analysis-table th,
+.analysis-table td {
+
+  border:1px solid #ddd;
+
+  padding:10px;
+
+  text-align:center;
+
+}
+
+
+.analysis-table th {
+
+  background:#f1f5f9;
+
+}
+
+
+/* =====================
+   成績提出
+===================== */
+
+.submission-complete {
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  border:1px solid #86efac;
+
+  background:#f0fdf4;
+
+  border-radius:10px;
+
+}
+
+
+.submission-complete h3 {
+
+  margin-top:0;
+
+}
+
+
+.submission-info {
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  border:1px solid #ddd;
+
+  border-radius:10px;
+
+}
+
+
+.success-text {
+
+  color:#15803d;
+
+  font-weight:bold;
+
+}
+
+
+.muted {
+
+  color:#777;
+
+  font-size:13px;
+
+}
+
+
+.empty-message {
+
+  padding:30px;
+
+  text-align:center;
+
+  color:#777;
+
+}
+
+
+.error-message {
+
+  padding:20px;
+
+  background:#fef2f2;
+
+  color:#b91c1c;
+
+  border-radius:8px;
+
+}
+
+
+/* =====================
+   文書
+===================== */
 
 .detail-box {
 
@@ -527,54 +771,155 @@ button {
 }
 
 
+.document-tag {
 
+  display:inline-block;
+
+  padding:5px 10px;
+
+  background:#e2e8f0;
+
+  border-radius:5px;
+
+  font-size:13px;
+
+  margin-bottom:15px;
+
+}
+
+
+.document-body {
+
+  white-space:pre-wrap;
+
+  line-height:1.8;
+
+  margin:25px 0;
+
+}
+
+
+/* =====================
+   ページング
+===================== */
+
+#documentPagination {
+
+  display:flex;
+
+  gap:8px;
+
+}
 
 
 /* =====================
    スマホ
 ===================== */
 
+@media(max-width:900px){
+
+  .stats-grid {
+
+    grid-template-columns:
+      repeat(2,1fr);
+
+  }
+
+  .analysis-grid {
+
+    grid-template-columns:
+      repeat(2,1fr);
+
+  }
+
+}
+
 
 @media(max-width:768px){
 
+  .layout {
 
-.layout {
+    display:block;
 
-  display:block;
+  }
+
+
+  .sidebar {
+
+    position:relative;
+
+    width:100%;
+
+    height:auto;
+
+  }
+
+
+  .content {
+
+    margin-left:0;
+
+    width:100%;
+
+    padding:15px;
+
+  }
+
+
+  .login-box {
+
+    width:90%;
+
+    padding:35px;
+
+  }
+
+
+  .calendar-cell {
+
+    min-height:100px;
+
+    padding:5px;
+
+  }
+
+
+  .calendar-event {
+
+    font-size:10px;
+
+    padding:4px;
+
+  }
+
+
+  .calendar-header {
+
+    grid-template-columns:
+      70px
+      1fr
+      70px;
+
+  }
 
 }
 
 
+@media(max-width:600px){
 
-.sidebar {
+  .stats-grid,
+  .analysis-grid {
 
-  position:relative;
+    grid-template-columns:
+      1fr;
 
-  width:100%;
-
-  height:auto;
-
-}
-
+  }
 
 
-.content {
+  .calendar-cell {
 
-  margin-left:0;
+    min-height:80px;
 
-  width:100%;
-
-  padding:15px;
-
-}
-
-
-
-.login-box {
-
-  width:90%;
-
-}
-
+  }
 
 }
