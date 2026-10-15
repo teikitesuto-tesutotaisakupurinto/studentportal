@@ -3,7 +3,6 @@ import {
   db
 } from "./firebase.js";
 
-
 import {
   onAuthStateChanged,
   updatePassword,
@@ -11,205 +10,159 @@ import {
   EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-
 import {
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
-
-
-// =====================
-// 設定情報取得
-// =====================
-
 async function loadSettings(user){
 
-
-const snap =
-await getDoc(
-doc(
-db,
-"users",
-user.uid
-)
-);
-
+  const snap =
+    await getDoc(
+      doc(
+        db,
+        "users",
+        user.uid
+      )
+    );
 
 
-if(!snap.exists()){
-
-return;
-
-}
+  if(!snap.exists()){
+    return;
+  }
 
 
-
-const data =
-snap.data();
-
+  const data =
+    snap.data();
 
 
-const area =
-document.getElementById(
-"userInfo"
-);
+  const area =
+    document.getElementById(
+      "userInfo"
+    );
 
 
-
-if(area){
-
-
-area.innerHTML = `
-
-<p>
-名前：
-${data.name || ""}
-</p>
+  if(!area){
+    return;
+  }
 
 
-<p>
-メールアドレス：
-${user.email || ""}
-</p>
+  area.innerHTML = `
 
+    <p>
+      名前：
+      ${escapeHtml(data.name || "")}
+    </p>
 
-<p>
-地方：
-${data.block || ""}
-</p>
+    <p>
+      メールアドレス：
+      ${escapeHtml(user.email || "")}
+    </p>
 
+    <p>
+      ブロック：
+      ${escapeHtml(data.block || "")}
+    </p>
 
-<p>
-学年：
-${data.grade || ""}
-</p>
+    <p>
+      学年：
+      ${escapeHtml(data.grade || "")}
+    </p>
 
-`;
+  `;
 
 }
 
-
-}
-
-
-
-
-
-
-
-
-
-// =====================
-// 認証確認
-// =====================
 
 onAuthStateChanged(
-auth,
-(user)=>{
+  auth,
+  user => {
 
+    if(user){
+      loadSettings(user);
+    }
 
-if(user){
-
-loadSettings(user);
-
-}
-
-
-});
-
-
-
-
-
-
-
-
-
-// =====================
-// パスワード変更
-// =====================
-
-window.changePassword = async function(){
-
-
-const oldPassword =
-prompt(
-"現在のパスワードを入力してください"
+  }
 );
 
 
+window.changePassword =
+async function(){
 
-const newPassword =
-prompt(
-"新しいパスワードを入力してください"
-);
-
-
-
-if(
-!oldPassword ||
-!newPassword
-){
-
-return;
-
-}
+  const oldPassword =
+    prompt(
+      "現在のパスワードを入力してください"
+    );
 
 
-
-const user =
-auth.currentUser;
-
-
-
-try{
+  const newPassword =
+    prompt(
+      "新しいパスワードを入力してください"
+    );
 
 
-const credential =
-EmailAuthProvider.credential(
-user.email,
-oldPassword
-);
+  if(
+    !oldPassword ||
+    !newPassword
+  ){
+
+    return;
+
+  }
 
 
-
-await reauthenticateWithCredential(
-user,
-credential
-);
+  const user =
+    auth.currentUser;
 
 
+  try{
 
-await updatePassword(
-user,
-newPassword
-);
-
-
-
-alert(
-"パスワードを変更しました"
-);
+    const credential =
+      EmailAuthProvider.credential(
+        user.email,
+        oldPassword
+      );
 
 
-
-}catch(error){
-
-
-console.error(error);
-
-
-alert(
-"変更できませんでした\n"
-+
-error.message
-);
+    await reauthenticateWithCredential(
+      user,
+      credential
+    );
 
 
+    await updatePassword(
+      user,
+      newPassword
+    );
 
-}
 
+    alert(
+      "パスワードを変更しました"
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "変更できませんでした\n" +
+      error.message
+    );
+
+  }
 
 };
+
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
