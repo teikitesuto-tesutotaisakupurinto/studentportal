@@ -2,355 +2,189 @@
 <html lang="ja">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<title>
-定期テスト対策ポータル
-</title>
-
+<title>定期テスト対策ポータル</title>
 
 <link rel="stylesheet" href="css/style.css">
-
-
 </head>
-
 
 <body>
 
-
 <div class="layout">
-
-
 
 <aside class="sidebar">
 
-
 <div class="logo">
-
 定期テスト対策ポータル
-
 </div>
 
-
-
 <nav>
-
 
 <button onclick="showPage('home')">
 ホーム
 </button>
 
-
 <button onclick="showPage('notice')">
 お知らせ
 </button>
-
 
 <button onclick="showPage('message')">
 連絡
 </button>
 
-
 <button onclick="showPage('documents')">
 配布文書
 </button>
-
 
 <button onclick="showPage('calendar')">
 カレンダー
 </button>
 
-
 <button onclick="showPage('scores')">
 テスト成績
 </button>
-
 
 <button onclick="showPage('settings')">
 各種設定
 </button>
 
-
-
 <hr>
-
 
 <button onclick="logout()">
 ログアウト
 </button>
 
-
 </nav>
-
 
 </aside>
 
-
-
-
-
-
-
 <main class="content">
 
-
-
-
-
-<!-- 初期表示 -->
-
 <section id="home" style="display:block;">
-
 
 <h1>
 ホーム
 </h1>
 
+<div class="card">
 
+<h2>
+お知らせ
+</h2>
+
+<div id="homeNoticeList">
+</div>
+
+</div>
 
 <div class="card">
 
-
 <h2>
-重要なお知らせ
+カレンダー
 </h2>
 
-
-<div id="importantNotice">
-
+<div id="homeCalendar">
 </div>
 
-
 </div>
-
-
-
-
-<div class="card">
-
-
-<h2>
-最新のお知らせ
-</h2>
-
-
-<div id="latestNotice">
-
-</div>
-
-
-</div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 非表示スタート -->
-
-
 <section id="notice" style="display:none;">
-
 
 <h1>
 お知らせ
 </h1>
 
-
 <div id="noticeList">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
 <section id="message" style="display:none;">
-
 
 <h1>
 連絡
 </h1>
-
 
 <textarea
 id="messageText"
 placeholder="運営への連絡内容">
 </textarea>
 
-
-
 <button onclick="sendMessage()">
-
 送信
-
 </button>
 
-
-
-
 <div id="messageHistory">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
 <section id="documents" style="display:none;">
-
 
 <h1>
 配布文書
 </h1>
 
-
 <div id="documentList">
-
 </div>
-
-
 
 <div id="documentPagination">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
 <section id="calendar" style="display:none;">
-
 
 <h1>
 カレンダー
 </h1>
 
-
 <div id="calendarArea">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
 <section id="scores" style="display:none;">
-
 
 <h1>
 テスト成績
 </h1>
 
-
 <div id="scoreFormList">
-
 </div>
-
 
 </section>
 
-
-
-
-
-
-
-
-
 <section id="settings" style="display:none;">
-
 
 <h1>
 各種設定
 </h1>
 
-
 <div class="card">
 
-
 <div id="userInfo">
-
 </div>
-
-
 
 <button onclick="changePassword()">
-
 パスワード変更
-
 </button>
 
-
 </div>
-
 
 </section>
 
-
-
-
-
-
 </main>
-
-
 </div>
 
-
-
-
-
-
-
 <script type="module" src="js/auth.js"></script>
-
 <script type="module" src="js/student.js"></script>
-
 <script type="module" src="js/settings.js"></script>
-
 <script type="module" src="js/calendar.js"></script>
 
-
-
 </body>
-
 </html>
