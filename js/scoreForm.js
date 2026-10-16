@@ -3,9 +3,11 @@ import {
   db
 } from "./firebase.js";
 
+
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
 
 import {
   doc,
@@ -15,328 +17,626 @@ import {
   query,
   where,
   getDocs,
+  updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
 
 import {
   getUserRole
 } from "./auth.js";
 
 
-let currentUser=null;
-let userData=null;
-let formData=null;
-let existingSubmission=null;
+let currentUser = null;
+
+let userData = null;
+
+let formData = null;
+
+let formId =
+  new URLSearchParams(
+    location.search
+  ).get("id");
+
+let existingSubmission = null;
 
 
-const params=new URLSearchParams(location.search);
-const formId=params.get("id");
-
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
+/* =========================
+   認証
+========================= */
 
 onAuthStateChanged(
   auth,
-  async(user)=>{
+  async user => {
 
     if(!user){
 
-      location.href="index.html";
+      location.href =
+        "index.html";
+
       return;
 
     }
 
-    const role=await getUserRole(user);
 
-    if(role!=="student"){
+    try{
 
-      alert("アクセス権限がありません");
-      location.href="admin.html";
-      return;
+      const role =
+        await getUserRole(user);
+
+
+      if(role !== "student"){
+
+        alert(
+          "アクセス権限がありません"
+        );
+
+        location.href =
+          "admin.html";
+
+        return;
+
+      }
+
+
+      currentUser =
+        user;
+
+
+      const userSnap =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+
+      if(!userSnap.exists()){
+
+        alert(
+          "ユーザー情報がありません"
+        );
+
+        return;
+
+      }
+
+
+      userData =
+        userSnap.data();
+
+
+      await loadForm();
+
+
+    }catch(error){
+
+      console.error(error);
+
+      document.getElementById(
+        "scorePage"
+      ).innerHTML = `
+
+        <div class="card error">
+
+          成績フォームを読み込めませんでした。
+
+        </div>
+
+      `;
 
     }
-
-    currentUser=user;
-
-    const userSnap=await getDoc(
-      doc(db,"users",user.uid)
-    );
-
-    if(!userSnap.exists()){
-
-      alert("ユーザー情報がありません");
-      return;
-
-    }
-
-    userData=userSnap.data();
-
-    await loadForm();
 
   }
 );
 
 
+/* =========================
+   escape
+========================= */
+
+const esc =
+  value =>
+
+    String(
+      value ?? ""
+    ).replace(
+      /[&<>\"]/g,
+      c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;"
+      }[c])
+    );
+
+
+/* =========================
+   フォーム取得
+========================= */
+
 async function loadForm(){
 
   if(!formId){
-
-    document.getElementById("formTitle").textContent=
-      "フォームが指定されていません";
 
     return;
 
   }
 
-  const snap=await getDoc(
-    doc(db,"scoreForms",formId)
-  );
+
+  const snap =
+    await getDoc(
+      doc(
+        db,
+        "scoreForms",
+        formId
+      )
+    );
+
+
+  const title =
+    document.getElementById(
+      "formTitle"
+    );
+
 
   if(!snap.exists()){
 
-    document.getElementById("formTitle").textContent=
+    title.textContent =
       "フォームがありません";
 
     return;
 
   }
 
-  formData=snap.data();
 
-  document.getElementById("formTitle").textContent=
-    formData.title || "成績入力";
-
-
-  const existingSnap=await getDocs(
-    query(
-      collection(db,"scores"),
-      where("formId","==",formId),
-      where("uid","==",currentUser.uid)
-    )
-  );
+  formData =
+    snap.data();
 
 
-  if(!existingSnap.empty){
-
-    existingSubmission={
-      id:existingSnap.docs[0].id,
-      ...existingSnap.docs[0].data()
-    };
-
-  }
+  title.textContent =
+    formData.title ||
+    "テスト成績入力";
 
 
-  renderForm();
+  if(
+    formData.targetType
+    &&
+    !canView(formData)
+  ){
 
-}
+    document.getElementById(
+      "scorePage"
+    ).innerHTML = `
 
+      <div class="card">
 
-function renderForm(){
-
-  const area=document.getElementById("subjectArea");
-  const status=document.getElementById("submissionStatus");
-  const submitArea=document.getElementById("submitArea");
-  const answerView=document.getElementById("answerView");
-
-  area.innerHTML="";
-  answerView.innerHTML="";
-
-
-  if(existingSubmission){
-
-    status.innerHTML=`
-
-      <div class="submission-complete">
-
-        <strong>提出しました。</strong>
-
-        <p>
-          この成績はすでに提出されています。
-        </p>
-
-        ${
-          existingSubmission.allowResubmit===true
-            ? `
-              <p class="resubmit-message">
-                管理者から再回答が許可されています。
-              </p>
-            `
-            : `
-              <p>
-                管理者が再回答を許可するまで、
-                もう一度解答することはできません。
-              </p>
-            `
-        }
+        この成績フォームの対象ではありません。
 
       </div>
 
     `;
-
-
-    renderAnswer(existingSubmission);
-
-    if(existingSubmission.allowResubmit===true){
-
-      renderInputs();
-
-      submitArea.style.display="block";
-
-    }else{
-
-      submitArea.style.display="none";
-
-    }
 
     return;
 
   }
 
 
-  status.innerHTML="";
-
-  renderInputs();
-
-  submitArea.style.display="block";
+  await loadExistingSubmission();
 
 }
 
 
-function renderInputs(){
+/* =========================
+   対象判定
+========================= */
 
-  const area=document.getElementById("subjectArea");
+function canView(data){
 
-  area.innerHTML="";
+  if(
+    !data.targetType
+    ||
+    data.targetType === "all"
+  ){
 
-  const subjects=formData.subjects || [];
+    return true;
 
-  subjects.forEach(subject=>{
+  }
 
-    area.innerHTML+=`
 
-      <div class="card">
+  if(
+    data.targetType === "block"
+  ){
 
-        <label>
-          ${escapeHtml(subject)}
-        </label>
+    return (
+      data.block ===
+      userData.block
+    );
 
-        <input
-          type="number"
-          min="0"
-          class="scoreInput"
-          data-subject="${escapeHtml(subject)}"
-          placeholder="点数"
-        >
+  }
+
+
+  if(
+    data.targetType ===
+    "block_grade"
+  ){
+
+    return (
+
+      data.block ===
+      userData.block
+
+      &&
+
+      data.grade ===
+      userData.grade
+
+    );
+
+  }
+
+
+  if(
+    data.targetType ===
+    "individual"
+  ){
+
+    return (
+      data.uid ===
+      currentUser.uid
+    );
+
+  }
+
+
+  return false;
+
+}
+
+
+/* =========================
+   既存提出確認
+========================= */
+
+async function loadExistingSubmission(){
+
+  const snap =
+    await getDocs(
+      query(
+        collection(
+          db,
+          "scores"
+        ),
+
+        where(
+          "formId",
+          "==",
+          formId
+        ),
+
+        where(
+          "uid",
+          "==",
+          currentUser.uid
+        )
+      )
+    );
+
+
+  if(snap.empty){
+
+    existingSubmission =
+      null;
+
+    renderInputForm();
+
+    return;
+
+  }
+
+
+  const docs = [];
+
+
+  snap.forEach(item => {
+
+    docs.push({
+
+      id:item.id,
+
+      ...item.data()
+
+    });
+
+  });
+
+
+  docs.sort(
+    (a,b) =>
+      timestampMs(
+        b.createdAt
+      )
+      -
+      timestampMs(
+        a.createdAt
+      )
+  );
+
+
+  existingSubmission =
+    docs[0];
+
+
+  /*
+   * 管理者が再回答を許可した場合だけ
+   * 入力画面を再表示
+   */
+
+  if(
+    existingSubmission
+      .resubmitAllowed === true
+  ){
+
+    renderInputForm(true);
+
+    return;
+
+  }
+
+
+  /*
+   * それ以外は提出済み画面
+   */
+
+  renderSubmitted(
+    existingSubmission
+  );
+
+}
+
+
+/* =========================
+   timestamp
+========================= */
+
+function timestampMs(ts){
+
+  if(
+    ts?.toDate
+  ){
+
+    return ts
+      .toDate()
+      .getTime();
+
+  }
+
+
+  return 0;
+
+}
+
+
+/* =========================
+   入力画面
+========================= */
+
+function renderInputForm(
+  isResubmit = false
+){
+
+  const area =
+    document.getElementById(
+      "subjectArea"
+    );
+
+
+  const status =
+    document.getElementById(
+      "submissionStatus"
+    );
+
+
+  if(isResubmit){
+
+    status.innerHTML = `
+
+      <div class="status-box warning">
+
+        管理者から再回答が許可されています。
+
+        <br>
+
+        回答内容を修正して再提出できます。
 
       </div>
 
     `;
 
-  });
+  }else{
+
+    status.innerHTML = "";
+
+  }
+
+
+  area.innerHTML =
+    (formData.subjects || [])
+    .map(
+      subject => `
+
+        <div class="card">
+
+          <label>
+
+            ${esc(subject)}
+
+            <input
+
+              type="number"
+
+              min="0"
+
+              max="100"
+
+              class="scoreInput"
+
+              data-subject="${esc(subject)}"
+
+              placeholder="点数"
+
+            >
+
+          </label>
+
+        </div>
+
+      `
+    )
+    .join("");
+
+
+  document.getElementById(
+    "submitArea"
+  ).style.display =
+    "block";
 
 }
 
 
-function renderAnswer(data){
+/* =========================
+   提出済み表示
+========================= */
 
-  const area=document.getElementById("answerView");
+function renderSubmitted(
+  data
+){
 
-  const subjects=data.subjects || {};
+  document.getElementById(
+    "submissionStatus"
+  ).innerHTML = `
 
-  let html=`
+    <div class="status-box success">
 
-    <div class="card">
+      <strong>
+        提出しました。
+      </strong>
 
-      <h2>提出内容の確認</h2>
+      <br><br>
 
-      <table class="score-table">
+      回答内容を確認できます。
 
-        <thead>
-          <tr>
-            <th>教科</th>
-            <th>点数</th>
-          </tr>
-        </thead>
+      <br>
 
-        <tbody>
+      管理者が再回答を許可しない限り、
+      もう一度解答することはできません。
+
+    </div>
 
   `;
 
-  Object.entries(subjects).forEach(
-    ([subject,score])=>{
 
-      html+=`
+  const area =
+    document.getElementById(
+      "subjectArea"
+    );
 
-        <tr>
 
-          <td>
-            ${escapeHtml(subject)}
-          </td>
+  area.innerHTML = `
 
-          <td>
-            ${escapeHtml(score)}
-          </td>
+    <div class="card">
 
-        </tr>
+      <h3>
+        回答内容の確認
+      </h3>
 
-      `;
 
-    }
-  );
+      ${
+        Object.entries(
+          data.subjects || {}
+        )
+        .map(
+          ([subject,score]) => `
 
-  html+=`
+            <div class="score-confirm-row">
 
-        </tbody>
+              <span>
+                ${esc(subject)}
+              </span>
 
-      </table>
+              <strong>
+                ${esc(score)}点
+              </strong>
+
+            </div>
+
+          `
+        )
+        .join("")
+      }
+
+
+      <hr>
+
 
       <p>
         合計：
-        <strong>${escapeHtml(data.total)}</strong>点
+        <strong>
+          ${esc(data.total)}点
+        </strong>
       </p>
+
 
       <p>
         平均：
-        <strong>${escapeHtml(data.average)}</strong>点
-      </p>
-
-      <p>
-        提出日時：
-        ${
-          data.createdAt?.toDate
-            ? data.createdAt.toDate().toLocaleString("ja-JP")
-            : "記録済み"
-        }
+        <strong>
+          ${esc(data.average)}点
+        </strong>
       </p>
 
     </div>
 
   `;
 
-  area.innerHTML=html;
+
+  document.getElementById(
+    "submitArea"
+  ).style.display =
+    "none";
 
 }
 
 
-window.submitScore=async function(){
+/* =========================
+   提出
+========================= */
+
+window.submitScore =
+async function(){
+
+  if(!formData){
+
+    return;
+
+  }
+
+
+  /*
+   * 既存提出があり、
+   * 再回答許可がない場合は絶対に拒否
+   */
 
   if(
-    existingSubmission &&
-    existingSubmission.allowResubmit!==true
+    existingSubmission
+    &&
+    existingSubmission
+      .resubmitAllowed !== true
   ){
 
-    alert(
-      "この成績はすでに提出されています。管理者が再回答を許可するまで、もう一度解答することはできません。"
+    renderSubmitted(
+      existingSubmission
     );
 
     return;
@@ -344,87 +644,111 @@ window.submitScore=async function(){
   }
 
 
-  const subjects={};
+  const subjects = {};
 
-  let total=0;
-  let count=0;
+  let total = 0;
+
+  let count = 0;
 
 
   document
-    .querySelectorAll(".scoreInput")
-    .forEach(input=>{
+    .querySelectorAll(
+      ".scoreInput"
+    )
+    .forEach(input => {
 
-      const raw=input.value.trim();
+      const raw =
+        input.value.trim();
 
-      if(raw==="") return;
 
-      const value=Number(raw);
+      if(raw !== ""){
 
-      if(!Number.isFinite(value)) return;
+        const value =
+          Number(raw);
 
-      subjects[input.dataset.subject]=value;
 
-      total+=value;
-      count++;
+        if(
+
+          Number.isFinite(value)
+
+          &&
+
+          value >= 0
+
+          &&
+
+          value <= 100
+
+        ){
+
+          subjects[
+            input.dataset.subject
+          ] = value;
+
+
+          total += value;
+
+          count++;
+
+        }
+
+      }
 
     });
 
 
-  if(count===0){
+  if(count === 0){
 
-    alert("点数を入力してください");
+    alert(
+      "点数を入力してください"
+    );
+
     return;
 
   }
 
 
-  const average=Number(
-    (total/count).toFixed(1)
-  );
+  if(
+    count !==
+    (formData.subjects || []).length
+  ){
+
+    alert(
+      "すべての教科の点数を入力してください"
+    );
+
+    return;
+
+  }
 
 
   try{
 
-    if(existingSubmission){
+    /*
+     * 再回答の場合
+     *
+     * 元の提出を再回答不可に戻す
+     */
 
-      // 再回答の場合も新しい提出記録を作る。
-      // allowResubmit を利用して管理者の許可を一度消費する。
+    if(
+      existingSubmission
+      &&
+      existingSubmission
+        .resubmitAllowed === true
+    ){
 
-      await addDoc(
-        collection(db,"scores"),
+      await updateDoc(
+        doc(
+          db,
+          "scores",
+          existingSubmission.id
+        ),
         {
 
-          formId,
-          uid:currentUser.uid,
-          name:userData.name || "",
-          testName:formData.title || "",
-          subjects,
-          total,
-          average,
-          allowResubmit:false,
-          resubmission:true,
-          previousSubmissionId:existingSubmission.id,
-          createdAt:serverTimestamp()
+          resubmitAllowed:false,
 
-        }
-      );
-
-    }else{
-
-      await addDoc(
-        collection(db,"scores"),
-        {
-
-          formId,
-          uid:currentUser.uid,
-          name:userData.name || "",
-          testName:formData.title || "",
-          subjects,
-          total,
-          average,
-          allowResubmit:false,
-          resubmission:false,
-          createdAt:serverTimestamp()
+          resubmittedAt:
+            serverTimestamp()
 
         }
       );
@@ -432,16 +756,97 @@ window.submitScore=async function(){
     }
 
 
-    alert("成績を提出しました。");
+    const average =
+      Number(
+        (
+          total / count
+        ).toFixed(1)
+      );
 
-    location.reload();
+
+    /*
+     * 新しい提出を保存
+     */
+
+    const newDoc =
+      await addDoc(
+        collection(
+          db,
+          "scores"
+        ),
+        {
+
+          formId,
+
+          uid:
+            currentUser.uid,
+
+          name:
+            userData.name || "",
+
+          testName:
+            formData.title || "",
+
+          subjects,
+
+          total,
+
+          average,
+
+          resubmitAllowed:false,
+
+          createdAt:
+            serverTimestamp()
+
+        }
+      );
+
+
+    existingSubmission = {
+
+      id:newDoc.id,
+
+      formId,
+
+      uid:currentUser.uid,
+
+      name:
+        userData.name || "",
+
+      testName:
+        formData.title || "",
+
+      subjects,
+
+      total,
+
+      average,
+
+      resubmitAllowed:false
+
+    };
+
+
+    /*
+     * ここで必ず
+     * 「提出しました。」
+     */
+
+    renderSubmitted(
+      existingSubmission
+    );
+
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "成績提出エラー:",
+      error
+    );
+
 
     alert(
-      "成績を提出できませんでした。\n"+
+      "提出できませんでした。\n" +
       error.message
     );
 
