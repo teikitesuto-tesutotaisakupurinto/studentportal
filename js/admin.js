@@ -3,11 +3,9 @@ import {
   db
 } from "./firebase.js";
 
-
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-
 
 import {
   collection,
@@ -21,24 +19,13 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-
 import {
   getUserRole
 } from "./auth.js";
 
-
-import "./scoreAnalysis.js";
-
-
-let students = [];
-
-
 const esc =
   value =>
-
-    String(
-      value ?? ""
-    ).replace(
+    String(value ?? "").replace(
       /[&<>\"]/g,
       c => ({
         "&":"&amp;",
@@ -48,184 +35,84 @@ const esc =
       }[c])
     );
 
+let students = [];
 
-/* =========================
-   ページ切り替え
-========================= */
+let adminCalendarEvents = [];
+let adminCalendarDate = new Date();
 
-window.showAdminPage =
-function(page){
-
-  document
-    .querySelectorAll(
-      ".content > section"
-    )
-    .forEach(
-      section =>
-        section.style.display =
-          "none"
-    );
-
-
-  const target =
-    document.getElementById(
-      page
-    );
-
-
-  if(target){
-
-    target.style.display =
-      "block";
-
-  }
-
-
-  if(
-    page === "scores"
-  ){
-
-    if(
-      window.loadScoreAnalysis
-    ){
-
-      window.loadScoreAnalysis();
-
-    }
-
-
-    loadScoreSubmissionList();
-
-  }
-
-};
-
-
-/* =========================
-   認証
-========================= */
+let adminCalendarRangeStart = "";
+let adminCalendarRangeEnd = "";
 
 onAuthStateChanged(
   auth,
-  async user => {
+  async user=>{
 
     if(!user){
 
       location.href =
-        "index.html";
+        "../index.html";
 
       return;
-
     }
 
+    const role =
+      await getUserRole(user);
 
-    try{
-
-      const role =
-        await getUserRole(user);
-
-
-      if(role !== "admin"){
-
-        alert(
-          "アクセス権限がありません"
-        );
-
-        location.href =
-          "student.html";
-
-        return;
-
-      }
-
-
-      await loadStudents();
-
-      await loadBlocks();
-
-      await loadMessages();
-
-      await loadUsers();
-
-      await loadCalendarAdmin();
-
-      await loadDashboard();
-
-      await loadScoreSubmissionList();
-
-
-    }catch(error){
-
-      console.error(
-        "管理画面初期化:",
-        error
-      );
-
+    if(role !== "admin"){
 
       alert(
-        "管理画面の読み込みに失敗しました。\n" +
-        error.message
+        "アクセス権限がありません"
       );
 
+      location.href =
+        "../home/index.html";
+
+      return;
     }
+
+    await loadStudents();
+    await loadBlocks();
+    await loadMessages();
+    await loadUsers();
+    await loadCalendarAdmin();
+    await loadDashboard();
+    await loadScoreSubmissionList();
 
   }
 );
-
-
-/* =========================
-   生徒
-========================= */
 
 async function loadStudents(){
 
   const snap =
     await getDocs(
-      collection(
-        db,
-        "users"
-      )
+      collection(db,"users")
     );
-
 
   students = [];
 
+  snap.forEach(item=>{
 
-  snap.forEach(
-    item => {
+    const data =
+      item.data();
 
-      const data =
-        item.data();
+    if(data.role === "student"){
 
-
-      if(
-        data.role ===
-        "student"
-      ){
-
-        students.push({
-
-          id:item.id,
-
-          ...data
-
-        });
-
-      }
+      students.push({
+        id:item.id,
+        ...data
+      });
 
     }
-  );
 
+  });
 
   populateUserSelect(
     "targetUser"
   );
 
-
   populateUserSelect(
     "documentUser"
   );
-
 
   populateUserSelect(
     "formUser"
@@ -233,236 +120,156 @@ async function loadStudents(){
 
 }
 
-
-function populateUserSelect(
-  id
-){
+function populateUserSelect(id){
 
   const select =
-    document.getElementById(
-      id
-    );
+    document.getElementById(id);
 
-
-  if(!select) return;
-
+  if(!select){
+    return;
+  }
 
   select.innerHTML = "";
 
-
-  [...students]
-
+  students
     .sort(
-      (a,b) =>
+      (a,b)=>
         String(a.name)
         .localeCompare(
           String(b.name),
           "ja"
         )
     )
+    .forEach(student=>{
 
-    .forEach(
-      student => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-
-        option.value =
-          student.id;
-
-
-        option.textContent =
-
-          `${student.name || ""}`
-
-          +
-
-          `（${student.grade || ""}`
-
-          +
-
-          `・${student.block || ""}）`;
-
-
-        select.appendChild(
-          option
+      const option =
+        document.createElement(
+          "option"
         );
 
-      }
-    );
+      option.value =
+        student.id;
+
+      option.textContent =
+        `${student.name || ""}（${student.grade || ""}・${student.block || ""}）`;
+
+      select.appendChild(
+        option
+      );
+
+    });
 
 }
-
-
-/* =========================
-   ブロック
-========================= */
 
 async function loadBlocks(){
 
   const blocks =
-
     [
-
       ...new Set(
-
         students
-
           .map(
             student =>
               student.block
           )
-
           .filter(Boolean)
-
       )
-
     ];
-
 
   [
     "block",
     "documentBlock",
     "formBlock"
-  ]
+  ].forEach(id=>{
 
-  .forEach(
-    id => {
+    const select =
+      document.getElementById(id);
 
-      const select =
-        document.getElementById(
-          id
+    if(!select){
+      return;
+    }
+
+    select.innerHTML = "";
+
+    blocks.forEach(block=>{
+
+      const option =
+        document.createElement(
+          "option"
         );
 
+      option.value = block;
+      option.textContent = block;
 
-      if(!select) return;
-
-
-      select.innerHTML = "";
-
-
-      blocks.forEach(
-        block => {
-
-          const option =
-            document.createElement(
-              "option"
-            );
-
-
-          option.value =
-            block;
-
-
-          option.textContent =
-            block;
-
-
-          select.appendChild(
-            option
-          );
-
-        }
+      select.appendChild(
+        option
       );
 
-    }
-  );
+    });
+
+  });
 
 }
 
-
-/* =========================
-   配信範囲
-========================= */
-
-window.changeTarget =
-function(){
+window.changeTarget = function(){
 
   toggleTarget(
     "targetType",
     "blockArea",
     "gradeArea",
-    "userArea",
-    "block_grade",
-    "individual"
+    "userArea"
   );
 
 };
 
-
-window.changeDocumentTarget =
-function(){
+window.changeDocumentTarget = function(){
 
   toggleTarget(
     "documentTargetType",
     "documentBlockArea",
     "documentGradeArea",
-    "documentUserArea",
-    "block_grade",
-    "individual"
+    "documentUserArea"
   );
 
 };
 
-
-window.changeFormTarget =
-function(){
+window.changeFormTarget = function(){
 
   toggleTarget(
     "formTargetType",
     "formBlockArea",
     "formGradeArea",
-    "formUserArea",
-    "block_grade",
-    "individual"
+    "formUserArea"
   );
 
 };
-
 
 function toggleTarget(
   selectId,
   blockId,
   gradeId,
-  userId,
-  blockGradeValue,
-  individualValue
+  userId
 ){
 
   const type =
     document.getElementById(
       selectId
-    ).value;
-
+    )?.value;
 
   [
     blockId,
     gradeId,
     userId
-  ]
+  ].forEach(id=>{
 
-  .forEach(
-    id => {
+    const element =
+      document.getElementById(id);
 
-      const element =
-        document.getElementById(
-          id
-        );
-
-
-      if(element){
-
-        element.style.display =
-          "none";
-
-      }
-
+    if(element){
+      element.style.display =
+        "none";
     }
-  );
 
+  });
 
   if(type === "block"){
 
@@ -473,17 +280,12 @@ function toggleTarget(
 
   }
 
-
-  if(
-    type ===
-    blockGradeValue
-  ){
+  if(type === "block_grade"){
 
     document.getElementById(
       blockId
     ).style.display =
       "block";
-
 
     document.getElementById(
       gradeId
@@ -492,11 +294,7 @@ function toggleTarget(
 
   }
 
-
-  if(
-    type ===
-    individualValue
-  ){
+  if(type === "individual"){
 
     document.getElementById(
       userId
@@ -507,11 +305,6 @@ function toggleTarget(
 
 }
 
-
-/* =========================
-   配信データ
-========================= */
-
 function targetData(
   type,
   blockId,
@@ -520,15 +313,11 @@ function targetData(
 ){
 
   const data = {
-
     targetType:type
-
   };
 
-
   if(
-    type === "block"
-    ||
+    type === "block" ||
     type === "block_grade"
   ){
 
@@ -539,10 +328,7 @@ function targetData(
 
   }
 
-
-  if(
-    type === "block_grade"
-  ){
+  if(type === "block_grade"){
 
     data.grade =
       document.getElementById(
@@ -551,10 +337,7 @@ function targetData(
 
   }
 
-
-  if(
-    type === "individual"
-  ){
+  if(type === "individual"){
 
     data.uid =
       document.getElementById(
@@ -563,30 +346,24 @@ function targetData(
 
   }
 
-
   return data;
-
 }
 
+/* お知らせ */
 
-/* =========================
-   お知らせ作成
-========================= */
-
-window.createNotice =
-async function(){
+window.createNotice = async function(){
 
   const title =
-    document.getElementById(
-      "noticeTitle"
-    ).value.trim();
-
+    document
+      .getElementById("noticeTitle")
+      .value
+      .trim();
 
   const body =
-    document.getElementById(
-      "noticeBody"
-    ).value.trim();
-
+    document
+      .getElementById("noticeBody")
+      .value
+      .trim();
 
   if(!title || !body){
 
@@ -595,83 +372,82 @@ async function(){
     );
 
     return;
-
   }
-
 
   try{
 
-    const data = {
-
-      title,
-
-      body,
-
-      importance:
-        document.getElementById(
-          "importance"
-        ).value,
-
-      startDate:
-        document.getElementById(
-          "startDate"
-        ).value,
-
-      endDate:
-        document.getElementById(
-          "endDate"
-        ).value,
-
-      createdAt:
-        serverTimestamp(),
-
-      ...targetData(
-
-        document.getElementById(
-          "targetType"
-        ).value,
-
-        "block",
-
-        "grade",
-
-        "targetUser"
-
-      )
-
-    };
-
+    const type =
+      document.getElementById(
+        "targetType"
+      ).value;
 
     await addDoc(
-      collection(
-        db,
-        "notices"
-      ),
-      data
-    );
+      collection(db,"notices"),
+      {
+        title,
+        body,
 
+        importance:
+          document.getElementById(
+            "importance"
+          ).value,
+
+        startDate:
+          document.getElementById(
+            "startDate"
+          ).value,
+
+        endDate:
+          document.getElementById(
+            "endDate"
+          ).value,
+
+        createdAt:
+          serverTimestamp(),
+
+        ...targetData(
+          type,
+          "block",
+          "grade",
+          "targetUser"
+        )
+      }
+    );
 
     document.getElementById(
       "noticeTitle"
     ).value = "";
 
-
     document.getElementById(
       "noticeBody"
     ).value = "";
 
+    document.getElementById(
+      "importance"
+    ).value = "normal";
 
-    alert(
-      "お知らせを公開しました"
-    );
+    document.getElementById(
+      "startDate"
+    ).value = "";
 
+    document.getElementById(
+      "endDate"
+    ).value = "";
+
+    document.getElementById(
+      "targetType"
+    ).value = "all";
+
+    changeTarget();
+
+    alert("送信しました");
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "お知らせを公開できませんでした。\n" +
+      "送信できませんでした\n" +
       error.message
     );
 
@@ -679,118 +455,92 @@ async function(){
 
 };
 
+/* 配布文書 */
 
-/* =========================
-   配布文書
-========================= */
-
-window.addDocument =
-async function(){
+window.addDocument = async function(){
 
   const title =
     document.getElementById(
       "documentTitle"
     ).value.trim();
-
 
   const body =
     document.getElementById(
       "documentBody"
     ).value.trim();
 
-
   const url =
     document.getElementById(
       "documentUrl"
     ).value.trim();
 
-
   if(!title || !url){
 
     alert(
-      "タイトルとURLを入力してください"
+      "タイトルと配布文書URLを入力してください"
     );
 
     return;
-
   }
-
 
   try{
 
-    const data = {
-
-      title,
-
-      body,
-
-      url,
-
-      startDate:
-        document.getElementById(
-          "documentStartDate"
-        ).value,
-
-      endDate:
-        document.getElementById(
-          "documentEndDate"
-        ).value,
-
-      createdAt:
-        serverTimestamp(),
-
-      ...targetData(
-
-        document.getElementById(
-          "documentTargetType"
-        ).value,
-
-        "documentBlock",
-
-        "documentGrade",
-
-        "documentUser"
-
-      )
-
-    };
-
+    const type =
+      document.getElementById(
+        "documentTargetType"
+      ).value;
 
     await addDoc(
-      collection(
-        db,
-        "documents"
-      ),
-      data
-    );
+      collection(db,"documents"),
+      {
 
+        title,
+        body,
+        url,
+
+        startDate:
+          document.getElementById(
+            "documentStartDate"
+          ).value,
+
+        endDate:
+          document.getElementById(
+            "documentEndDate"
+          ).value,
+
+        createdAt:
+          serverTimestamp(),
+
+        ...targetData(
+          type,
+          "documentBlock",
+          "documentGrade",
+          "documentUser"
+        )
+
+      }
+    );
 
     document.getElementById(
       "documentTitle"
     ).value = "";
 
-
     document.getElementById(
       "documentBody"
     ).value = "";
-
 
     document.getElementById(
       "documentUrl"
     ).value = "";
 
-
-    alert(
-      "配布文書を登録しました"
-    );
-
+    alert("登録しました");
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "配布文書を登録できませんでした。\n" +
+      "登録できませんでした\n" +
       error.message
     );
 
@@ -798,137 +548,98 @@ async function(){
 
 };
 
+/* カレンダー */
 
-/* =========================
-   カレンダー
-========================= */
-
-window.addCalendar =
-async function(){
+window.addCalendar = async function(){
 
   const title =
     document.getElementById(
       "calendarTitle"
     ).value.trim();
 
-
   const startDate =
     document.getElementById(
       "calendarStartDate"
     ).value;
 
-
   const endDate =
     document.getElementById(
       "calendarEndDate"
-    ).value
-    ||
+    ).value ||
     startDate;
-
 
   const description =
     document.getElementById(
       "calendarDescription"
     ).value.trim();
 
-
-  if(
-    !title
-    ||
-    !startDate
-  ){
+  if(!title || !startDate){
 
     alert(
       "予定名と開始日を入力してください"
     );
 
     return;
-
   }
 
-
-  if(
-    endDate <
-    startDate
-  ){
+  if(endDate < startDate){
 
     alert(
       "終了日は開始日以降にしてください"
     );
 
     return;
-
   }
-
 
   try{
 
     await addDoc(
-      collection(
-        db,
-        "calendar"
-      ),
+      collection(db,"calendar"),
       {
-
         title,
-
         startDate,
-
         endDate,
-
         date:startDate,
-
         description,
-
         createdAt:
           serverTimestamp(),
-
         updatedAt:
           serverTimestamp()
-
       }
     );
 
+    document.getElementById(
+      "calendarTitle"
+    ).value = "";
 
-    [
-      "calendarTitle",
-      "calendarStartDate",
-      "calendarEndDate",
+    document.getElementById(
+      "calendarStartDate"
+    ).value = "";
+
+    document.getElementById(
+      "calendarEndDate"
+    ).value = "";
+
+    document.getElementById(
       "calendarDescription"
-    ]
+    ).value = "";
 
-    .forEach(
-      id => {
-
-        document.getElementById(
-          id
-        ).value = "";
-
-      }
-    );
-
-
-    alert(
-      "予定を登録しました"
-    );
-
+    alert("予定を登録しました");
 
     await loadCalendarAdmin();
-
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "予定を登録できませんでした。\n" +
+      "予定を登録できませんでした\n" +
       error.message
     );
 
   }
 
 };
-
 
 async function loadCalendarAdmin(){
 
@@ -937,100 +648,440 @@ async function loadCalendarAdmin(){
       "adminCalendar"
     );
 
+  if(!area){
+    return;
+  }
 
-  if(!area) return;
+  try{
 
-
-  const snap =
-    await getDocs(
-      query(
-        collection(
-          db,
-          "calendar"
-        ),
-        orderBy(
-          "startDate",
-          "asc"
+    const snap =
+      await getDocs(
+        query(
+          collection(db,"calendar"),
+          orderBy("startDate","asc")
         )
-      )
-    );
+      );
 
+    adminCalendarEvents = [];
 
-  area.innerHTML = "";
+    snap.forEach(item=>{
 
+      adminCalendarEvents.push({
+        id:item.id,
+        ...item.data()
+      });
 
-  snap.forEach(
-    item => {
+    });
 
-      const data =
-        item.data();
+    renderAdminCalendar();
 
+  }catch(error){
 
-      area.innerHTML += `
+    console.error(error);
 
-        <div class="card">
+    area.innerHTML = `
+      <div class="card error">
+        カレンダーを読み込めませんでした。
+      </div>
+    `;
 
-          <p>
+  }
 
-            ${esc(
-              data.startDate ||
-              data.date ||
-              ""
-            )}
+}
 
-            ${
-              data.endDate
-              &&
-              data.endDate !==
-              (
-                data.startDate ||
-                data.date
-              )
+function adminDateKey(date){
 
-              ?
-
-              "〜 " +
-              esc(data.endDate)
-
-              :
-
-              ""
-
-            }
-
-          </p>
-
-
-          <h3>
-            ${esc(data.title)}
-          </h3>
-
-
-          <p>
-            ${esc(
-              data.description
-            )}
-          </p>
-
-
-          <button
-            onclick="deleteCalendar('${item.id}')"
-          >
-            削除
-          </button>
-
-        </div>
-
-      `;
-
-    }
+  return (
+    date.getFullYear() +
+    "-" +
+    String(
+      date.getMonth()+1
+    ).padStart(2,"0") +
+    "-" +
+    String(
+      date.getDate()
+    ).padStart(2,"0")
   );
 
 }
 
+function adminEventCoversDate(
+  event,
+  key
+){
 
-window.deleteCalendar =
-async function(id){
+  const start =
+    event.startDate ||
+    event.date;
+
+  const end =
+    event.endDate ||
+    event.date ||
+    start;
+
+  return (
+    start &&
+    end &&
+    key >= start &&
+    key <= end
+  );
+
+}
+
+function renderAdminCalendar(){
+
+  const area =
+    document.getElementById(
+      "adminCalendar"
+    );
+
+  if(!area){
+    return;
+  }
+
+  const year =
+    adminCalendarDate.getFullYear();
+
+  const month =
+    adminCalendarDate.getMonth();
+
+  const first =
+    new Date(
+      year,
+      month,
+      1
+    );
+
+  const lastDay =
+    new Date(
+      year,
+      month+1,
+      0
+    ).getDate();
+
+  const today =
+    adminDateKey(
+      new Date()
+    );
+
+  let html = `
+
+    <div class="calendar-tools">
+
+      <div class="calendar-header">
+
+        <button
+          type="button"
+          onclick="adminPrevMonth()"
+        >
+          前月
+        </button>
+
+        <h2>
+          ${year}年${month+1}月
+        </h2>
+
+        <button
+          type="button"
+          onclick="adminNextMonth()"
+        >
+          次月
+        </button>
+
+      </div>
+
+      <div class="calendar-range-filter">
+
+        <label>
+          表示開始
+          <input
+            id="adminCalendarRangeStart"
+            type="date"
+            value="${adminCalendarRangeStart}"
+          >
+        </label>
+
+        <span>〜</span>
+
+        <label>
+          表示終了
+          <input
+            id="adminCalendarRangeEnd"
+            type="date"
+            value="${adminCalendarRangeEnd}"
+          >
+        </label>
+
+        <button
+          onclick="applyAdminCalendarRange()"
+        >
+          期間を適用
+        </button>
+
+        <button
+          onclick="clearAdminCalendarRange()"
+        >
+          解除
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="calendar-wrap">
+
+    <table class="calendar">
+
+    <thead>
+      <tr>
+        <th>日</th>
+        <th>月</th>
+        <th>火</th>
+        <th>水</th>
+        <th>木</th>
+        <th>金</th>
+        <th>土</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    <tr>
+  `;
+
+  for(
+    let i=0;
+    i<first.getDay();
+    i++
+  ){
+
+    html +=
+      `<td class="empty"></td>`;
+
+  }
+
+  for(
+    let day=1;
+    day<=lastDay;
+    day++
+  ){
+
+    const key =
+      adminDateKey(
+        new Date(
+          year,
+          month,
+          day
+        )
+      );
+
+    const visible =
+      (
+        !adminCalendarRangeStart ||
+        key >= adminCalendarRangeStart
+      ) &&
+      (
+        !adminCalendarRangeEnd ||
+        key <= adminCalendarRangeEnd
+      );
+
+    const events =
+      visible
+        ? adminCalendarEvents.filter(
+            event =>
+              adminEventCoversDate(
+                event,
+                key
+              )
+          )
+        : [];
+
+    html += `
+
+      <td
+        class="calendar-day ${
+          key === today
+            ? "today"
+            : ""
+        }"
+      >
+
+      <div class="day-number">
+        ${day}
+      </div>
+    `;
+
+    events.forEach(event=>{
+
+      html += `
+
+        <button
+          class="calendar-event"
+          onclick="showAdminEvent('${event.id}')"
+        >
+          ${esc(event.title)}
+        </button>
+
+      `;
+
+    });
+
+    html += `</td>`;
+
+    if(
+      (
+        first.getDay()+day
+      ) % 7 === 0 &&
+      day !== lastDay
+    ){
+
+      html +=
+        "</tr><tr>";
+
+    }
+
+  }
+
+  const cells =
+    first.getDay()+lastDay;
+
+  const trailing =
+    (
+      7 -
+      cells % 7
+    ) % 7;
+
+  for(
+    let i=0;
+    i<trailing;
+    i++
+  ){
+
+    html +=
+      `<td class="empty"></td>`;
+
+  }
+
+  html += `
+    </tr>
+    </tbody>
+    </table>
+
+    </div>
+  `;
+
+  area.innerHTML = html;
+
+}
+
+window.adminPrevMonth = function(){
+
+  adminCalendarDate.setMonth(
+    adminCalendarDate.getMonth()-1
+  );
+
+  renderAdminCalendar();
+
+};
+
+window.adminNextMonth = function(){
+
+  adminCalendarDate.setMonth(
+    adminCalendarDate.getMonth()+1
+  );
+
+  renderAdminCalendar();
+
+};
+
+window.applyAdminCalendarRange = function(){
+
+  const start =
+    document.getElementById(
+      "adminCalendarRangeStart"
+    )?.value || "";
+
+  const end =
+    document.getElementById(
+      "adminCalendarRangeEnd"
+    )?.value || "";
+
+  if(
+    start &&
+    end &&
+    start > end
+  ){
+
+    alert(
+      "開始日は終了日以前にしてください"
+    );
+
+    return;
+  }
+
+  adminCalendarRangeStart = start;
+  adminCalendarRangeEnd = end;
+
+  renderAdminCalendar();
+
+};
+
+window.clearAdminCalendarRange = function(){
+
+  adminCalendarRangeStart = "";
+  adminCalendarRangeEnd = "";
+
+  renderAdminCalendar();
+
+};
+
+window.showAdminEvent = function(id){
+
+  const event =
+    adminCalendarEvents.find(
+      item => item.id === id
+    );
+
+  if(!event){
+    return;
+  }
+
+  const start =
+    event.startDate ||
+    event.date;
+
+  const end =
+    event.endDate ||
+    event.date ||
+    start;
+
+  alert(
+    event.title +
+    "\n\n" +
+    start +
+    (
+      end !== start
+        ? " 〜 " + end
+        : ""
+    ) +
+    (
+      event.description
+        ? "\n\n" +
+          event.description
+        : ""
+    )
+  );
+
+};
+
+window.deleteCalendar = async function(id){
+
+  if(
+    !confirm(
+      "この予定を削除しますか？"
+    )
+  ){
+    return;
+  }
 
   try{
 
@@ -1042,21 +1093,16 @@ async function(id){
       )
     );
 
-
-    alert(
-      "削除しました"
-    );
-
+    alert("削除しました");
 
     await loadCalendarAdmin();
-
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "削除できませんでした。\n" +
+      "削除できませんでした\n" +
       error.message
     );
 
@@ -1064,10 +1110,7 @@ async function(id){
 
 };
 
-
-/* =========================
-   連絡管理
-========================= */
+/* 連絡 */
 
 async function loadMessages(){
 
@@ -1076,128 +1119,81 @@ async function loadMessages(){
       "messageList"
     );
 
+  if(!area){
+    return;
+  }
 
-  if(!area) return;
+  try{
 
-
-  const snap =
-    await getDocs(
-      query(
-        collection(
-          db,
-          "messages"
-        ),
-        orderBy(
-          "createdAt",
-          "desc"
+    const snap =
+      await getDocs(
+        query(
+          collection(db,"messages"),
+          orderBy("createdAt","desc")
         )
-      )
-    );
+      );
 
+    if(snap.empty){
 
-  area.innerHTML = "";
+      area.innerHTML = `
+        <div class="card">
+          連絡はありません。
+        </div>
+      `;
 
+      return;
+    }
 
-  snap.forEach(
-    item => {
+    area.innerHTML = "";
+
+    snap.forEach(item=>{
 
       const data =
         item.data();
-
 
       area.innerHTML += `
 
         <div class="card">
 
           <p>
-            送信者：
-            ${esc(
-              data.senderName
-            )}
+            <strong>
+              送信者：
+            </strong>
+            ${esc(data.senderName)}
           </p>
-
 
           <p>
-            メール：
-            ${esc(
-              data.senderEmail
-            )}
+            <strong>
+              メール：
+            </strong>
+            ${esc(data.senderEmail)}
           </p>
 
-
-          <p>
-            ${esc(
-              data.body
-            )}
-          </p>
-
-
-          <p>
-            状態：
-            ${esc(
-              data.status ||
-              "unread"
-            )}
-          </p>
-
-
-          ${
-            data.status !==
-            "opened"
-
-              ?
-
-              `<button
-                onclick="openMessage('${item.id}')"
-              >
-                開封する
-               </button>`
-
-              :
-
-              "確認済み"
-
-          }
+          <div class="document-body">
+            ${esc(data.body)}
+          </div>
 
         </div>
 
       `;
 
-    }
-  );
+    });
 
-}
+  }catch(error){
 
+    console.error(error);
 
-window.openMessage =
-async function(id){
+    area.innerHTML = `
+      <div class="card error">
+        連絡を読み込めませんでした。
+      </div>
+    `;
 
-  await updateDoc(
-    doc(
-      db,
-      "messages",
-      id
-    ),
-    {
-
-      status:
-        "opened",
-
-      openedAt:
-        serverTimestamp()
-
-    }
-  );
-
-
-  await loadMessages();
+  }
 
 };
 
-
-/* =========================
-   ユーザー
-========================= */
+/* 生徒 */
 
 async function loadUsers(){
 
@@ -1206,109 +1202,89 @@ async function loadUsers(){
       "userList"
     );
 
-
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   area.innerHTML = "";
 
+  students.forEach(student=>{
 
-  students.forEach(
-    student => {
+    area.innerHTML += `
 
-      area.innerHTML += `
+      <div class="card">
 
-        <div class="card">
+        <p>
+          名前：
+          ${esc(student.name)}
+        </p>
 
-          <p>
-            名前：
-            ${esc(student.name)}
-          </p>
+        <p>
+          地方：
+          ${esc(student.block)}
+        </p>
 
-          <p>
-            ブロック：
-            ${esc(student.block)}
-          </p>
+        <p>
+          学年：
+          ${esc(student.grade)}
+        </p>
 
-          <p>
-            学年：
-            ${esc(student.grade)}
-          </p>
+      </div>
 
-        </div>
+    `;
 
-      `;
+  });
 
-    }
-  );
+}
 
+/* ダッシュボード */
 
-  const count =
+async function loadDashboard(){
+
+  const scoreSnap =
+    await getDocs(
+      collection(db,"scores")
+    );
+
+  const studentCount =
     document.getElementById(
       "studentCount"
     );
 
-
-  if(count){
-
-    count.textContent =
-      `${students.length}人`;
-
-  }
-
-}
-
-
-/* =========================
-   ダッシュボード
-========================= */
-
-async function loadDashboard(){
-
-  const snap =
-    await getDocs(
-      collection(
-        db,
-        "scores"
-      )
-    );
-
-
-  const count =
+  const scoreCount =
     document.getElementById(
       "scoreCount"
     );
 
+  if(studentCount){
 
-  if(count){
+    studentCount.textContent =
+      `${students.length}人`;
 
-    count.textContent =
-      `${snap.size}件`;
+  }
+
+  if(scoreCount){
+
+    scoreCount.textContent =
+      `${scoreSnap.size}件`;
 
   }
 
 }
 
-
-/* =========================
-   成績フォーム
-========================= */
+/* 成績フォーム */
 
 window.createScoreForm =
 async function(){
 
   const subjects =
     [
-      ...document
-        .querySelectorAll(
-          "#subjectList input:checked"
-        )
-    ]
-    .map(
-      input =>
-        input.value
+      ...document.querySelectorAll(
+        "#subjectList input:checked"
+      )
+    ].map(
+      input => input.value
     );
-
 
   if(!subjects.length){
 
@@ -1317,29 +1293,34 @@ async function(){
     );
 
     return;
-
   }
 
+  const title =
+    document.getElementById(
+      "formTitle"
+    ).value.trim();
+
+  if(!title){
+
+    alert(
+      "フォーム名を入力してください"
+    );
+
+    return;
+  }
 
   const type =
     document.getElementById(
       "formTargetType"
     ).value;
 
-
   try{
 
     await addDoc(
-      collection(
-        db,
-        "scoreForms"
-      ),
+      collection(db,"scoreForms"),
       {
 
-        title:
-          document.getElementById(
-            "formTitle"
-          ).value.trim(),
+        title,
 
         testType:
           document.getElementById(
@@ -1367,37 +1348,29 @@ async function(){
           serverTimestamp(),
 
         ...targetData(
-
           type,
-
           "formBlock",
-
           "formGrade",
-
           "formUser"
-
         )
 
       }
     );
 
-
     document.getElementById(
       "formTitle"
     ).value = "";
 
-
     alert(
       "成績フォームを作成しました"
     );
-
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "成績フォームを作成できませんでした。\n" +
+      "作成できませんでした\n" +
       error.message
     );
 
@@ -1405,10 +1378,7 @@ async function(){
 
 };
 
-
-/* =========================
-   再回答許可
-========================= */
+/* 再回答許可 */
 
 window.allowResubmit =
 async function(scoreId){
@@ -1422,7 +1392,6 @@ async function(scoreId){
         scoreId
       ),
       {
-
         resubmitAllowed:true,
 
         resubmitAllowedAt:
@@ -1430,32 +1399,27 @@ async function(scoreId){
 
         resubmitAllowedBy:
           auth.currentUser.uid
-
       }
     );
-
 
     alert(
       "再回答を許可しました"
     );
 
-
     await loadScoreSubmissionList();
-
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "再回答を許可できませんでした。\n" +
+      "再回答の許可に失敗しました\n" +
       error.message
     );
 
   }
 
 };
-
 
 window.denyResubmit =
 async function(scoreId){
@@ -1469,38 +1433,28 @@ async function(scoreId){
         scoreId
       ),
       {
-
         resubmitAllowed:false
-
       }
     );
-
 
     alert(
       "再回答を禁止しました"
     );
 
-
     await loadScoreSubmissionList();
-
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "変更できませんでした。\n" +
+      "変更できませんでした\n" +
       error.message
     );
 
   }
 
 };
-
-
-/* =========================
-   提出一覧
-========================= */
 
 async function loadScoreSubmissionList(){
 
@@ -1509,19 +1463,16 @@ async function loadScoreSubmissionList(){
       "scoreSubmissionList"
     );
 
-
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   try{
 
     const snap =
       await getDocs(
         query(
-          collection(
-            db,
-            "scores"
-          ),
+          collection(db,"scores"),
           orderBy(
             "createdAt",
             "desc"
@@ -1529,126 +1480,84 @@ async function loadScoreSubmissionList(){
         )
       );
 
+    if(snap.empty){
+
+      area.innerHTML = `
+        <p>
+          提出された成績はありません。
+        </p>
+      `;
+
+      return;
+    }
 
     area.innerHTML = "";
 
+    snap.forEach(item=>{
 
-    snap.forEach(
-      item => {
+      const data =
+        item.data();
 
-        const data =
-          item.data();
-
-
-        const allowed =
-          data.resubmitAllowed === true;
-
-
-        area.innerHTML += `
-
-          <div class="card">
-
-            <h3>
-              ${esc(
-                data.name ||
-                ""
-              )}
-            </h3>
-
-
-            <p>
-              ${esc(
-                data.testName ||
-                ""
-              )}
-            </p>
-
-
-            <p>
-              合計：
-              <strong>
-                ${esc(
-                  data.total
-                )}点
-              </strong>
-            </p>
-
-
-            <p>
-
-              状態：
-
-              ${
-                allowed
-
-                  ?
-
-                  "再回答許可中"
-
-                  :
-
-                  "提出済み・再回答不可"
-
-              }
-
-            </p>
-
-
-            <button
-              onclick="${
-                allowed
-                ? `denyResubmit('${item.id}')`
-                : `allowResubmit('${item.id}')`
-              }"
-            >
-
-              ${
-                allowed
-                ? "再回答を禁止"
-                : "再回答を許可"
-              }
-
-            </button>
-
-          </div>
-
-        `;
-
-      }
-    );
-
-
-    if(!area.innerHTML){
-
-      area.innerHTML = `
+      area.innerHTML += `
 
         <div class="card">
 
-          現在、提出された成績はありません。
+          <h3>
+            ${esc(data.name || "")}
+          </h3>
+
+          <p>
+            ${esc(data.testName || "")}
+          </p>
+
+          <p>
+            合計：
+            ${esc(data.total)}
+            点
+          </p>
+
+          <p>
+            ${
+              data.resubmitAllowed === true
+                ? "再回答を許可しています"
+                : "再回答不可"
+            }
+          </p>
+
+          ${
+            data.resubmitAllowed === true
+
+            ? `
+              <button
+                onclick="denyResubmit('${item.id}')"
+              >
+                再回答を禁止
+              </button>
+            `
+
+            : `
+              <button
+                onclick="allowResubmit('${item.id}')"
+              >
+                再回答を許可
+              </button>
+            `
+          }
 
         </div>
 
       `;
 
-    }
-
+    });
 
   }catch(error){
 
-    console.error(
-      "提出一覧:",
-      error
-    );
-
+    console.error(error);
 
     area.innerHTML = `
-
       <div class="card error">
-
-        成績提出一覧を読み込めませんでした。
-
+        成績提出状況を読み込めませんでした。
       </div>
-
     `;
 
   }
