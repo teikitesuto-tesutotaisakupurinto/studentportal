@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>カレンダー管理</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside class="sidebar admin-sidebar">
+
+<div class="logo">
+定期テスト対策ポータル<br>
+管理画面
+</div>
+
+<nav>
+<a href="../dashboard/admin.html">ダッシュボード</a>
+<a href="../information/admin.html">お知らせ管理</a>
+<a href="../messages/admin.html">連絡管理</a>
+<a href="../documents/admin.html">配布文書管理</a>
+<a href="../calendar/admin.html">カレンダー管理</a>
+<a href="../scoreForms/admin.html">成績フォーム作成</a>
+<a href="../scores/admin.html">成績分析</a>
+<a href="../users/admin.html">生徒管理</a>
+<hr>
+<button onclick="logout()">ログアウト</button>
+</nav>
+
+</aside>
+
+<main class="content">
+
+<section>
+
+<h1>カレンダー管理</h1>
+
+<div class="card">
+
+<h2>予定登録</h2>
+
+<label>予定名</label>
+<input id="calendarTitle">
+
+<label>開始日</label>
+<input id="calendarStartDate" type="date">
+
+<label>終了日</label>
+<input id="calendarEndDate" type="date">
+
+<label>内容</label>
+<textarea id="calendarDescription"></textarea>
+
+<button onclick="addCalendar()">
+登録
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>カレンダー</h2>
+
+<div id="adminCalendar">
+読み込み中...
+</div>
+
+</div>
+
+</section>
+
+</main>
+</div>
+
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/admin.js"></script>
+
+</body>
+</html>
