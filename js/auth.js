@@ -16,10 +16,9 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-
 export async function getUserRole(user){
 
-  const snap=await getDoc(
+  const snap = await getDoc(
     doc(db,"users",user.uid)
   );
 
@@ -28,49 +27,41 @@ export async function getUserRole(user){
   }
 
   return snap.data().role;
-
 }
-
 
 async function redirectUser(user){
 
-  const role=await getUserRole(user);
+  const role = await getUserRole(user);
 
-  if(role==="admin"){
-
-    location.href="admin.html";
-
-  }else if(role==="student"){
-
-    location.href="student.html";
-
-  }else{
-
-    alert("権限が設定されていません");
-
+  if(role === "admin"){
+    location.href = "dashboard/admin.html";
+    return;
   }
 
+  if(role === "student"){
+    location.href = "home/index.html";
+    return;
+  }
+
+  alert("権限が設定されていません");
 }
 
+window.login = async function(){
 
-window.login=async function(){
-
-  const email=
+  const email =
     document.getElementById("email").value.trim();
 
-  const password=
+  const password =
     document.getElementById("password").value;
 
   if(!email || !password){
-
     alert("メールアドレスとパスワードを入力してください");
     return;
-
   }
 
   try{
 
-    const result=
+    const result =
       await signInWithEmailAndPassword(
         auth,
         email,
@@ -84,20 +75,18 @@ window.login=async function(){
     console.error(error);
 
     alert(
-      "ログイン失敗\n"+
+      "ログイン失敗\n" +
       error.message
     );
 
   }
-
 };
 
-
-window.googleLogin=async function(){
+window.googleLogin = async function(){
 
   try{
 
-    const result=
+    const result =
       await signInWithPopup(
         auth,
         googleProvider
@@ -110,49 +99,41 @@ window.googleLogin=async function(){
     console.error(error);
 
     alert(
-      "Googleログイン失敗\n"+
+      "Googleログイン失敗\n" +
       error.message
     );
 
   }
-
 };
 
-
-window.logout=async function(){
+window.logout = async function(){
 
   try{
 
     await signOut(auth);
 
-    location.href="index.html";
+    location.href =
+      "../index.html";
 
   }catch(error){
 
     console.error(error);
 
     alert(
-      "ログアウト失敗\n"+
+      "ログアウト失敗\n" +
       error.message
     );
 
   }
-
 };
 
+onAuthStateChanged(auth,user=>{
 
-onAuthStateChanged(
-  auth,
-  user=>{
-
-    if(user){
-
-      console.log(
-        "ログイン中:",
-        user.email
-      );
-
-    }
-
+  if(user){
+    console.log(
+      "ログイン中:",
+      user.email
+    );
   }
-);
+
+});
