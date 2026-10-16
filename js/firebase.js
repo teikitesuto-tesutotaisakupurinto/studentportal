@@ -2,12 +2,10 @@ import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
-
 import {
   getAuth,
   GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-
 
 import {
   getFirestore
@@ -17,42 +15,34 @@ import {
 const firebaseConfig = {
 
   apiKey:
-    "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
+  "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
 
   authDomain:
-    "aitera-83486.firebaseapp.com",
+  "aitera-83486.firebaseapp.com",
 
   projectId:
-    "aitera-83486",
+  "aitera-83486",
 
   storageBucket:
-    "aitera-83486.firebasestorage.app",
+  "aitera-83486.firebasestorage.app",
 
   messagingSenderId:
-    "79405334766",
+  "79405334766",
 
   appId:
-    "1:79405334766:web:694c02a7abb407b50c73ff"
+  "1:79405334766:web:694c02a7abb407b50c73ff"
 
 };
 
 
-const app =
-  initializeApp(
-    firebaseConfig
-  );
+const app=initializeApp(firebaseConfig);
 
+const auth=getAuth(app);
 
-const auth =
-  getAuth(app);
-
-
-const googleProvider =
+const googleProvider=
   new GoogleAuthProvider();
 
-
-const db =
-  getFirestore(app);
+const db=getFirestore(app);
 
 
 export {
