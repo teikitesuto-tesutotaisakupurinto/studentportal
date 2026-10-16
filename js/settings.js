@@ -15,7 +15,6 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-
 async function loadSettings(user){
 
   const snap =
@@ -27,57 +26,51 @@ async function loadSettings(user){
       )
     );
 
-
   if(!snap.exists()){
     return;
   }
 
-
   const data =
     snap.data();
-
 
   const area =
     document.getElementById(
       "userInfo"
     );
 
+  if(area){
 
-  if(!area){
-    return;
+    area.innerHTML = `
+
+      <p>
+        名前：
+        ${data.name || ""}
+      </p>
+
+      <p>
+        メールアドレス：
+        ${user.email || ""}
+      </p>
+
+      <p>
+        地方：
+        ${data.block || ""}
+      </p>
+
+      <p>
+        学年：
+        ${data.grade || ""}
+      </p>
+
+    `;
+
   }
-
-
-  area.innerHTML = `
-
-    <p>
-      名前：
-      ${escapeHtml(data.name || "")}
-    </p>
-
-    <p>
-      メールアドレス：
-      ${escapeHtml(user.email || "")}
-    </p>
-
-    <p>
-      ブロック：
-      ${escapeHtml(data.block || "")}
-    </p>
-
-    <p>
-      学年：
-      ${escapeHtml(data.grade || "")}
-    </p>
-
-  `;
 
 }
 
-
 onAuthStateChanged(
   auth,
-  user => {
+  user=>{
 
     if(user){
       loadSettings(user);
@@ -85,7 +78,6 @@ onAuthStateChanged(
 
   }
 );
-
 
 window.changePassword =
 async function(){
@@ -95,26 +87,20 @@ async function(){
       "現在のパスワードを入力してください"
     );
 
-
   const newPassword =
     prompt(
       "新しいパスワードを入力してください"
     );
 
-
   if(
     !oldPassword ||
     !newPassword
   ){
-
     return;
-
   }
-
 
   const user =
     auth.currentUser;
-
 
   try{
 
@@ -124,23 +110,19 @@ async function(){
         oldPassword
       );
 
-
     await reauthenticateWithCredential(
       user,
       credential
     );
-
 
     await updatePassword(
       user,
       newPassword
     );
 
-
     alert(
       "パスワードを変更しました"
     );
-
 
   }catch(error){
 
@@ -154,15 +136,3 @@ async function(){
   }
 
 };
-
-
-function escapeHtml(value){
-
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
