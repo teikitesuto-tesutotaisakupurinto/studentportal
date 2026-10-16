@@ -4,42 +4,74 @@ import {
 
 import {
   collection,
-  getDocs
+  getDocs,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
-let currentDate = new Date();
+let currentDate=new Date();
 
-let events = [];
+let events=[];
+
+let filterStart="";
+let filterEnd="";
 
 
-// =====================
-// 取得
-// =====================
+function pad(value){
+
+  return String(value).padStart(2,"0");
+
+}
+
+
+function formatDate(year,month,day){
+
+  return `${year}-${pad(month+1)}-${pad(day)}`;
+
+}
+
+
+function eventOverlapsDate(event,date){
+
+  const start=event.startDate || event.date;
+  const end=event.endDate || start;
+
+  return date>=start && date<=end;
+
+}
+
 
 async function loadCalendar(){
 
-  const area =
-    document.getElementById("calendarArea");
+  const area=document.getElementById("calendarArea");
 
-  if(!area){
-    return;
-  }
+  if(!area) return;
 
   try{
 
-    const snap =
-      await getDocs(
-        collection(db, "calendar")
-      );
+    const snap=await getDocs(
+      query(
+        collection(db,"calendar"),
+        orderBy("startDate","asc")
+      )
+    );
 
-    events = [];
+    events=[];
 
-    snap.forEach(item => {
+    snap.forEach(item=>{
+
+      const data=item.data();
+
+      const start=data.startDate || data.date;
+
+      if(!start) return;
 
       events.push({
         id:item.id,
-        ...item.data()
+        ...data,
+        startDate:start,
+        endDate:data.endDate || start
       });
 
     });
@@ -50,139 +82,101 @@ async function loadCalendar(){
 
     console.error(error);
 
-    area.innerHTML = `
-      <div class="error-message">
-        カレンダーを読み込めませんでした。
-      </div>
-    `;
+    area.innerHTML=
+      "<p>カレンダーを読み込めませんでした。</p>";
 
   }
 
 }
 
 
-// =====================
-// カレンダー表示
-// =====================
-
 function renderCalendar(){
 
-  const area =
-    document.getElementById("calendarArea");
+  const area=document.getElementById("calendarArea");
 
-  if(!area){
-    return;
-  }
+  if(!area) return;
 
-  const year =
-    currentDate.getFullYear();
+  const year=currentDate.getFullYear();
+  const month=currentDate.getMonth();
 
-  const month =
-    currentDate.getMonth();
+  const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
 
-  const firstDay =
-    new Date(
-      year,
-      month,
-      1
-    );
-
-  const lastDay =
-    new Date(
-      year,
-      month + 1,
-      0
-    ).getDate();
-
-  const firstWeekday =
-    firstDay.getDay();
-
-
-  let html = `
+  let html=`
 
     <div class="calendar-header">
 
-      <button onclick="prevMonth()">
-        前月
-      </button>
+      <button onclick="prevMonth()">前月</button>
 
       <h2>
-        ${year}年${month + 1}月
+        ${year}年${month+1}月
       </h2>
 
-      <button onclick="nextMonth()">
-        次月
-      </button>
+      <button onclick="nextMonth()">次月</button>
 
     </div>
 
-    <div class="calendar-weekdays">
+    <table class="calendar">
 
-      <div>日</div>
-      <div>月</div>
-      <div>火</div>
-      <div>水</div>
-      <div>木</div>
-      <div>金</div>
-      <div>土</div>
+      <thead>
 
-    </div>
+        <tr>
+          <th>日</th>
+          <th>月</th>
+          <th>火</th>
+          <th>水</th>
+          <th>木</th>
+          <th>金</th>
+          <th>土</th>
+        </tr>
 
-    <div class="calendar-grid">
+      </thead>
+
+      <tbody>
+
   `;
 
+  let dayOfWeek=first.getDay();
 
-  // 空白
+  let day=1;
 
-  for(
-    let i = 0;
-    i < firstWeekday;
-    i++
-  ){
+  html+="<tr>";
 
-    html += `
-      <div class="calendar-cell empty">
-      </div>
-    `;
+  for(let i=0;i<dayOfWeek;i++){
+
+    html+="<td class='empty-day'></td>";
 
   }
 
+  while(day<=last.getDate()){
 
-  // 日付
+    const date=formatDate(year,month,day);
 
-  for(
-    let day = 1;
-    day <= lastDay;
-    day++
-  ){
+    if((dayOfWeek+day-1)%7===0 && day!==1){
 
-    const date =
-      `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+      html+="</tr><tr>";
 
-    const dayEvents =
-      events.filter(event =>
-        eventCoversDate(
-          event,
-          date
-        )
-      );
+    }
 
+    const dayEvents=events.filter(event=>{
 
-    const today =
-      new Date();
+      if(filterStart && event.endDate < filterStart){
+        return false;
+      }
 
-    const isToday =
-      today.getFullYear() === year &&
-      today.getMonth() === month &&
-      today.getDate() === day;
+      if(filterEnd && event.startDate > filterEnd){
+        return false;
+      }
 
+      return eventOverlapsDate(event,date);
 
-    html += `
+    });
 
-      <div
-        class="calendar-cell ${isToday ? "today" : ""}">
+    html+=`
 
-        <div class="calendar-day">
+      <td>
+
+        <div class="calendar-day-number">
           ${day}
         </div>
 
@@ -190,20 +184,19 @@ function renderCalendar(){
 
     `;
 
+    dayEvents.forEach(event=>{
 
-    dayEvents.forEach(event => {
+      html+=`
 
-      html += `
-
-        <div class="calendar-event">
+        <div class="event">
 
           <strong>
-            ${escapeHtml(event.title || "")}
+            ${escapeHtml(event.title)}
           </strong>
 
           ${
             event.description
-              ? `<small>${escapeHtml(event.description)}</small>`
+              ? `<div>${escapeHtml(event.description)}</div>`
               : ""
           }
 
@@ -213,104 +206,44 @@ function renderCalendar(){
 
     });
 
+    html+=`
 
-    html += `
         </div>
-      </div>
+
+      </td>
+
     `;
 
+    day++;
+
   }
 
+  const remaining=(7-(dayOfWeek+last.getDate())%7)%7;
 
-  html += `
-    </div>
+  for(let i=0;i<remaining;i++){
+
+    html+="<td class='empty-day'></td>";
+
+  }
+
+  html+=`
+
+      </tr>
+
+      </tbody>
+
+    </table>
+
   `;
 
-  area.innerHTML = html;
+  area.innerHTML=html;
 
 }
 
-
-// =====================
-// 期間判定
-// =====================
-
-function eventCoversDate(
-  event,
-  date
-){
-
-  // 新方式
-  if(
-    event.startDate ||
-    event.endDate
-  ){
-
-    const start =
-      event.startDate ||
-      event.endDate;
-
-    const end =
-      event.endDate ||
-      event.startDate;
-
-    return (
-      date >= start &&
-      date <= end
-    );
-
-  }
-
-
-  // 旧方式
-  if(event.date){
-
-    return event.date === date;
-
-  }
-
-  return false;
-
-}
-
-
-// =====================
-// 前月
-// =====================
-
-window.prevMonth = function(){
-
-  currentDate.setMonth(
-    currentDate.getMonth() - 1
-  );
-
-  renderCalendar();
-
-};
-
-
-// =====================
-// 次月
-// =====================
-
-window.nextMonth = function(){
-
-  currentDate.setMonth(
-    currentDate.getMonth() + 1
-  );
-
-  renderCalendar();
-
-};
-
-
-// =====================
-// HTMLエスケープ
-// =====================
 
 function escapeHtml(value){
 
-  return String(value)
+  return String(value ?? "")
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
@@ -318,6 +251,70 @@ function escapeHtml(value){
     .replaceAll("'","&#039;");
 
 }
+
+
+window.prevMonth=function(){
+
+  currentDate.setMonth(
+    currentDate.getMonth()-1
+  );
+
+  renderCalendar();
+
+};
+
+
+window.nextMonth=function(){
+
+  currentDate.setMonth(
+    currentDate.getMonth()+1
+  );
+
+  renderCalendar();
+
+};
+
+
+window.applyCalendarFilter=function(){
+
+  filterStart=
+    document.getElementById(
+      "calendarFilterStart"
+    ).value;
+
+  filterEnd=
+    document.getElementById(
+      "calendarFilterEnd"
+    ).value;
+
+  if(filterStart && filterEnd && filterStart>filterEnd){
+
+    alert("開始日は終了日以前にしてください");
+    return;
+
+  }
+
+  renderCalendar();
+
+};
+
+
+window.clearCalendarFilter=function(){
+
+  filterStart="";
+  filterEnd="";
+
+  document.getElementById(
+    "calendarFilterStart"
+  ).value="";
+
+  document.getElementById(
+    "calendarFilterEnd"
+  ).value="";
+
+  renderCalendar();
+
+};
 
 
 loadCalendar();
