@@ -1,6 +1,4 @@
-import {
-  db
-} from "./firebase.js";
+import { db } from "./firebase.js";
 
 import {
   collection,
@@ -10,734 +8,1062 @@ import {
 
 function escapeHtml(value){
 
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  return String(
+    value ?? ""
+  ).replace(
+    /[&<>\"]/g,
+    c => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;"
+    }[c])
+  );
 
 }
 
 
 function average(values){
 
-  if(!values.length) return 0;
+  if(!values.length){
 
-  return values.reduce(
-    (a,b)=>a+b,
-    0
-  ) / values.length;
+    return 0;
+
+  }
+
+
+  return (
+    values.reduce(
+      (a,b) => a + b,
+      0
+    )
+    /
+    values.length
+  );
 
 }
 
 
 function median(values){
 
-  if(!values.length) return 0;
+  if(!values.length){
 
-  const sorted=[...values].sort(
-    (a,b)=>a-b
-  );
+    return 0;
 
-  const middle=Math.floor(
-    sorted.length/2
-  );
+  }
 
-  if(sorted.length%2){
+
+  const sorted =
+    [...values]
+      .sort(
+        (a,b) => a-b
+      );
+
+
+  const middle =
+    Math.floor(
+      sorted.length / 2
+    );
+
+
+  if(
+    sorted.length % 2
+  ){
 
     return sorted[middle];
 
   }
 
+
   return (
-    sorted[middle-1]+sorted[middle]
-  )/2;
+    sorted[middle-1]
+    +
+    sorted[middle]
+  ) / 2;
 
 }
 
 
-function max(values){
+function standardDeviation(values){
 
-  return values.length
-    ? Math.max(...values)
-    : 0;
+  if(values.length < 2){
+
+    return 0;
+
+  }
+
+
+  const avg =
+    average(values);
+
+
+  const variance =
+    average(
+      values.map(
+        value =>
+          Math.pow(
+            value - avg,
+            2
+          )
+      )
+    );
+
+
+  return Math.sqrt(
+    variance
+  );
 
 }
 
 
-function min(values){
+function createStats(values){
 
-  return values.length
-    ? Math.min(...values)
-    : 0;
+  if(!values.length){
+
+    return {
+
+      count:0,
+
+      average:0,
+
+      median:0,
+
+      max:0,
+
+      min:0,
+
+      sd:0
+
+    };
+
+  }
+
+
+  return {
+
+    count:
+      values.length,
+
+    average:
+      average(values),
+
+    median:
+      median(values),
+
+    max:
+      Math.max(...values),
+
+    min:
+      Math.min(...values),
+
+    sd:
+      standardDeviation(values)
+
+  };
 
 }
 
 
-async function loadScoreAnalysis(){
+function statsRow(
+  name,
+  values
+){
 
-  const area=document.getElementById("analysisArea");
+  const s =
+    createStats(values);
+
+
+  return `
+
+    <tr>
+
+      <td>
+        ${escapeHtml(name)}
+      </td>
+
+      <td>
+        ${s.count}
+      </td>
+
+      <td>
+        ${s.average.toFixed(1)}
+      </td>
+
+      <td>
+        ${s.median.toFixed(1)}
+      </td>
+
+      <td>
+        ${s.max}
+      </td>
+
+      <td>
+        ${s.min}
+      </td>
+
+      <td>
+        ${s.sd.toFixed(1)}
+      </td>
+
+    </tr>
+
+  `;
+
+}
+
+
+export async function buildScoreAnalysis(){
+
+  const [
+    scoreSnap,
+    userSnap
+  ] =
+    await Promise.all([
+
+      getDocs(
+        collection(
+          db,
+          "scores"
+        )
+      ),
+
+      getDocs(
+        collection(
+          db,
+          "users"
+        )
+      )
+
+    ]);
+
+
+  const users = {};
+
+
+  userSnap.forEach(
+    item => {
+
+      users[item.id] =
+        item.data();
+
+    }
+  );
+
+
+  const scores = [];
+
+
+  scoreSnap.forEach(
+    item => {
+
+      const data =
+        item.data();
+
+
+      if(
+        typeof data.total ===
+        "number"
+      ){
+
+        scores.push({
+
+          id:item.id,
+
+          ...data
+
+        });
+
+      }
+
+    }
+  );
+
+
+  const totals =
+    scores.map(
+      s => Number(s.total)
+    );
+
+
+  const overall =
+    createStats(
+      totals
+    );
+
+
+  const subjects = {};
+
+  const grades = {};
+
+  const blocks = {};
+
+  const tests = {};
+
+  const students = {};
+
+
+  scores.forEach(
+    score => {
+
+      const user =
+        users[score.uid]
+        || {};
+
+
+      Object.entries(
+        score.subjects || {}
+      )
+      .forEach(
+        ([subject,value]) => {
+
+          const number =
+            Number(value);
+
+
+          if(
+            !Number.isFinite(
+              number
+            )
+          ){
+
+            return;
+
+          }
+
+
+          if(
+            !subjects[subject]
+          ){
+
+            subjects[subject] =
+              [];
+
+          }
+
+
+          subjects[subject]
+            .push(number);
+
+        }
+      );
+
+
+      const grade =
+        user.grade ||
+        "未設定";
+
+
+      const block =
+        user.block ||
+        "未設定";
+
+
+      const test =
+        score.testName ||
+        score.formId ||
+        "未設定";
+
+
+      if(!grades[grade]){
+
+        grades[grade] = [];
+
+      }
+
+
+      if(!blocks[block]){
+
+        blocks[block] = [];
+
+      }
+
+
+      if(!tests[test]){
+
+        tests[test] = [];
+
+      }
+
+
+      grades[grade]
+        .push(score.total);
+
+
+      blocks[block]
+        .push(score.total);
+
+
+      tests[test]
+        .push(score.total);
+
+
+      const studentKey =
+        score.uid ||
+        score.name ||
+        score.id;
+
+
+      if(
+        !students[studentKey]
+      ){
+
+        students[studentKey] = {
+
+          name:
+            score.name ||
+            user.name ||
+            "未設定",
+
+          scores:[]
+
+        };
+
+      }
+
+
+      students[studentKey]
+        .scores
+        .push(score.total);
+
+    }
+  );
+
+
+  const subjectRows =
+    Object.entries(
+      subjects
+    )
+    .sort(
+      (a,b) =>
+        average(b[1])
+        -
+        average(a[1])
+    )
+    .map(
+      ([name,values]) =>
+        statsRow(
+          name,
+          values
+        )
+    )
+    .join("");
+
+
+  const gradeRows =
+    Object.entries(
+      grades
+    )
+    .map(
+      ([name,values]) =>
+        statsRow(
+          name,
+          values
+        )
+    )
+    .join("");
+
+
+  const blockRows =
+    Object.entries(
+      blocks
+    )
+    .map(
+      ([name,values]) =>
+        statsRow(
+          name,
+          values
+        )
+    )
+    .join("");
+
+
+  const testRows =
+    Object.entries(
+      tests
+    )
+    .map(
+      ([name,values]) =>
+        statsRow(
+          name,
+          values
+        )
+    )
+    .join("");
+
+
+  const studentRows =
+    Object.values(
+      students
+    )
+    .sort(
+      (a,b) =>
+        average(b.scores)
+        -
+        average(a.scores)
+    )
+    .map(
+      student => {
+
+        const s =
+          createStats(
+            student.scores
+          );
+
+
+        return `
+
+          <tr>
+
+            <td>
+              ${escapeHtml(
+                student.name
+              )}
+            </td>
+
+            <td>
+              ${s.count}
+            </td>
+
+            <td>
+              ${s.average.toFixed(1)}
+            </td>
+
+            <td>
+              ${s.median.toFixed(1)}
+            </td>
+
+            <td>
+              ${s.max}
+            </td>
+
+            <td>
+              ${s.min}
+            </td>
+
+            <td>
+              ${s.sd.toFixed(1)}
+            </td>
+
+          </tr>
+
+        `;
+
+      }
+    )
+    .join("");
+
+
+  /*
+   * 得点分布
+   */
+
+  const distribution =
+    Array(11).fill(0);
+
+
+  totals.forEach(
+    total => {
+
+      const index =
+        Math.max(
+          0,
+          Math.min(
+            10,
+            Math.floor(
+              total / 10
+            )
+          )
+        );
+
+
+      distribution[index]++;
+
+    }
+  );
+
+
+  const distributionHtml =
+    distribution
+      .map(
+        (count,index) => `
+
+          <div
+            class="distribution-item"
+          >
+
+            <span>
+
+              ${
+                index === 10
+
+                  ?
+
+                  "100"
+
+                  :
+
+                  `${index*10}〜${index*10+9}`
+
+              }
+
+            </span>
+
+
+            <strong>
+              ${count}
+            </strong>
+
+            <small>
+              件
+            </small>
+
+          </div>
+
+        `
+      )
+      .join("");
+
+
+  return `
+
+    <div class="analysis-grid">
+
+
+      <div class="card">
+
+        <h3>
+          提出件数
+        </h3>
+
+        <div class="analysis-number">
+          ${overall.count}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          提出者数
+        </h3>
+
+        <div class="analysis-number">
+          ${
+            new Set(
+              scores.map(
+                s => s.uid
+              )
+            ).size
+          }
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          全体平均
+        </h3>
+
+        <div class="analysis-number">
+          ${overall.average.toFixed(1)}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          中央値
+        </h3>
+
+        <div class="analysis-number">
+          ${overall.median.toFixed(1)}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          最高点
+        </h3>
+
+        <div class="analysis-number">
+          ${overall.max}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          最低点
+        </h3>
+
+        <div class="analysis-number">
+          ${overall.min}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>
+          標準偏差
+        </h3>
+
+        <div class="analysis-number">
+          ${overall.sd.toFixed(1)}
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        教科別詳細分析
+      </h2>
+
+
+      <div class="table-wrap">
+
+        <table class="data-table">
+
+          <thead>
+
+            <tr>
+
+              <th>教科</th>
+
+              <th>提出数</th>
+
+              <th>平均</th>
+
+              <th>中央値</th>
+
+              <th>最高</th>
+
+              <th>最低</th>
+
+              <th>標準偏差</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            ${
+              subjectRows
+              ||
+
+              `<tr>
+                <td colspan="7">
+                  データなし
+                </td>
+               </tr>`
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <div class="analysis-grid">
+
+
+      <div class="card">
+
+        <h2>
+          学年別
+        </h2>
+
+
+        <div class="table-wrap">
+
+          <table class="data-table">
+
+            <thead>
+
+              <tr>
+
+                <th>学年</th>
+                <th>提出数</th>
+                <th>平均</th>
+                <th>中央値</th>
+                <th>最高</th>
+                <th>最低</th>
+                <th>標準偏差</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              ${
+                gradeRows
+                ||
+
+                `<tr>
+                  <td colspan="7">
+                    データなし
+                  </td>
+                 </tr>`
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>
+          ブロック別
+        </h2>
+
+
+        <div class="table-wrap">
+
+          <table class="data-table">
+
+            <thead>
+
+              <tr>
+
+                <th>ブロック</th>
+                <th>提出数</th>
+                <th>平均</th>
+                <th>中央値</th>
+                <th>最高</th>
+                <th>最低</th>
+                <th>標準偏差</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              ${
+                blockRows
+                ||
+
+                `<tr>
+                  <td colspan="7">
+                    データなし
+                  </td>
+                 </tr>`
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        テスト別分析
+      </h2>
+
+
+      <div class="table-wrap">
+
+        <table class="data-table">
+
+          <thead>
+
+            <tr>
+
+              <th>テスト</th>
+              <th>提出数</th>
+              <th>平均</th>
+              <th>中央値</th>
+              <th>最高</th>
+              <th>最低</th>
+              <th>標準偏差</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            ${
+              testRows
+              ||
+
+              `<tr>
+                <td colspan="7">
+                  データなし
+                </td>
+               </tr>`
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        生徒別詳細
+      </h2>
+
+
+      <div class="table-wrap">
+
+        <table class="data-table">
+
+          <thead>
+
+            <tr>
+
+              <th>生徒</th>
+              <th>提出数</th>
+              <th>平均</th>
+              <th>中央値</th>
+              <th>最高</th>
+              <th>最低</th>
+              <th>標準偏差</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            ${
+              studentRows
+              ||
+
+              `<tr>
+                <td colspan="7">
+                  データなし
+                </td>
+               </tr>`
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        総得点の分布
+      </h2>
+
+
+      <div class="distribution">
+
+        ${distributionHtml}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+window.loadScoreAnalysis =
+async function(){
+
+  const area =
+    document.getElementById(
+      "analysisArea"
+    );
+
 
   if(!area) return;
 
 
-  const scoreSnap=await getDocs(
-    collection(db,"scores")
-  );
+  area.innerHTML = `
 
-  const userSnap=await getDocs(
-    collection(db,"users")
-  );
+    <div class="card">
 
+      成績分析を読み込んでいます。
 
-  const users={};
+    </div>
 
-  userSnap.forEach(item=>{
+  `;
 
-    users[item.id]=item.data();
 
-  });
+  try{
 
+    area.innerHTML =
+      await buildScoreAnalysis();
 
-  const allScores=[];
 
-  const subjects={};
+  }catch(error){
 
-  const grades={};
+    console.error(
+      "成績分析エラー:",
+      error
+    );
 
-  const blocks={};
 
-  const tests={};
+    area.innerHTML = `
 
-  const students={};
+      <div class="card error">
 
+        成績分析を読み込めませんでした。
 
-  scoreSnap.forEach(item=>{
+        <br><br>
 
-    const data=item.data();
-
-    if(typeof data.total!=="number"){
-      return;
-    }
-
-    const user=users[data.uid] || {};
-
-    const record={
-
-      id:item.id,
-
-      ...data,
-
-      user
-
-    };
-
-    allScores.push(record);
-
-
-    // 教科別
-
-    Object.entries(data.subjects || {})
-      .forEach(([subject,score])=>{
-
-        if(!subjects[subject]){
-
-          subjects[subject]=[];
-
-        }
-
-        if(typeof score==="number"){
-
-          subjects[subject].push(score);
-
-        }
-
-      });
-
-
-    // 学年別
-
-    const grade=user.grade || "未設定";
-
-    if(!grades[grade]){
-
-      grades[grade]=[];
-
-    }
-
-    grades[grade].push(data.total);
-
-
-    // ブロック別
-
-    const block=user.block || "未設定";
-
-    if(!blocks[block]){
-
-      blocks[block]=[];
-
-    }
-
-    blocks[block].push(data.total);
-
-
-    // テスト別
-
-    const test=data.testName || "テスト名未設定";
-
-    if(!tests[test]){
-
-      tests[test]=[];
-
-    }
-
-    tests[test].push(data.total);
-
-
-    // 生徒別
-
-    const uid=data.uid || item.id;
-
-    if(!students[uid]){
-
-      students[uid]={
-
-        name:user.name || data.name || "名前未設定",
-
-        scores:[]
-
-      };
-
-    }
-
-    students[uid].scores.push(data.total);
-
-  });
-
-
-  const totals=allScores.map(
-    item=>item.total
-  );
-
-
-  const overallAverage=average(totals);
-
-  const overallMedian=median(totals);
-
-  const overallMax=max(totals);
-
-  const overallMin=min(totals);
-
-
-  let html="";
-
-
-  html+=`
-
-    <div class="stats-grid">
-
-      <div class="card">
-
-        <h3>提出件数</h3>
-
-        <strong>
-          ${allScores.length}件
-        </strong>
+        ${escapeHtml(
+          error.message
+        )}
 
       </div>
 
+    `;
 
-      <div class="card">
+  }
 
-        <h3>平均点</h3>
-
-        <strong>
-          ${overallAverage.toFixed(1)}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>中央値</h3>
-
-        <strong>
-          ${overallMedian.toFixed(1)}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>最高点</h3>
-
-        <strong>
-          ${overallMax}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>最低点</h3>
-
-        <strong>
-          ${overallMin}点
-        </strong>
-
-      </div>
-
-    </div>
-
-  `;
-
-
-  // 教科別
-
-  html+=`
-
-    <div class="card">
-
-      <h2>教科別詳細分析</h2>
-
-      <table class="analysis-table">
-
-        <thead>
-
-          <tr>
-
-            <th>教科</th>
-            <th>平均</th>
-            <th>中央値</th>
-            <th>最高</th>
-            <th>最低</th>
-            <th>提出数</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  Object.entries(subjects).forEach(
-    ([subject,values])=>{
-
-      html+=`
-
-        <tr>
-
-          <td>
-            ${escapeHtml(subject)}
-          </td>
-
-          <td>
-            ${average(values).toFixed(1)}
-          </td>
-
-          <td>
-            ${median(values).toFixed(1)}
-          </td>
-
-          <td>
-            ${max(values)}
-          </td>
-
-          <td>
-            ${min(values)}
-          </td>
-
-          <td>
-            ${values.length}
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-  );
-
-
-  html+=`
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  // 学年別
-
-  html+=`
-
-    <div class="card">
-
-      <h2>学年別分析</h2>
-
-      <table class="analysis-table">
-
-        <thead>
-
-          <tr>
-            <th>学年</th>
-            <th>平均</th>
-            <th>中央値</th>
-            <th>最高</th>
-            <th>最低</th>
-            <th>件数</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  Object.entries(grades).forEach(
-    ([grade,values])=>{
-
-      html+=`
-
-        <tr>
-
-          <td>${escapeHtml(grade)}</td>
-          <td>${average(values).toFixed(1)}</td>
-          <td>${median(values).toFixed(1)}</td>
-          <td>${max(values)}</td>
-          <td>${min(values)}</td>
-          <td>${values.length}</td>
-
-        </tr>
-
-      `;
-
-    }
-  );
-
-
-  html+=`
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  // ブロック別
-
-  html+=`
-
-    <div class="card">
-
-      <h2>ブロック別分析</h2>
-
-      <table class="analysis-table">
-
-        <thead>
-
-          <tr>
-            <th>ブロック</th>
-            <th>平均</th>
-            <th>中央値</th>
-            <th>最高</th>
-            <th>最低</th>
-            <th>件数</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  Object.entries(blocks).forEach(
-    ([block,values])=>{
-
-      html+=`
-
-        <tr>
-
-          <td>${escapeHtml(block)}</td>
-          <td>${average(values).toFixed(1)}</td>
-          <td>${median(values).toFixed(1)}</td>
-          <td>${max(values)}</td>
-          <td>${min(values)}</td>
-          <td>${values.length}</td>
-
-        </tr>
-
-      `;
-
-    }
-  );
-
-
-  html+=`
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  // テスト別
-
-  html+=`
-
-    <div class="card">
-
-      <h2>テスト別分析</h2>
-
-      <table class="analysis-table">
-
-        <thead>
-
-          <tr>
-
-            <th>テスト</th>
-            <th>平均</th>
-            <th>中央値</th>
-            <th>最高</th>
-            <th>最低</th>
-            <th>提出数</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  Object.entries(tests).forEach(
-    ([test,values])=>{
-
-      html+=`
-
-        <tr>
-
-          <td>${escapeHtml(test)}</td>
-          <td>${average(values).toFixed(1)}</td>
-          <td>${median(values).toFixed(1)}</td>
-          <td>${max(values)}</td>
-          <td>${min(values)}</td>
-          <td>${values.length}</td>
-
-        </tr>
-
-      `;
-
-    }
-  );
-
-
-  html+=`
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  // 得点分布
-
-  const distribution={
-
-    "0～19":0,
-    "20～39":0,
-    "40～59":0,
-    "60～79":0,
-    "80～99":0,
-    "100以上":0
-
-  };
-
-
-  totals.forEach(score=>{
-
-    if(score<20){
-
-      distribution["0～19"]++;
-
-    }else if(score<40){
-
-      distribution["20～39"]++;
-
-    }else if(score<60){
-
-      distribution["40～59"]++;
-
-    }else if(score<80){
-
-      distribution["60～79"]++;
-
-    }else if(score<100){
-
-      distribution["80～99"]++;
-
-    }else{
-
-      distribution["100以上"]++;
-
-    }
-
-  });
-
-
-  html+=`
-
-    <div class="card">
-
-      <h2>得点分布</h2>
-
-      <table class="analysis-table">
-
-        <thead>
-
-          <tr>
-            <th>得点帯</th>
-            <th>人数</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  Object.entries(distribution).forEach(
-    ([range,count])=>{
-
-      html+=`
-
-        <tr>
-
-          <td>${range}</td>
-          <td>${count}人</td>
-
-        </tr>
-
-      `;
-
-    }
-  );
-
-
-  html+=`
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  // 生徒別
-
-  html+=`
-
-    <div class="card">
-
-      <h2>生徒別成績</h2>
-
-      <table class="analysis-table">
-
-        <thead>
-
-          <tr>
-
-            <th>生徒</th>
-            <th>提出数</th>
-            <th>平均</th>
-            <th>最高</th>
-            <th>最低</th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-  `;
-
-
-  Object.values(students)
-    .sort(
-      (a,b)=>
-        average(b.scores)-average(a.scores)
-    )
-    .forEach(student=>{
-
-      html+=`
-
-        <tr>
-
-          <td>
-            ${escapeHtml(student.name)}
-          </td>
-
-          <td>
-            ${student.scores.length}
-          </td>
-
-          <td>
-            ${average(student.scores).toFixed(1)}
-          </td>
-
-          <td>
-            ${max(student.scores)}
-          </td>
-
-          <td>
-            ${min(student.scores)}
-          </td>
-
-        </tr>
-
-      `;
-
-    });
-
-
-  html+=`
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  `;
-
-
-  area.innerHTML=html;
-
-}
-
-
-loadScoreAnalysis();
+};
