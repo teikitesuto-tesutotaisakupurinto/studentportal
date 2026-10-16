@@ -2,12 +2,11 @@
 <html lang="ja">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-テスト成績入力
-</title>
+<title>テスト成績入力</title>
 
 <link rel="stylesheet" href="css/style.css">
 
@@ -23,15 +22,10 @@
 定期テスト対策ポータル
 </div>
 
-<nav>
-
-<button onclick="history.back()">
-戻る
-</button>
-
-</nav>
+<button onclick="history.back()">戻る</button>
 
 </aside>
+
 
 <main class="content">
 
@@ -41,20 +35,16 @@
 読み込み中...
 </h1>
 
-<div id="submissionStatus">
-</div>
+<div id="submissionStatus"></div>
 
-<div id="subjectArea">
-</div>
+<div id="subjectArea"></div>
 
-<div class="card">
+<div id="answerView"></div>
 
-<button
-id="submitButton"
-onclick="submitScore()">
+<div id="submitArea" class="card">
 
-提出
-
+<button onclick="submitScore()">
+提出する
 </button>
 
 </div>
