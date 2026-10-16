@@ -1,925 +1,406 @@
 * {
-  box-sizing:border-box;
+  box-sizing: border-box;
 }
 
 html,
 body {
-
   width:100%;
   min-height:100%;
   margin:0;
   padding:0;
-
-  font-family:
-    "Noto Sans JP",
-    sans-serif;
-
+  font-family:"Noto Sans JP",sans-serif;
   background:#f5f6f8;
   color:#333;
-
 }
 
-
-/* =====================
-   ログイン
-===================== */
+button {
+  cursor:pointer;
+}
 
 .login-container {
-
   width:100vw;
   min-height:100vh;
-
   display:flex;
-
   justify-content:center;
   align-items:center;
-
 }
-
 
 .login-box {
-
   width:480px;
-
   padding:55px;
-
   background:white;
-
   border-radius:18px;
-
-  box-shadow:
-    0 10px 40px rgba(0,0,0,.15);
-
+  box-shadow:0 10px 40px rgba(0,0,0,.15);
 }
-
 
 .login-box h1 {
-
   text-align:center;
   font-size:30px;
-
 }
-
 
 .login-box p {
-
   text-align:center;
   color:#666;
-
 }
-
 
 .login-box input {
-
   width:100%;
   height:50px;
-
   padding:12px;
-
   border:1px solid #ddd;
   border-radius:8px;
-
   margin-bottom:15px;
-
 }
-
 
 .login-box button {
-
   width:100%;
   height:50px;
-
   border:none;
   border-radius:8px;
-
-  cursor:pointer;
-
 }
 
-
-.login-box button:not(.google-btn){
-
+.login-box button:not(.google-btn) {
   background:#2563eb;
   color:white;
-
 }
-
 
 .google-btn {
-
   display:flex;
-
   justify-content:center;
   align-items:center;
-
   gap:12px;
-
   background:white;
-
   border:1px solid #ddd !important;
-
   color:#333;
-
 }
-
 
 .google-btn img {
-
   width:22px;
-
 }
-
 
 .separator {
-
   display:flex;
-
   align-items:center;
-
   gap:15px;
-
   margin:25px 0;
-
   color:#777;
-
 }
-
 
 .separator::before,
 .separator::after {
-
   content:"";
-
   flex:1;
-
   height:1px;
-
   background:#ddd;
-
 }
-
-
-/* =====================
-   レイアウト
-===================== */
 
 .layout {
-
   display:flex;
   min-height:100vh;
-
 }
-
 
 .sidebar {
-
   position:fixed;
-
   left:0;
   top:0;
-
   width:250px;
   height:100vh;
-
   background:white;
-
   border-right:1px solid #ddd;
-
   padding:20px;
-
+  overflow-y:auto;
 }
-
 
 .logo {
-
   font-size:18px;
-
   font-weight:bold;
-
   margin-bottom:30px;
-
 }
-
 
 .sidebar nav {
-
   display:flex;
-
   flex-direction:column;
-
   gap:8px;
-
 }
-
 
 .sidebar button {
-
   width:100%;
-
   padding:12px;
-
   background:white;
-
   color:#333;
-
   border:none;
-
   border-radius:8px;
-
   text-align:left;
-
-  cursor:pointer;
-
 }
-
 
 .sidebar button:hover {
-
   background:#eef2ff;
-
 }
-
 
 .content {
-
   margin-left:250px;
-
   width:calc(100% - 250px);
-
   padding:30px;
-
 }
-
 
 .content section {
-
   background:white;
-
   padding:25px;
-
   border-radius:12px;
-
 }
-
-
-/* =====================
-   カード
-===================== */
 
 .card {
-
   background:white;
-
   border-radius:12px;
-
   padding:20px;
-
   margin-bottom:20px;
-
-  box-shadow:
-    0 2px 8px rgba(0,0,0,.05);
-
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
-
 
 .notice-card {
-
   border:1px solid #ddd;
-
   border-radius:10px;
-
   padding:15px;
-
   margin-bottom:15px;
-
 }
-
 
 .notice-card a {
-
   color:#2563eb;
   text-decoration:none;
-
 }
-
 
 .important {
-
   display:inline-block;
-
   background:#dc2626;
-
   color:white;
-
   padding:4px 10px;
-
   border-radius:20px;
-
   font-size:12px;
-
   margin-bottom:8px;
-
 }
-
-
-/* =====================
-   フォーム
-===================== */
 
 input,
 textarea,
 select {
-
   width:100%;
-
   padding:12px;
-
   border:1px solid #ddd;
-
   border-radius:8px;
-
   margin-bottom:15px;
-
+  background:white;
 }
-
 
 textarea {
-
   min-height:120px;
-
+  resize:vertical;
 }
-
 
 button {
-
   background:#2563eb;
-
   color:white;
-
   padding:12px 18px;
-
   border:none;
-
   border-radius:8px;
-
-  cursor:pointer;
-
 }
 
-
-button:disabled {
-
-  background:#aaa;
-
-  cursor:not-allowed;
-
+button:hover {
+  opacity:.9;
 }
 
-
-.secondary-button {
-
-  background:#64748b;
-
+.calendar-filter {
+  display:grid;
+  grid-template-columns:1fr 1fr auto auto;
+  gap:12px;
+  align-items:end;
+  margin-bottom:25px;
+  padding:15px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
 }
-
-
-/* =====================
-   カレンダー
-===================== */
 
 .calendar-header {
-
-  display:grid;
-
-  grid-template-columns:
-    100px
-    1fr
-    100px;
-
+  display:flex;
+  justify-content:space-between;
   align-items:center;
-
-  gap:10px;
-
   margin-bottom:15px;
-
 }
-
 
 .calendar-header h2 {
-
-  text-align:center;
   margin:0;
-
 }
 
-
-.calendar-header button {
-
+.calendar {
   width:100%;
-
-}
-
-
-.calendar-weekdays {
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(7, 1fr);
-
-  border-left:1px solid #ddd;
-
-  border-top:1px solid #ddd;
-
-}
-
-
-.calendar-weekdays div {
-
-  padding:10px;
-
-  text-align:center;
-
-  font-weight:bold;
-
-  background:#f1f5f9;
-
-  border-right:1px solid #ddd;
-
-  border-bottom:1px solid #ddd;
-
-}
-
-
-.calendar-grid {
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(7, 1fr);
-
-  border-left:1px solid #ddd;
-
-}
-
-
-.calendar-cell {
-
-  min-height:130px;
-
-  padding:8px;
-
-  border-right:1px solid #ddd;
-
-  border-bottom:1px solid #ddd;
-
+  border-collapse:collapse;
+  table-layout:fixed;
   background:white;
-
 }
 
+.calendar th {
+  background:#f1f5f9;
+  border:1px solid #cbd5e1;
+  height:42px;
+  text-align:center;
+}
 
-.calendar-cell.empty {
+.calendar td {
+  border:1px solid #cbd5e1;
+  height:120px;
+  padding:6px;
+  vertical-align:top;
+  background:white;
+}
 
+.calendar td.empty-day {
   background:#f8fafc;
-
 }
 
-
-.calendar-cell.today {
-
-  background:#eff6ff;
-
-}
-
-
-.calendar-day {
-
+.calendar-day-number {
   font-weight:bold;
-
-  margin-bottom:8px;
-
+  margin-bottom:6px;
 }
-
 
 .calendar-events {
-
   display:flex;
-
   flex-direction:column;
-
-  gap:5px;
-
+  gap:4px;
 }
 
-
-.calendar-event {
-
-  padding:6px;
-
+.event {
   background:#2563eb;
-
   color:white;
-
+  padding:5px;
   border-radius:5px;
-
   font-size:12px;
-
+  line-height:1.4;
+  overflow-wrap:anywhere;
 }
 
-
-.calendar-event strong {
-
+.event strong {
   display:block;
-
 }
 
-
-.calendar-event small {
-
-  display:block;
-
-  margin-top:3px;
-
+.document-open-button {
+  display:inline-block;
+  padding:10px 15px;
+  background:#2563eb;
+  color:white;
+  text-decoration:none;
+  border-radius:7px;
 }
-
-
-/* =====================
-   分析
-===================== */
-
-.stats-grid {
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(4,1fr);
-
-  gap:15px;
-
-}
-
-
-.stat-card {
-
-  text-align:center;
-
-}
-
-
-.stat-card h3 {
-
-  color:#666;
-
-}
-
-
-.stat-card > div {
-
-  font-size:28px;
-
-  font-weight:bold;
-
-}
-
-
-.analysis-grid {
-
-  display:grid;
-
-  grid-template-columns:
-    repeat(3,1fr);
-
-  gap:15px;
-
-}
-
-
-.analysis-grid > div {
-
-  padding:15px;
-
-  background:#f8fafc;
-
-  border-radius:8px;
-
-}
-
-
-.analysis-grid span {
-
-  display:block;
-
-  color:#666;
-
-  font-size:13px;
-
-}
-
-
-.analysis-grid strong {
-
-  display:block;
-
-  font-size:22px;
-
-  margin-top:5px;
-
-}
-
-
-.analysis-subcard {
-
-  padding:15px;
-
-  border:1px solid #ddd;
-
-  border-radius:10px;
-
-  margin-bottom:15px;
-
-}
-
-
-.analysis-table {
-
-  overflow-x:auto;
-
-}
-
-
-.analysis-table table {
-
-  width:100%;
-
-  border-collapse:collapse;
-
-}
-
-
-.analysis-table th,
-.analysis-table td {
-
-  border:1px solid #ddd;
-
-  padding:10px;
-
-  text-align:center;
-
-}
-
-
-.analysis-table th {
-
-  background:#f1f5f9;
-
-}
-
-
-/* =====================
-   成績提出
-===================== */
-
-.submission-complete {
-
-  padding:20px;
-
-  margin-bottom:20px;
-
-  border:1px solid #86efac;
-
-  background:#f0fdf4;
-
-  border-radius:10px;
-
-}
-
-
-.submission-complete h3 {
-
-  margin-top:0;
-
-}
-
-
-.submission-info {
-
-  padding:20px;
-
-  margin-bottom:20px;
-
-  border:1px solid #ddd;
-
-  border-radius:10px;
-
-}
-
-
-.success-text {
-
-  color:#15803d;
-
-  font-weight:bold;
-
-}
-
-
-.muted {
-
-  color:#777;
-
-  font-size:13px;
-
-}
-
-
-.empty-message {
-
-  padding:30px;
-
-  text-align:center;
-
-  color:#777;
-
-}
-
-
-.error-message {
-
-  padding:20px;
-
-  background:#fef2f2;
-
-  color:#b91c1c;
-
-  border-radius:8px;
-
-}
-
-
-/* =====================
-   文書
-===================== */
 
 .detail-box {
-
   background:white;
-
   padding:30px;
-
   border-radius:12px;
-
 }
 
-
-.document-tag {
-
-  display:inline-block;
-
-  padding:5px 10px;
-
-  background:#e2e8f0;
-
-  border-radius:5px;
-
-  font-size:13px;
-
-  margin-bottom:15px;
-
+.notice-detail-body,
+.document-detail-body {
+  line-height:1.9;
+  margin-top:25px;
 }
 
-
-.document-body {
-
-  white-space:pre-wrap;
-
-  line-height:1.8;
-
-  margin:25px 0;
-
+.submission-complete {
+  padding:20px;
+  margin-bottom:20px;
+  background:#f0fdf4;
+  border:1px solid #86efac;
+  border-radius:10px;
 }
 
+.submission-complete strong {
+  font-size:20px;
+}
 
-/* =====================
-   ページング
-===================== */
+.resubmit-message {
+  color:#2563eb;
+  font-weight:bold;
+}
+
+.score-table,
+.analysis-table {
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+.score-table th,
+.score-table td,
+.analysis-table th,
+.analysis-table td {
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:left;
+}
+
+.score-table th,
+.analysis-table th {
+  background:#f8fafc;
+}
+
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+}
+
+.stats-grid .card {
+  margin-bottom:0;
+}
+
+.stats-grid strong {
+  font-size:24px;
+}
 
 #documentPagination {
-
   display:flex;
-
   gap:8px;
-
 }
 
-
-/* =====================
-   スマホ
-===================== */
-
-@media(max-width:900px){
-
-  .stats-grid {
-
-    grid-template-columns:
-      repeat(2,1fr);
-
-  }
-
-  .analysis-grid {
-
-    grid-template-columns:
-      repeat(2,1fr);
-
-  }
-
+hr {
+  border:0;
+  border-top:1px solid #ddd;
+  margin:20px 0;
 }
-
 
 @media(max-width:768px){
 
   .layout {
-
     display:block;
-
   }
-
 
   .sidebar {
-
     position:relative;
-
     width:100%;
-
     height:auto;
-
   }
-
 
   .content {
-
     margin-left:0;
-
     width:100%;
-
     padding:15px;
-
   }
-
 
   .login-box {
-
     width:90%;
-
-    padding:35px;
-
   }
 
-
-  .calendar-cell {
-
-    min-height:100px;
-
-    padding:5px;
-
+  .calendar-filter {
+    grid-template-columns:1fr;
   }
 
-
-  .calendar-event {
-
-    font-size:10px;
-
-    padding:4px;
-
+  .calendar {
+    min-width:700px;
   }
 
-
-  .calendar-header {
-
-    grid-template-columns:
-      70px
-      1fr
-      70px;
-
+  #calendarArea {
+    overflow-x:auto;
   }
 
-}
-
-
-@media(max-width:600px){
-
-  .stats-grid,
-  .analysis-grid {
-
-    grid-template-columns:
-      1fr;
-
-  }
-
-
-  .calendar-cell {
-
-    min-height:80px;
-
+  .calendar td {
+    height:100px;
   }
 
 }
