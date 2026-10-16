@@ -2,106 +2,177 @@ import {
   db
 } from "./firebase.js";
 
+
 import {
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
-const params=new URLSearchParams(location.search);
-
-const documentId=params.get("id");
-
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
+const id =
+  new URLSearchParams(
+    location.search
+  ).get("id");
 
 
-async function loadDocument(){
-
-  const area=document.getElementById("documentDetail");
-
-  if(!documentId){
-
-    area.innerHTML="<p>文書が見つかりません。</p>";
-    return;
-
-  }
-
-  try{
-
-    const snap=await getDoc(
-      doc(db,"documents",documentId)
+const esc =
+  value =>
+    String(
+      value ?? ""
+    ).replace(
+      /[&<>\"]/g,
+      c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;"
+      }[c])
     );
 
-    if(!snap.exists()){
 
-      area.innerHTML="<p>文書が存在しません。</p>";
-      return;
+async function load(){
 
-    }
+  const area =
+    document.getElementById(
+      "documentDetail"
+    );
 
-    const data=snap.data();
 
-    area.innerHTML=`
+  if(!id){
 
-      <div class="detail-box">
+    area.innerHTML = `
 
-        <h1>
-          ${escapeHtml(data.title)}
-        </h1>
+      <div class="card">
 
-        <div class="document-detail-body">
-
-          ${escapeHtml(data.body || "")
-            .replaceAll("\n","<br>")}
-
-        </div>
-
-        <hr>
-
-        <p>
-          公開期間：
-          ${escapeHtml(data.startDate || "指定なし")}
-          ～
-          ${escapeHtml(data.endDate || "指定なし")}
-        </p>
-
-        <p>
-
-          <a
-            href="${escapeHtml(data.url || "#")}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="document-open-button"
-          >
-            配布文書を開く
-          </a>
-
-        </p>
+        文書が見つかりません。
 
       </div>
 
     `;
 
+    return;
+
+  }
+
+
+  try{
+
+    const snap =
+      await getDoc(
+        doc(
+          db,
+          "documents",
+          id
+        )
+      );
+
+
+    if(!snap.exists()){
+
+      area.innerHTML = `
+
+        <div class="card">
+
+          文書が存在しません。
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    const data =
+      snap.data();
+
+
+    area.innerHTML = `
+
+      <div class="card">
+
+        <h1>
+          ${esc(data.title)}
+        </h1>
+
+
+        <div class="document-body">
+
+          ${esc(
+            data.body
+          ).replace(
+            /\n/g,
+            "<br>"
+          )}
+
+        </div>
+
+
+        <p class="document-period">
+
+          公開期間：
+
+          ${esc(
+            data.startDate || ""
+          )}
+
+          ${
+            data.endDate
+
+              ?
+
+              "〜 " +
+              esc(data.endDate)
+
+              :
+
+              ""
+
+          }
+
+        </p>
+
+
+        <!--
+          文書本体は別タブで開く
+          文書詳細ページ自体は別タブにしない
+        -->
+
+        <a
+          class="button-link"
+          href="${esc(data.url || "#")}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+
+          配布文書を開く
+
+        </a>
+
+      </div>
+
+    `;
+
+
   }catch(error){
 
     console.error(error);
 
-    area.innerHTML=
-      "<p>文書を読み込めませんでした。</p>";
+
+    area.innerHTML = `
+
+      <div class="card error">
+
+        文書を読み込めませんでした。
+
+      </div>
+
+    `;
 
   }
 
 }
 
 
-loadDocument();
+load();
