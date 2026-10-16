@@ -2,127 +2,181 @@ import {
   db
 } from "./firebase.js";
 
+
 import {
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
-const params=new URLSearchParams(location.search);
-
-const noticeId=params.get("id");
-
-
-function escapeHtml(value){
-
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
+const id =
+  new URLSearchParams(
+    location.search
+  ).get("id");
 
 
-async function loadNotice(){
+const esc =
+  value =>
+    String(
+      value ?? ""
+    ).replace(
+      /[&<>\"]/g,
+      c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;"
+      }[c])
+    );
 
-  const area=document.getElementById("noticeDetail");
 
-  if(!noticeId){
+async function load(){
 
-    area.innerHTML="<p>お知らせが見つかりません。</p>";
+  const area =
+    document.getElementById(
+      "noticeDetail"
+    );
+
+
+  if(!id){
+
+    area.innerHTML = `
+
+      <div class="card">
+
+        お知らせが見つかりません。
+
+      </div>
+
+    `;
+
     return;
 
   }
 
+
   try{
 
-    const snap=await getDoc(
-      doc(db,"notices",noticeId)
-    );
+    const snap =
+      await getDoc(
+        doc(
+          db,
+          "notices",
+          id
+        )
+      );
+
 
     if(!snap.exists()){
 
-      area.innerHTML="<p>お知らせが存在しません。</p>";
+      area.innerHTML = `
+
+        <div class="card">
+
+          お知らせが存在しません。
+
+        </div>
+
+      `;
+
       return;
 
     }
 
-    const data=snap.data();
 
-    const today=new Date();
+    const data =
+      snap.data();
 
-    today.setHours(0,0,0,0);
 
-    if(data.startDate){
+    area.innerHTML = `
 
-      const start=new Date(data.startDate+"T00:00:00");
+      <div class="card">
 
-      if(today<start){
+        <div>
 
-        area.innerHTML="<p>公開前のお知らせです。</p>";
-        return;
+          ${
+            data.importance ===
+            "important"
 
-      }
+              ?
 
-    }
+              `<span class="important">
+                重要
+               </span>`
 
-    if(data.endDate){
+              :
 
-      const end=new Date(data.endDate+"T23:59:59");
+              `<span class="normal-tag">
+                通常
+               </span>`
+          }
 
-      if(today>end){
-
-        area.innerHTML="<p>公開終了したお知らせです。</p>";
-        return;
-
-      }
-
-    }
-
-    const tag=
-      data.importance==="important"
-        ? `<span class="important">重要</span>`
-        : "";
-
-    area.innerHTML=`
-
-      <div class="detail-box">
-
-        ${tag}
-
-        <h1>
-          ${escapeHtml(data.title)}
-        </h1>
-
-        <div class="notice-detail-body">
-          ${escapeHtml(data.body || "").replaceAll("\n","<br>")}
         </div>
 
-        <hr>
+
+        <h1>
+          ${esc(data.title)}
+        </h1>
+
+
+        <div class="notice-body">
+
+          ${esc(
+            data.body
+          ).replace(
+            /\n/g,
+            "<br>"
+          )}
+
+        </div>
+
 
         <p>
+
           公開期間：
-          ${escapeHtml(data.startDate || "指定なし")}
-          ～
-          ${escapeHtml(data.endDate || "指定なし")}
+
+          ${esc(
+            data.startDate || ""
+          )}
+
+          ${
+            data.endDate
+              ?
+
+              "〜 " +
+              esc(data.endDate)
+
+              :
+
+              ""
+
+          }
+
         </p>
 
       </div>
 
     `;
 
+
   }catch(error){
 
     console.error(error);
 
-    area.innerHTML=
-      "<p>お知らせを読み込めませんでした。</p>";
+
+    area.innerHTML = `
+
+      <div class="card error">
+
+        お知らせを読み込めませんでした。
+
+      </div>
+
+    `;
 
   }
 
 }
 
 
-loadNotice();
+load();
