@@ -1,66 +1,39 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>定期テスト対策ポータル</title>
-
 <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <div class="login-container">
+  <div class="login-box">
 
-<div class="login-box">
+    <h1>定期テスト対策ポータル</h1>
+    <p>ログインしてください</p>
 
-<h1>定期テスト対策ポータル</h1>
+    <label>メールアドレス</label>
+    <input id="email" type="email" placeholder="メールアドレス">
 
-<p>ログインしてください</p>
+    <label>パスワード</label>
+    <input id="password" type="password" placeholder="パスワード">
 
-<label>メールアドレス</label>
+    <button onclick="login()">ログイン</button>
 
-<input
-id="email"
-type="email"
-placeholder="メールアドレス">
+    <div class="separator">または</div>
 
-<label>パスワード</label>
+    <button class="google-btn" onclick="googleLogin()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Googleでログイン
+    </button>
 
-<input
-id="password"
-type="password"
-placeholder="パスワード">
-
-<button onclick="login()">
-ログイン
-</button>
-
-<div class="separator">
-または
+  </div>
 </div>
 
-<button
-class="google-btn"
-onclick="googleLogin()">
-
-<img
-src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-alt="Google">
-
-Googleでログイン
-
-</button>
-
-</div>
-</div>
-
-<script
-type="module"
-src="js/auth.js">
-</script>
+<script type="module" src="js/auth.js"></script>
 
 </body>
 </html>
