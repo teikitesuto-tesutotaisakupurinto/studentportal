@@ -1,354 +1,416 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+  <title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
+  <link
+    rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Cpath d='M18 16h28v7H25v10h18v7H25v8h21v7H18z' fill='white'/%3E%3C/svg%3E"
+  >
 
-<title>
-お知らせ | 定期テスト対策プリント運営事務局|ポータルサイト
-</title>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  >
 
-<link
-  rel="icon"
-  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Cpath d='M18 16h28v7H25v10h18v7H25v8h21v7H18z' fill='white'/%3E%3C/svg%3E"
->
+  <link rel="stylesheet" href="../css/style.css">
 
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
->
+  <style>
+    .portal-topbar {
+      position: fixed;
+      z-index: 900;
+      top: 0;
+      right: 0;
+      left: 250px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px 0 70px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      transition: left .2s ease;
+    }
 
-<link
-  rel="stylesheet"
-  href="../css/style.css"
->
+    .portal-topbar.sidebar-collapsed {
+      left: 76px;
+    }
 
+    .portal-site-name {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .sidebar-toggle {
+      position: fixed;
+      z-index: 1200;
+      top: 11px;
+      left: 14px;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    }
+
+    .sidebar-toggle:hover {
+      background: #f3f4f6;
+    }
+
+    .sidebar {
+      padding-top: 76px;
+      transition: width .2s ease;
+    }
+
+    .sidebar .logo {
+      display: none;
+    }
+
+    .sidebar nav a,
+    .sidebar nav button {
+      min-height: 44px;
+      padding: 9px 12px;
+      gap: 12px;
+    }
+
+    .sidebar nav .menu-icon {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar nav .menu-icon .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    .sidebar nav .menu-text {
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .sidebar.collapsed {
+      width: 76px;
+      padding-right: 10px;
+      padding-left: 10px;
+    }
+
+    .sidebar.collapsed nav a,
+    .sidebar.collapsed nav button {
+      justify-content: center;
+      padding: 10px 8px;
+    }
+
+    .sidebar.collapsed nav .menu-text {
+      display: none;
+    }
+
+    .sidebar.collapsed nav .menu-icon {
+      margin: 0;
+    }
+
+    .content {
+      padding-top: 88px;
+    }
+
+    .content.sidebar-collapsed {
+      margin-left: 76px;
+      width: calc(100% - 76px);
+    }
+
+    .notice-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+
+    .notice-title {
+      display: inline-block;
+      color: #2563eb;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.6;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    .notice-title:hover {
+      text-decoration: underline;
+    }
+
+    .notice-meta {
+      margin-top: 7px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .notice-create-area {
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    .notice-create-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .notice-create-button:hover {
+      background: #1d4ed8;
+    }
+
+    .notice-empty {
+      display: none;
+      padding: 28px 20px;
+      text-align: center;
+      color: #6b7280;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+    }
+
+    .notice-error {
+      display: none;
+      padding: 15px;
+      margin-bottom: 16px;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    @media (max-width: 768px) {
+      .portal-topbar,
+      .portal-topbar.sidebar-collapsed {
+        left: 0;
+        padding-left: 64px;
+        padding-right: 12px;
+      }
+
+      .portal-site-name {
+        font-size: 13px;
+      }
+
+      .sidebar {
+        z-index: 1000;
+      }
+
+      .content,
+      .content.sidebar-collapsed {
+        width: 100%;
+        margin-left: 0;
+        padding: 84px 15px 20px;
+      }
+
+      .sidebar-toggle {
+        left: 12px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<div class="layout">
-
-<aside
-  class="sidebar admin-sidebar"
-  id="sidebar"
->
-
-<div class="logo">
-定期テスト対策プリント<br>
-運営事務局
-</div>
-
-<nav>
-
-<a href="../dashboard/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-dashboard
-</span>
-</span>
-
-<span class="menu-text">
-ダッシュボード
-</span>
-</a>
-
-
-<a
-  href="../information/admin.html"
-  class="active"
->
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-campaign
-</span>
-</span>
-
-<span class="menu-text">
-お知らせ
-</span>
-
-</a>
-
-
-<a href="../messages/admin.html">
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-mail
-</span>
-</span>
-
-<span class="menu-text">
-連絡
-</span>
-
-</a>
-
-
-<a href="../documents/admin.html">
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-description
-</span>
-</span>
-
-<span class="menu-text">
-配布文書
-</span>
-
-</a>
-
-
-<a href="../calendar/admin.html">
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-calendar_month
-</span>
-</span>
-
-<span class="menu-text">
-カレンダー
-</span>
-
-</a>
-
-
-<a href="../scoreForms/admin.html">
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-assignment
-</span>
-</span>
-
-<span class="menu-text">
-成績フォーム作成
-</span>
-
-</a>
-
-
-<a href="../scores/admin.html">
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-analytics
-</span>
-</span>
-
-<span class="menu-text">
-成績分析
-</span>
-
-</a>
-
-
-<a href="../users/admin.html">
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-group
-</span>
-</span>
-
-<span class="menu-text">
-生徒管理
-</span>
-
-</a>
-
-
-<hr>
-
-
-<button
-  type="button"
-  onclick="logout()"
->
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-logout
-</span>
-</span>
-
-<span class="menu-text">
-ログアウト
-</span>
-
-</button>
-
-</nav>
-
-</aside>
-
-
-<button
-  type="button"
-  id="sidebarToggle"
-  class="sidebar-toggle"
-  aria-label="メニューを開閉"
->
-
-<span class="material-symbols-outlined">
-menu
-</span>
-
-</button>
-
-
-<main class="content">
-
-<section>
-
-<div class="page-header">
-
-<h1>
-お知らせ
-</h1>
-
-</div>
-
-
-<div
-  id="noticeList"
->
-</div>
-
-
-<div
-  id="noticeEmpty"
-  class="empty-state"
-  style="display:none;"
->
-お知らせはありません。
-</div>
-
-
-<div
-  style="
-    margin-top:25px;
-    text-align:center;
-  "
->
-
-<a
-  href="./create.html"
-  class="btn"
->
-
-<span class="material-symbols-outlined">
-add
-</span>
-
-お知らせを作成
-
-</a>
-
-</div>
-
-</section>
-
-</main>
-
-</div>
-
-
-<script
-  type="module"
-  src="../js/auth.js"
-></script>
-
-
-<script
-  type="module"
-  src="../js/informationAdmin.js"
-></script>
-
-
-<script>
-
-const sidebar =
-  document.getElementById(
-    "sidebar"
-  );
-
-const content =
-  document.querySelector(
-    ".content"
-  );
-
-const toggle =
-  document.getElementById(
-    "sidebarToggle"
-  );
-
-
-const savedState =
-  localStorage.getItem(
-    "portalSidebarCollapsed"
-  );
-
-
-function setSidebarState(
-  collapsed
-){
-
-  sidebar.classList.toggle(
-    "collapsed",
-    collapsed
-  );
-
-  content.classList.toggle(
-    "sidebar-collapsed",
-    collapsed
-  );
-
-  toggle.classList.toggle(
-    "collapsed",
-    collapsed
-  );
-
-}
-
-
-setSidebarState(
-  savedState === "true"
-);
-
-
-toggle.addEventListener(
-  "click",
-  () => {
-
-    const collapsed =
-      !sidebar.classList.contains(
-        "collapsed"
-      );
-
-    setSidebarState(
-      collapsed
-    );
-
-    localStorage.setItem(
-      "portalSidebarCollapsed",
-      String(collapsed)
-    );
-
-  }
-);
-
-</script>
-
+  <div class="layout">
+
+    <!-- メニュー開閉ボタン -->
+    <button
+      type="button"
+      id="sidebarToggle"
+      class="sidebar-toggle"
+      aria-label="メニューを開閉"
+      aria-expanded="true"
+      title="メニューを開閉"
+    >
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <!-- サイドバー -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+      <nav aria-label="メインメニュー">
+
+        <a href="../dashboard/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">dashboard</span>
+          </span>
+          <span class="menu-text">ダッシュボード</span>
+        </a>
+
+        <a href="./admin.html" class="active" aria-current="page">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">campaign</span>
+          </span>
+          <span class="menu-text">お知らせ</span>
+        </a>
+
+        <a href="../messages/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">mail</span>
+          </span>
+          <span class="menu-text">連絡</span>
+        </a>
+
+        <a href="../documents/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">description</span>
+          </span>
+          <span class="menu-text">配布文書</span>
+        </a>
+
+        <a href="../calendar/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">calendar_month</span>
+          </span>
+          <span class="menu-text">カレンダー</span>
+        </a>
+
+        <a href="../scoreForms/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">assignment</span>
+          </span>
+          <span class="menu-text">成績フォーム作成</span>
+        </a>
+
+        <a href="../scores/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">analytics</span>
+          </span>
+          <span class="menu-text">成績分析</span>
+        </a>
+
+        <a href="../users/admin.html">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">group</span>
+          </span>
+          <span class="menu-text">生徒管理</span>
+        </a>
+
+        <hr>
+
+        <button type="button" id="logoutButton">
+          <span class="menu-icon">
+            <span class="material-symbols-outlined">logout</span>
+          </span>
+          <span class="menu-text">ログアウト</span>
+        </button>
+
+      </nav>
+    </aside>
+
+    <!-- 全ページ共通のサイト名。ページ名には変更しない -->
+    <header class="portal-topbar" id="portalTopbar">
+      <p class="portal-site-name">定期テスト対策プリント運営事務局|ポータルサイト</p>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="content" id="mainContent">
+      <section>
+        <div class="page-header">
+          <h1>お知らせ</h1>
+        </div>
+
+        <div id="noticeError" class="notice-error" role="alert"></div>
+
+        <div id="noticeList"></div>
+
+        <div id="noticeEmpty" class="notice-empty">
+          お知らせはありません。
+        </div>
+
+        <div class="notice-create-area">
+          <a href="./create.html" class="notice-create-button">
+            <span class="material-symbols-outlined">add</span>
+            お知らせを作成
+          </a>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <script type="module">
+    import { logout } from "../js/auth.js";
+
+    document
+      .getElementById("logoutButton")
+      .addEventListener("click", async () => {
+        await logout();
+      });
+  </script>
+
+  <script type="module" src="../js/informationAdmin.js"></script>
+
+  <!-- メニュー開閉 -->
+  <script>
+    (() => {
+      const sidebar = document.getElementById("sidebar");
+      const content = document.getElementById("mainContent");
+      const topbar = document.getElementById("portalTopbar");
+      const toggle = document.getElementById("sidebarToggle");
+
+      const storageKey = "portalSidebarCollapsed";
+
+      function setSidebarState(collapsed) {
+        sidebar.classList.toggle("collapsed", collapsed);
+        content.classList.toggle("sidebar-collapsed", collapsed);
+        topbar.classList.toggle("sidebar-collapsed", collapsed);
+
+        toggle.setAttribute(
+          "aria-expanded",
+          String(!collapsed)
+        );
+
+        toggle.title = collapsed
+          ? "メニューを開く"
+          : "メニューを閉じる";
+      }
+
+      let collapsed = false;
+
+      try {
+        collapsed = localStorage.getItem(storageKey) === "true";
+      } catch (error) {
+        console.warn("メニュー設定を読み込めませんでした。", error);
+      }
+
+      setSidebarState(collapsed);
+
+      toggle.addEventListener("click", () => {
+        collapsed = !sidebar.classList.contains("collapsed");
+        setSidebarState(collapsed);
+
+        try {
+          localStorage.setItem(storageKey, String(collapsed));
+        } catch (error) {
+          console.warn("メニュー設定を保存できませんでした。", error);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
