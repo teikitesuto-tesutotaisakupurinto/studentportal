@@ -1,4 +1,3 @@
-```javascript
 import {
   auth,
   db
@@ -13,12 +12,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 
-// =====================================================
-// 状態
-// =====================================================
-
 let allScores = [];
+
 let allUsers = [];
+
 let allForms = [];
 
 let testList = [];
@@ -26,22 +23,53 @@ let testList = [];
 let selectedTestId = "";
 
 
-// =====================================================
-// 共通
-// =====================================================
+/* =====================================================
+   共通
+===================================================== */
 
 function escapeHtml(value){
 
   return String(value ?? "").replace(
     /[&<>"']/g,
-    character => ({
+    c => ({
       "&":"&amp;",
       "<":"&lt;",
       ">":"&gt;",
       '"':"&quot;",
       "'":"&#39;"
-    }[character])
+    }[c])
   );
+
+}
+
+
+function numberValue(value){
+
+  if(
+    typeof value === "number" &&
+    Number.isFinite(value)
+  ){
+
+    return value;
+
+  }
+
+
+  if(
+    typeof value === "string" &&
+    value.trim() !== ""
+  ){
+
+    const n = Number(value);
+
+    if(Number.isFinite(n)){
+      return n;
+    }
+
+  }
+
+
+  return null;
 
 }
 
@@ -66,18 +94,27 @@ function median(values){
     return 0;
   }
 
-  const sorted = [...values].sort(
-    (a,b) => a - b
-  );
+
+  const sorted =
+    [...values].sort(
+      (a,b) => a - b
+    );
+
 
   const middle =
-    Math.floor(sorted.length / 2);
+    Math.floor(
+      sorted.length / 2
+    );
 
-  if(sorted.length % 2){
+
+  if(
+    sorted.length % 2
+  ){
 
     return sorted[middle];
 
   }
+
 
   return (
     sorted[middle - 1] +
@@ -93,25 +130,40 @@ function standardDeviation(values){
     return 0;
   }
 
-  const avg = average(values);
+
+  const avg =
+    average(values);
+
 
   const variance =
     values.reduce(
       (sum,value) =>
-        sum + Math.pow(value - avg,2),
+        sum +
+        Math.pow(
+          value - avg,
+          2
+        ),
       0
     ) / values.length;
 
-  return Math.sqrt(variance);
+
+  return Math.sqrt(
+    variance
+  );
 
 }
 
 
 function formatNumber(value){
 
-  if(!Number.isFinite(value)){
+  if(
+    !Number.isFinite(value)
+  ){
+
     return "-";
+
   }
+
 
   return Number(
     value.toFixed(1)
@@ -120,54 +172,23 @@ function formatNumber(value){
 }
 
 
-function numberValue(value){
-
-  if(typeof value === "number"){
-
-    return Number.isFinite(value)
-      ? value
-      : null;
-
-  }
-
-  if(
-    typeof value === "string" &&
-    value.trim() !== ""
-  ){
-
-    const number = Number(value);
-
-    return Number.isFinite(number)
-      ? number
-      : null;
-
-  }
-
-  return null;
-
-}
-
-
-// =====================================================
-// ユーザー情報
-// =====================================================
+/* =====================================================
+   ユーザー
+===================================================== */
 
 function getUser(score){
 
-  if(!score.uid){
-    return {};
-  }
-
   return allUsers.find(
-    user => user.id === score.uid
+    user =>
+      user.id === score.uid
   ) || {};
 
 }
 
 
-// =====================================================
-// テスト名
-// =====================================================
+/* =====================================================
+   テスト名
+===================================================== */
 
 function getTestName(score){
 
@@ -180,102 +201,116 @@ function getTestName(score){
 }
 
 
-// =====================================================
-// テスト識別
-// =====================================================
-
 function getTestKey(score){
 
   if(score.formId){
 
-    return "form:" + String(
-      score.formId
-    );
+    return "form:" +
+      String(score.formId);
 
   }
 
-  return "name:" + getTestName(score);
+
+  return "name:" +
+    getTestName(score);
 
 }
 
 
-// =====================================================
-// テスト一覧作成
-// =====================================================
+/* =====================================================
+   テスト一覧
+===================================================== */
 
 function createTestList(){
 
-  const map = new Map();
+  const map =
+    new Map();
 
 
-  // -------------------------------------
-  // 成績フォームからテストを登録
-  // -------------------------------------
+  /*
+   * scoreFormsから登録
+   */
 
-  allForms.forEach(form => {
-
-    const id =
-      "form:" + form.id;
-
-    map.set(
-      id,
-      {
-        id,
-        formId:form.id,
-        name:
-          form.title ||
-          "名称未設定",
-        count:0
-      }
-    );
-
-  });
-
-
-  // -------------------------------------
-  // scoresからもテストを登録
-  // -------------------------------------
-
-  allScores.forEach(score => {
-
-    const id =
-      getTestKey(score);
-
-    if(!map.has(id)){
+  allForms.forEach(
+    form => {
 
       map.set(
-        id,
+        "form:" + form.id,
         {
-          id,
-          formId:score.formId || "",
-          name:getTestName(score),
+          id:
+            "form:" + form.id,
+
+          formId:
+            form.id,
+
+          name:
+            form.title ||
+            "名称未設定",
+
           count:0
         }
       );
 
     }
+  );
 
-    map.get(id).count++;
 
-  });
+  /*
+   * scoresからも登録
+   */
+
+  allScores.forEach(
+    score => {
+
+      const key =
+        getTestKey(score);
+
+
+      if(!map.has(key)){
+
+        map.set(
+          key,
+          {
+
+            id:key,
+
+            formId:
+              score.formId || "",
+
+            name:
+              getTestName(score),
+
+            count:0
+
+          }
+        );
+
+      }
+
+
+      map.get(key).count++;
+
+    }
+  );
 
 
   testList =
-    Array.from(map.values())
-      .sort(
-        (a,b) =>
-          a.name.localeCompare(
-            b.name,
-            "ja"
-          )
-      );
+    Array.from(
+      map.values()
+    ).sort(
+      (a,b) =>
+        a.name.localeCompare(
+          b.name,
+          "ja"
+        )
+    );
 
 }
 
 
-// =====================================================
-// テスト選択欄
-// =====================================================
+/* =====================================================
+   セレクト
+===================================================== */
 
 function renderTestSelect(){
 
@@ -284,33 +319,41 @@ function renderTestSelect(){
       "testSelect"
     );
 
+
   if(!select){
     return;
   }
 
 
   select.innerHTML = `
+
     <option value="">
       テストを選択してください
     </option>
 
     ${
-      testList.map(test => `
-        <option value="${escapeHtml(test.id)}">
-          ${escapeHtml(test.name)}
-          （${test.count}件提出）
-        </option>
-      `).join("")
+      testList.map(
+        test => `
+
+          <option
+            value="${escapeHtml(test.id)}"
+          >
+
+            ${escapeHtml(test.name)}
+
+            （${test.count}件提出）
+
+          </option>
+
+        `
+      ).join("")
     }
+
   `;
 
 
   if(
-    selectedTestId &&
-    testList.some(
-      test =>
-        test.id === selectedTestId
-    )
+    selectedTestId
   ){
 
     select.value =
@@ -321,9 +364,9 @@ function renderTestSelect(){
 }
 
 
-// =====================================================
-// 選択された成績
-// =====================================================
+/* =====================================================
+   選択テストの成績
+===================================================== */
 
 function getSelectedScores(){
 
@@ -332,14 +375,15 @@ function getSelectedScores(){
   }
 
 
-  const selectedTest =
+  const test =
     testList.find(
-      test =>
-        test.id === selectedTestId
+      item =>
+        item.id ===
+        selectedTestId
     );
 
 
-  if(!selectedTest){
+  if(!test){
     return [];
   }
 
@@ -347,23 +391,21 @@ function getSelectedScores(){
   return allScores.filter(
     score => {
 
-      // formIdが存在するテスト
-      if(selectedTest.formId){
+      if(test.formId){
 
         return String(
           score.formId || ""
         ) === String(
-          selectedTest.formId
+          test.formId
         );
 
       }
 
 
-      // formIdがない古いデータ
       return (
         !score.formId &&
         getTestName(score) ===
-          selectedTest.name
+          test.name
       );
 
     }
@@ -372,203 +414,214 @@ function getSelectedScores(){
 }
 
 
-// =====================================================
-// 全体分析
-// =====================================================
+/* =====================================================
+   全体
+===================================================== */
 
 function renderOverview(scores){
 
   const values =
     scores
-      .map(score =>
-        numberValue(score.total)
+      .map(
+        score =>
+          numberValue(score.total)
       )
       .filter(
-        value => value !== null
+        value =>
+          value !== null
       );
+
+
+  const studentCount =
+    new Set(
+      scores
+        .map(
+          score =>
+            score.uid
+        )
+        .filter(Boolean)
+    ).size;
 
 
   const avg =
     average(values);
 
+
   const med =
     median(values);
+
 
   const max =
     values.length
       ? Math.max(...values)
       : 0;
 
+
   const min =
     values.length
       ? Math.min(...values)
       : 0;
 
+
   const sd =
     standardDeviation(values);
 
 
-  const studentCount =
-    new Set(
-      scores
-        .map(score => score.uid)
-        .filter(Boolean)
-    ).size;
-
-
   return `
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
-      全体分析
-    </h2>
+      <h2>
+        全体分析
+      </h2>
 
-    <div class="analysis-grid">
 
-      <div class="card">
+      <div class="analysis-grid">
 
-        <h3>
-          提出件数
-        </h3>
 
-        <strong>
-          ${scores.length}件
-        </strong>
+        <div class="card">
+
+          <h3>
+            提出件数
+          </h3>
+
+          <strong>
+            ${scores.length}件
+          </strong>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>
+            提出者数
+          </h3>
+
+          <strong>
+            ${studentCount}人
+          </strong>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>
+            平均点
+          </h3>
+
+          <strong>
+            ${formatNumber(avg)}点
+          </strong>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>
+            中央値
+          </h3>
+
+          <strong>
+            ${formatNumber(med)}点
+          </strong>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>
+            最高点
+          </h3>
+
+          <strong>
+            ${formatNumber(max)}点
+          </strong>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>
+            最低点
+          </h3>
+
+          <strong>
+            ${formatNumber(min)}点
+          </strong>
+
+        </div>
+
+
+        <div class="card">
+
+          <h3>
+            標準偏差
+          </h3>
+
+          <strong>
+            ${formatNumber(sd)}
+          </strong>
+
+        </div>
+
 
       </div>
-
-
-      <div class="card">
-
-        <h3>
-          提出者数
-        </h3>
-
-        <strong>
-          ${studentCount}人
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>
-          平均点
-        </h3>
-
-        <strong>
-          ${formatNumber(avg)}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>
-          中央値
-        </h3>
-
-        <strong>
-          ${formatNumber(med)}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>
-          最高点
-        </h3>
-
-        <strong>
-          ${formatNumber(max)}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>
-          最低点
-        </h3>
-
-        <strong>
-          ${formatNumber(min)}点
-        </strong>
-
-      </div>
-
-
-      <div class="card">
-
-        <h3>
-          標準偏差
-        </h3>
-
-        <strong>
-          ${formatNumber(sd)}
-        </strong>
-
-      </div>
-
 
     </div>
-
-  </div>
 
   `;
 
 }
 
 
-// =====================================================
-// 教科別分析
-// =====================================================
+/* =====================================================
+   教科別
+===================================================== */
 
 function renderSubjectAnalysis(scores){
 
   const subjectMap = {};
 
 
-  scores.forEach(score => {
+  scores.forEach(
+    score => {
 
-    const subjects =
-      score.subjects || {};
+      Object.entries(
+        score.subjects || {}
+      ).forEach(
+        ([subject,value]) => {
+
+          const n =
+            numberValue(value);
 
 
-    Object.entries(
-      subjects
-    ).forEach(
-      ([subject,value]) => {
+          if(n === null){
+            return;
+          }
 
-        const number =
-          numberValue(value);
 
-        if(number === null){
-          return;
+          if(
+            !subjectMap[subject]
+          ){
+
+            subjectMap[subject] =
+              [];
+
+          }
+
+
+          subjectMap[subject].push(n);
+
         }
+      );
 
-
-        if(!subjectMap[subject]){
-
-          subjectMap[subject] = [];
-
-        }
-
-
-        subjectMap[subject].push(
-          number
-        );
-
-      }
-    );
-
-  });
+    }
+  );
 
 
   const rows =
@@ -581,25 +634,7 @@ function renderSubjectAnalysis(scores){
         average(a[1])
     )
     .map(
-      ([subject,values]) => {
-
-        const avg =
-          average(values);
-
-        const med =
-          median(values);
-
-        const max =
-          Math.max(...values);
-
-        const min =
-          Math.min(...values);
-
-        const sd =
-          standardDeviation(values);
-
-
-        return `
+      ([subject,values]) => `
 
         <tr>
 
@@ -608,23 +643,29 @@ function renderSubjectAnalysis(scores){
           </td>
 
           <td>
-            ${formatNumber(avg)}
+            ${formatNumber(
+              average(values)
+            )}
           </td>
 
           <td>
-            ${formatNumber(med)}
+            ${formatNumber(
+              median(values)
+            )}
           </td>
 
           <td>
-            ${formatNumber(max)}
+            ${Math.max(...values)}
           </td>
 
           <td>
-            ${formatNumber(min)}
+            ${Math.min(...values)}
           </td>
 
           <td>
-            ${formatNumber(sd)}
+            ${formatNumber(
+              standardDeviation(values)
+            )}
           </td>
 
           <td>
@@ -633,128 +674,116 @@ function renderSubjectAnalysis(scores){
 
         </tr>
 
-        `;
-
-      }
+      `
     )
     .join("");
 
 
   return `
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
-      教科別詳細分析
-    </h2>
-
-    <div class="table-wrap">
-
-      <table class="data-table">
-
-        <thead>
-
-          <tr>
-
-            <th>
-              教科
-            </th>
-
-            <th>
-              平均
-            </th>
-
-            <th>
-              中央値
-            </th>
-
-            <th>
-              最高
-            </th>
-
-            <th>
-              最低
-            </th>
-
-            <th>
-              標準偏差
-            </th>
-
-            <th>
-              提出数
-            </th>
-
-          </tr>
-
-        </thead>
+      <h2>
+        教科別詳細分析
+      </h2>
 
 
-        <tbody>
+      <div class="table-wrap">
 
-          ${
-            rows ||
-            `
-              <tr>
-                <td colspan="7">
-                  データなし
-                </td>
-              </tr>
-            `
-          }
+        <table class="data-table">
 
-        </tbody>
+          <thead>
 
-      </table>
+            <tr>
+
+              <th>教科</th>
+
+              <th>平均</th>
+
+              <th>中央値</th>
+
+              <th>最高</th>
+
+              <th>最低</th>
+
+              <th>標準偏差</th>
+
+              <th>提出数</th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            ${
+              rows ||
+
+              `
+                <tr>
+                  <td colspan="7">
+                    データなし
+                  </td>
+                </tr>
+              `
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
-
-  </div>
 
   `;
 
 }
 
 
-// =====================================================
-// 学年別
-// =====================================================
+/* =====================================================
+   学年
+===================================================== */
 
 function renderGradeAnalysis(scores){
 
   const groups = {};
 
 
-  scores.forEach(score => {
+  scores.forEach(
+    score => {
 
-    const user =
-      getUser(score);
-
-    const grade =
-      user.grade ||
-      score.grade ||
-      "未設定";
+      const user =
+        getUser(score);
 
 
-    const total =
-      numberValue(score.total);
+      const grade =
+        user.grade ||
+        score.grade ||
+        "未設定";
 
-    if(total === null){
-      return;
+
+      const total =
+        numberValue(score.total);
+
+
+      if(total === null){
+        return;
+      }
+
+
+      if(!groups[grade]){
+        groups[grade] = [];
+      }
+
+
+      groups[grade].push(
+        total
+      );
+
     }
-
-
-    if(!groups[grade]){
-
-      groups[grade] = [];
-
-    }
-
-
-    groups[grade].push(
-      total
-    );
-
-  });
+  );
 
 
   const rows =
@@ -790,15 +819,11 @@ function renderGradeAnalysis(scores){
             </td>
 
             <td>
-              ${formatNumber(
-                Math.max(...values)
-              )}
+              ${Math.max(...values)}
             </td>
 
             <td>
-              ${formatNumber(
-                Math.min(...values)
-              )}
+              ${Math.min(...values)}
             </td>
 
           </tr>
@@ -810,114 +835,102 @@ function renderGradeAnalysis(scores){
 
   return `
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
-      学年別詳細
-    </h2>
+      <h2>
+        学年別詳細
+      </h2>
 
-    <div class="table-wrap">
 
-      <table class="data-table">
+      <div class="table-wrap">
 
-        <thead>
+        <table class="data-table">
 
-          <tr>
+          <thead>
 
-            <th>
-              学年
-            </th>
+            <tr>
 
-            <th>
-              件数
-            </th>
+              <th>学年</th>
+              <th>件数</th>
+              <th>平均</th>
+              <th>中央値</th>
+              <th>最高</th>
+              <th>最低</th>
 
-            <th>
-              平均
-            </th>
+            </tr>
 
-            <th>
-              中央値
-            </th>
+          </thead>
 
-            <th>
-              最高
-            </th>
 
-            <th>
-              最低
-            </th>
+          <tbody>
 
-          </tr>
+            ${
+              rows ||
 
-        </thead>
+              `
+                <tr>
+                  <td colspan="6">
+                    データなし
+                  </td>
+                </tr>
+              `
+            }
 
-        <tbody>
+          </tbody>
 
-          ${
-            rows ||
-            `
-              <tr>
-                <td colspan="6">
-                  データなし
-                </td>
-              </tr>
-            `
-          }
+        </table>
 
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
-
-  </div>
 
   `;
 
 }
 
 
-// =====================================================
-// ブロック別
-// =====================================================
+/* =====================================================
+   ブロック
+===================================================== */
 
 function renderBlockAnalysis(scores){
 
   const groups = {};
 
 
-  scores.forEach(score => {
+  scores.forEach(
+    score => {
 
-    const user =
-      getUser(score);
-
-    const block =
-      user.block ||
-      score.block ||
-      "未設定";
+      const user =
+        getUser(score);
 
 
-    const total =
-      numberValue(score.total);
+      const block =
+        user.block ||
+        score.block ||
+        "未設定";
 
-    if(total === null){
-      return;
+
+      const total =
+        numberValue(score.total);
+
+
+      if(total === null){
+        return;
+      }
+
+
+      if(!groups[block]){
+        groups[block] = [];
+      }
+
+
+      groups[block].push(
+        total
+      );
+
     }
-
-
-    if(!groups[block]){
-
-      groups[block] = [];
-
-    }
-
-
-    groups[block].push(
-      total
-    );
-
-  });
+  );
 
 
   const rows =
@@ -953,15 +966,11 @@ function renderBlockAnalysis(scores){
             </td>
 
             <td>
-              ${formatNumber(
-                Math.max(...values)
-              )}
+              ${Math.max(...values)}
             </td>
 
             <td>
-              ${formatNumber(
-                Math.min(...values)
-              )}
+              ${Math.min(...values)}
             </td>
 
           </tr>
@@ -973,132 +982,124 @@ function renderBlockAnalysis(scores){
 
   return `
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
-      ブロック別詳細
-    </h2>
+      <h2>
+        ブロック別詳細
+      </h2>
 
-    <div class="table-wrap">
 
-      <table class="data-table">
+      <div class="table-wrap">
 
-        <thead>
+        <table class="data-table">
 
-          <tr>
+          <thead>
 
-            <th>
-              ブロック
-            </th>
+            <tr>
 
-            <th>
-              件数
-            </th>
+              <th>ブロック</th>
+              <th>件数</th>
+              <th>平均</th>
+              <th>中央値</th>
+              <th>最高</th>
+              <th>最低</th>
 
-            <th>
-              平均
-            </th>
+            </tr>
 
-            <th>
-              中央値
-            </th>
+          </thead>
 
-            <th>
-              最高
-            </th>
 
-            <th>
-              最低
-            </th>
+          <tbody>
 
-          </tr>
+            ${
+              rows ||
 
-        </thead>
+              `
+                <tr>
+                  <td colspan="6">
+                    データなし
+                  </td>
+                </tr>
+              `
+            }
 
-        <tbody>
+          </tbody>
 
-          ${
-            rows ||
-            `
-              <tr>
-                <td colspan="6">
-                  データなし
-                </td>
-              </tr>
-            `
-          }
+        </table>
 
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
-
-  </div>
 
   `;
 
 }
 
 
-// =====================================================
-// 生徒別
-// =====================================================
+/* =====================================================
+   生徒別
+===================================================== */
 
 function renderStudentAnalysis(scores){
 
   const groups = {};
 
 
-  scores.forEach(score => {
+  scores.forEach(
+    score => {
 
-    const user =
-      getUser(score);
-
-    const key =
-      score.uid ||
-      score.name ||
-      score.id;
+      const user =
+        getUser(score);
 
 
-    if(!groups[key]){
+      const key =
+        score.uid ||
+        score.name ||
+        score.id;
 
-      groups[key] = {
 
-        name:
-          score.name ||
-          user.name ||
-          "氏名未登録",
+      if(!groups[key]){
 
-        grade:
-          user.grade ||
-          score.grade ||
-          "未設定",
+        groups[key] = {
 
-        block:
-          user.block ||
-          score.block ||
-          "未設定",
+          name:
+            score.name ||
+            user.name ||
+            "氏名未登録",
 
-        scores:[]
+          grade:
+            user.grade ||
+            score.grade ||
+            "未設定",
 
-      };
+          block:
+            user.block ||
+            score.block ||
+            "未設定",
+
+          scores:[]
+
+        };
+
+      }
+
+
+      const total =
+        numberValue(
+          score.total
+        );
+
+
+      if(total !== null){
+
+        groups[key]
+          .scores
+          .push(total);
+
+      }
 
     }
-
-
-    const total =
-      numberValue(score.total);
-
-    if(total !== null){
-
-      groups[key]
-        .scores
-        .push(total);
-
-    }
-
-  });
+  );
 
 
   const rows =
@@ -1156,18 +1157,14 @@ function renderStudentAnalysis(scores){
             </td>
 
             <td>
-              ${formatNumber(
-                Math.max(
-                  ...student.scores
-                )
+              ${Math.max(
+                ...student.scores
               )}
             </td>
 
             <td>
-              ${formatNumber(
-                Math.min(
-                  ...student.scores
-                )
+              ${Math.min(
+                ...student.scores
               )}
             </td>
 
@@ -1188,103 +1185,79 @@ function renderStudentAnalysis(scores){
 
   return `
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
-      生徒別詳細
-    </h2>
+      <h2>
+        生徒別詳細
+      </h2>
 
-    <div class="table-wrap">
 
-      <table class="data-table">
+      <div class="table-wrap">
 
-        <thead>
+        <table class="data-table">
 
-          <tr>
+          <thead>
 
-            <th>
-              順位
-            </th>
+            <tr>
 
-            <th>
-              生徒
-            </th>
+              <th>順位</th>
+              <th>生徒</th>
+              <th>学年</th>
+              <th>ブロック</th>
+              <th>提出数</th>
+              <th>平均</th>
+              <th>中央値</th>
+              <th>最高</th>
+              <th>最低</th>
+              <th>標準偏差</th>
 
-            <th>
-              学年
-            </th>
+            </tr>
 
-            <th>
-              ブロック
-            </th>
+          </thead>
 
-            <th>
-              提出数
-            </th>
 
-            <th>
-              平均
-            </th>
+          <tbody>
 
-            <th>
-              中央値
-            </th>
+            ${
+              rows ||
 
-            <th>
-              最高
-            </th>
+              `
+                <tr>
+                  <td colspan="10">
+                    データなし
+                  </td>
+                </tr>
+              `
+            }
 
-            <th>
-              最低
-            </th>
+          </tbody>
 
-            <th>
-              ばらつき
-            </th>
+        </table>
 
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          ${
-            rows ||
-            `
-              <tr>
-                <td colspan="10">
-                  データなし
-                </td>
-              </tr>
-            `
-          }
-
-        </tbody>
-
-      </table>
+      </div>
 
     </div>
-
-  </div>
 
   `;
 
 }
 
 
-// =====================================================
-// 得点分布
-// =====================================================
+/* =====================================================
+   得点分布
+===================================================== */
 
 function renderDistribution(scores){
 
   const values =
     scores
-      .map(score =>
-        numberValue(score.total)
+      .map(
+        score =>
+          numberValue(score.total)
       )
       .filter(
-        value => value !== null
+        value =>
+          value !== null
       );
 
 
@@ -1309,58 +1282,58 @@ function renderDistribution(scores){
   }
 
 
-  const maxScore =
-    Math.max(...values);
+  const ranges = [];
 
 
   /*
-   * 100点満点の場合は10点刻み。
-   * 100点を超えるテストの場合は、
-   * 最大点に合わせて10分割する。
+   * 100点以下なら10点刻み
    */
 
-  let ranges = [];
+  if(
+    Math.max(...values) <= 100
+  ){
+
+    for(
+      let start = 0;
+      start < 100;
+      start += 10
+    ){
+
+      ranges.push({
+
+        min:start,
+
+        max:start + 10,
+
+        label:
+          `${start}～${start + 9}`
+
+      });
+
+    }
 
 
-  if(maxScore <= 100){
+    ranges.push({
 
-    ranges = [
+      min:100,
 
-      {min:0,max:10,label:"0～9"},
+      max:Infinity,
 
-      {min:10,max:20,label:"10～19"},
+      label:"100"
 
-      {min:20,max:30,label:"20～29"},
-
-      {min:30,max:40,label:"30～39"},
-
-      {min:40,max:50,label:"40～49"},
-
-      {min:50,max:60,label:"50～59"},
-
-      {min:60,max:70,label:"60～69"},
-
-      {min:70,max:80,label:"70～79"},
-
-      {min:80,max:90,label:"80～89"},
-
-      {min:90,max:101,label:"90～99"},
-
-      {min:100,max:Infinity,label:"100"}
-
-    ];
+    });
 
   }else{
 
     const step =
       Math.ceil(
-        maxScore / 10
+        Math.max(...values) / 10
       );
 
 
     for(
       let start = 0;
-      start <= maxScore;
+      start <= Math.max(...values);
       start += step
     ){
 
@@ -1380,59 +1353,61 @@ function renderDistribution(scores){
   }
 
 
-  const counts =
-    ranges.map(
-      range =>
-        values.filter(
-          value =>
-            value >= range.min &&
-            value < range.max
-        ).length
-    );
-
-
   return `
 
-  <div class="card">
+    <div class="card">
 
-    <h2>
-      総得点の分布
-    </h2>
+      <h2>
+        総得点の分布
+      </h2>
 
-    <div class="distribution">
 
-      ${
-        ranges.map(
-          (range,index) => `
+      <div class="distribution">
 
-            <div>
+        ${
+          ranges.map(
+            range => {
 
-              <span>
-                ${range.label}
-              </span>
+              const count =
+                values.filter(
+                  value =>
+                    value >= range.min &&
+                    value < range.max
+                ).length;
 
-              <strong>
-                ${counts[index]}
-              </strong>
 
-            </div>
+              return `
 
-          `
-        ).join("")
-      }
+                <div>
+
+                  <span>
+                    ${range.label}
+                  </span>
+
+                  <strong>
+                    ${count}
+                  </strong>
+
+                </div>
+
+              `;
+
+            }
+          ).join("")
+        }
+
+      </div>
 
     </div>
-
-  </div>
 
   `;
 
 }
 
 
-// =====================================================
-// 提出・再回答管理
-// =====================================================
+/* =====================================================
+   提出・再回答
+===================================================== */
 
 function renderSubmissionManagement(
   scores
@@ -1452,8 +1427,10 @@ function renderSubmissionManagement(
   if(!selectedTestId){
 
     area.innerHTML = `
+
       テストを選択すると、
       そのテストの提出状況が表示されます。
+
     `;
 
     return;
@@ -1464,34 +1441,16 @@ function renderSubmissionManagement(
   if(!scores.length){
 
     area.innerHTML = `
+
       <p>
         このテストの提出はありません。
       </p>
+
     `;
 
     return;
 
   }
-
-
-  const sorted =
-    [...scores].sort(
-      (a,b) => {
-
-        const aTime =
-          a.createdAt?.toMillis
-            ? a.createdAt.toMillis()
-            : 0;
-
-        const bTime =
-          b.createdAt?.toMillis
-            ? b.createdAt.toMillis()
-            : 0;
-
-        return bTime - aTime;
-
-      }
-    );
 
 
   area.innerHTML = `
@@ -1504,38 +1463,22 @@ function renderSubmissionManagement(
 
           <tr>
 
-            <th>
-              生徒
-            </th>
-
-            <th>
-              合計
-            </th>
-
-            <th>
-              平均
-            </th>
-
-            <th>
-              提出日時
-            </th>
-
-            <th>
-              状態
-            </th>
-
-            <th>
-              操作
-            </th>
+            <th>生徒</th>
+            <th>合計</th>
+            <th>平均</th>
+            <th>提出日時</th>
+            <th>状態</th>
+            <th>操作</th>
 
           </tr>
 
         </thead>
 
+
         <tbody>
 
           ${
-            sorted.map(
+            scores.map(
               score => {
 
                 const user =
@@ -1572,15 +1515,13 @@ function renderSubmissionManagement(
 
                     <td>
                       ${escapeHtml(
-                        score.total ??
-                        "-"
+                        score.total ?? "-"
                       )}点
                     </td>
 
                     <td>
                       ${escapeHtml(
-                        score.average ??
-                        "-"
+                        score.average ?? "-"
                       )}点
                     </td>
 
@@ -1603,27 +1544,27 @@ function renderSubmissionManagement(
                       ${
                         allowed
 
-                          ? `
+                        ? `
 
-                            <button
-                              type="button"
-                              onclick="denyScoreResubmit('${escapeHtml(score.id)}')"
-                            >
-                              再回答を禁止
-                            </button>
+                          <button
+                            type="button"
+                            onclick="denyScoreResubmit('${score.id}')"
+                          >
+                            再回答を禁止
+                          </button>
 
-                            `
+                        `
 
-                          : `
+                        : `
 
-                            <button
-                              type="button"
-                              onclick="allowScoreResubmit('${escapeHtml(score.id)}')"
-                            >
-                              再回答を許可
-                            </button>
+                          <button
+                            type="button"
+                            onclick="allowScoreResubmit('${score.id}')"
+                          >
+                            再回答を許可
+                          </button>
 
-                            `
+                        `
 
                       }
 
@@ -1648,9 +1589,9 @@ function renderSubmissionManagement(
 }
 
 
-// =====================================================
-// 選択テストを表示
-// =====================================================
+/* =====================================================
+   選択テスト表示
+===================================================== */
 
 function renderSelectedTest(){
 
@@ -1692,9 +1633,7 @@ function renderSelectedTest(){
     }
 
 
-    renderSubmissionManagement(
-      []
-    );
+    renderSubmissionManagement([]);
 
     return;
 
@@ -1709,21 +1648,6 @@ function renderSelectedTest(){
 
 
   if(!test){
-
-    if(area){
-
-      area.innerHTML = `
-
-        <div class="card error">
-
-          選択したテストが
-          見つかりません。
-
-        </div>
-
-      `;
-
-    }
 
     return;
 
@@ -1780,9 +1704,7 @@ function renderSelectedTest(){
     }
 
 
-    renderSubmissionManagement(
-      []
-    );
+    renderSubmissionManagement([]);
 
     return;
 
@@ -1793,29 +1715,17 @@ function renderSelectedTest(){
 
     area.innerHTML = [
 
-      renderOverview(
-        scores
-      ),
+      renderOverview(scores),
 
-      renderSubjectAnalysis(
-        scores
-      ),
+      renderSubjectAnalysis(scores),
 
-      renderDistribution(
-        scores
-      ),
+      renderDistribution(scores),
 
-      renderGradeAnalysis(
-        scores
-      ),
+      renderGradeAnalysis(scores),
 
-      renderBlockAnalysis(
-        scores
-      ),
+      renderBlockAnalysis(scores),
 
-      renderStudentAnalysis(
-        scores
-      )
+      renderStudentAnalysis(scores)
 
     ].join("");
 
@@ -1829,9 +1739,9 @@ function renderSelectedTest(){
 }
 
 
-// =====================================================
-// テスト変更
-// =====================================================
+/* =====================================================
+   テスト変更
+===================================================== */
 
 async function changeAnalysisTest(
   testId
@@ -1851,17 +1761,12 @@ export {
 };
 
 
-// =====================================================
-// 再回答許可
-// =====================================================
+/* =====================================================
+   再回答許可
+===================================================== */
 
 window.allowScoreResubmit =
   async function(scoreId){
-
-    if(!scoreId){
-      return;
-    }
-
 
     try{
 
@@ -1872,6 +1777,7 @@ window.allowScoreResubmit =
           scoreId
         ),
         {
+
           resubmitAllowed:true,
 
           resubmitAllowedAt:
@@ -1879,27 +1785,21 @@ window.allowScoreResubmit =
 
           resubmitAllowedBy:
             auth.currentUser?.uid || ""
+
         }
       );
 
 
       await refreshSelectedTest();
 
-      alert(
-        "再回答を許可しました。"
-      );
-
 
     }catch(error){
 
-      console.error(
-        "再回答許可エラー:",
-        error
-      );
-
+      console.error(error);
 
       alert(
-        "再回答を許可できませんでした。"
+        "再回答を許可できませんでした。\n" +
+        error.message
       );
 
     }
@@ -1907,17 +1807,12 @@ window.allowScoreResubmit =
   };
 
 
-// =====================================================
-// 再回答禁止
-// =====================================================
+/* =====================================================
+   再回答禁止
+===================================================== */
 
 window.denyScoreResubmit =
   async function(scoreId){
-
-    if(!scoreId){
-      return;
-    }
-
 
     try{
 
@@ -1935,21 +1830,14 @@ window.denyScoreResubmit =
 
       await refreshSelectedTest();
 
-      alert(
-        "再回答を禁止しました。"
-      );
-
 
     }catch(error){
 
-      console.error(
-        "再回答禁止エラー:",
-        error
-      );
-
+      console.error(error);
 
       alert(
-        "再回答を禁止できませんでした。"
+        "再回答を禁止できませんでした。\n" +
+        error.message
       );
 
     }
@@ -1957,13 +1845,13 @@ window.denyScoreResubmit =
   };
 
 
-// =====================================================
-// 選択テストを再読み込み
-// =====================================================
+/* =====================================================
+   再読み込み
+===================================================== */
 
 async function refreshSelectedTest(){
 
-  const scoreSnap =
+  const snap =
     await getDocs(
       collection(
         db,
@@ -1975,7 +1863,7 @@ async function refreshSelectedTest(){
   allScores = [];
 
 
-  scoreSnap.forEach(
+  snap.forEach(
     item => {
 
       allScores.push({
@@ -1999,9 +1887,9 @@ async function refreshSelectedTest(){
 }
 
 
-// =====================================================
-// 初期読み込み
-// =====================================================
+/* =====================================================
+   初期読み込み
+===================================================== */
 
 export async function loadScoreAnalysis(){
 
@@ -2029,9 +1917,9 @@ export async function loadScoreAnalysis(){
 
   try{
 
-    // -----------------------------------
-    // scores
-    // -----------------------------------
+    /*
+     * 成績
+     */
 
     const scoreSnap =
       await getDocs(
@@ -2060,9 +1948,9 @@ export async function loadScoreAnalysis(){
     );
 
 
-    // -----------------------------------
-    // users
-    // -----------------------------------
+    /*
+     * ユーザー
+     */
 
     const userSnap =
       await getDocs(
@@ -2091,9 +1979,9 @@ export async function loadScoreAnalysis(){
     );
 
 
-    // -----------------------------------
-    // scoreForms
-    // -----------------------------------
+    /*
+     * 成績フォーム
+     */
 
     try{
 
@@ -2124,16 +2012,11 @@ export async function loadScoreAnalysis(){
       );
 
 
-    }catch(formError){
-
-      /*
-       * scoreFormsの取得ができなくても、
-       * scoresだけで分析できるようにする。
-       */
+    }catch(error){
 
       console.warn(
-        "scoreFormsの取得をスキップ:",
-        formError
+        "scoreForms取得をスキップ:",
+        error
       );
 
       allForms = [];
@@ -2141,12 +2024,11 @@ export async function loadScoreAnalysis(){
     }
 
 
-    // -----------------------------------
-    // テスト一覧
-    // -----------------------------------
+    /*
+     * テスト一覧
+     */
 
     createTestList();
-
 
     renderTestSelect();
 
@@ -2159,24 +2041,21 @@ export async function loadScoreAnalysis(){
 
     if(select){
 
-      select.onchange =
-        async function(){
+      select.addEventListener(
+        "change",
+        event => {
 
-          await changeAnalysisTest(
-            this.value
+          changeAnalysisTest(
+            event.target.value
           );
 
-        };
+        }
+      );
 
     }
 
 
-    // -----------------------------------
-    // 初期状態
-    // -----------------------------------
-
     selectedTestId = "";
-
 
     renderSelectedTest();
 
@@ -2204,8 +2083,7 @@ export async function loadScoreAnalysis(){
 
         <p>
           ${escapeHtml(
-            error?.message ||
-            "Unknown error"
+            error.message
           )}
         </p>
 
@@ -2218,34 +2096,9 @@ export async function loadScoreAnalysis(){
 }
 
 
-// =====================================================
-// 後から再読み込みする場合
-// =====================================================
-
-export async function refreshScoreAnalysis(){
-
-  selectedTestId = "";
-
-  allScores = [];
-
-  allUsers = [];
-
-  allForms = [];
-
-  testList = [];
-
-  await loadScoreAnalysis();
-
-}
-
-
-// =====================================================
-// 念のためwindowにも公開
-// =====================================================
-
 window.loadScoreAnalysis =
   loadScoreAnalysis;
 
+
 window.changeAnalysisTest =
   changeAnalysisTest;
-```
