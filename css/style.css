@@ -1,3 +1,4 @@
+```css
 *{
   box-sizing:border-box;
 }
@@ -60,7 +61,24 @@ button:hover{
   gap:6px;
 }
 
-.sidebar nav a,
+/* サイドバーメニュー */
+.sidebar nav a{
+  display:block;
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  text-decoration:none;
+  text-align:left;
+  background:#fff;
+  color:#333;
+  border:0;
+  font-size:14px;
+  line-height:1.5;
+  cursor:pointer;
+  transition:background-color .15s ease;
+}
+
+/* ログアウトなどの実ボタン */
 .sidebar nav button{
   display:block;
   width:100%;
@@ -70,11 +88,23 @@ button:hover{
   text-align:left;
   background:#fff;
   color:#333;
+  font-size:14px;
+  line-height:1.5;
+  cursor:pointer;
+  transition:background-color .15s ease;
 }
 
+/* メニューを押したとき・カーソルを合わせたとき */
 .sidebar nav a:hover,
 .sidebar nav button:hover{
   background:#eef2ff;
+  opacity:1;
+}
+
+/* 現在のページ */
+.sidebar nav a.active{
+  background:#eef2ff;
+  font-weight:600;
 }
 
 .sidebar hr{
@@ -453,3 +483,4 @@ label{
   }
 
 }
+```
