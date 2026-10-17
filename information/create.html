@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
+<title>
+お知らせ作成 | 定期テスト対策プリント運営事務局|ポータルサイト
+</title>
+
+<link
+  rel="icon"
+  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Cpath d='M18 16h28v7H25v10h18v7H25v8h21v7H18z' fill='white'/%3E%3C/svg%3E"
+>
+
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
+>
+
+<link
+  rel="stylesheet"
+  href="../css/style.css"
+>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+<aside
+  class="sidebar admin-sidebar"
+  id="sidebar"
+>
+
+<div class="logo">
+定期テスト対策プリント<br>
+運営事務局
+</div>
+
+<nav>
+
+<a href="../dashboard/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+dashboard
+</span>
+</span>
+<span class="menu-text">
+ダッシュボード
+</span>
+</a>
+
+<a href="./admin.html" class="active">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+campaign
+</span>
+</span>
+<span class="menu-text">
+お知らせ
+</span>
+</a>
+
+<a href="../messages/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+mail
+</span>
+</span>
+<span class="menu-text">
+連絡
+</span>
+</a>
+
+<a href="../documents/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+description
+</span>
+</span>
+<span class="menu-text">
+配布文書
+</span>
+</a>
+
+<a href="../calendar/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+calendar_month
+</span>
+</span>
+<span class="menu-text">
+カレンダー
+</span>
+</a>
+
+<a href="../scoreForms/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+assignment
+</span>
+</span>
+<span class="menu-text">
+成績フォーム作成
+</span>
+</a>
+
+<a href="../scores/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+analytics
+</span>
+</span>
+<span class="menu-text">
+成績分析
+</span>
+</a>
+
+<a href="../users/admin.html">
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+group
+</span>
+</span>
+<span class="menu-text">
+生徒管理
+</span>
+</a>
+
+<hr>
+
+<button
+  type="button"
+  onclick="logout()"
+>
+
+<span class="menu-icon">
+<span class="material-symbols-outlined">
+logout
+</span>
+</span>
+
+<span class="menu-text">
+ログアウト
+</span>
+
+</button>
+
+</nav>
+
+</aside>
+
+
+<button
+  type="button"
+  id="sidebarToggle"
+  class="sidebar-toggle"
+>
+
+<span class="material-symbols-outlined">
+menu
+</span>
+
+</button>
+
+
+<main class="content">
+
+<section>
+
+<div class="page-header">
+
+<h1>
+お知らせを作成
+</h1>
+
+<a
+  href="./admin.html"
+  class="btn btn-light"
+>
+
+<span class="material-symbols-outlined">
+arrow_back
+</span>
+
+戻る
+
+</a>
+
+</div>
+
+
+<div
+  id="successMessage"
+  class="success-message"
+  style="display:none;"
+>
+送信しました。
+</div>
+
+
+<div class="card">
+
+<form id="noticeForm">
+
+
+<label for="title">
+タイトル
+</label>
+
+<input
+  id="title"
+  type="text"
+  maxlength="100"
+  required
+>
+
+
+<label for="body">
+本文
+</label>
+
+<textarea
+  id="body"
+  placeholder="お知らせ本文"
+></textarea>
+
+
+<label for="scope">
+配信範囲
+</label>
+
+<select
+  id="scope"
+>
+
+<option value="全員">
+全員
+</option>
+
+<option value="生徒">
+生徒
+</option>
+
+<option value="保護者">
+保護者
+</option>
+
+</select>
+
+
+<div class="form-actions">
+
+<button
+  type="submit"
+  class="btn"
+>
+
+<span class="material-symbols-outlined">
+send
+</span>
+
+送信
+
+</button>
+
+
+<a
+  href="./admin.html"
+  class="btn btn-secondary"
+>
+戻る
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script
+  type="module"
+  src="../js/auth.js"
+></script>
+
+<script
+  type="module"
+  src="../js/informationCreate.js"
+></script>
+
+
+<script>
+
+const sidebar =
+  document.getElementById(
+    "sidebar"
+  );
+
+const content =
+  document.querySelector(
+    ".content"
+  );
+
+const toggle =
+  document.getElementById(
+    "sidebarToggle"
+  );
+
+const savedState =
+  localStorage.getItem(
+    "portalSidebarCollapsed"
+  );
+
+function setSidebarState(
+  collapsed
+){
+
+  sidebar.classList.toggle(
+    "collapsed",
+    collapsed
+  );
+
+  content.classList.toggle(
+    "sidebar-collapsed",
+    collapsed
+  );
+
+  toggle.classList.toggle(
+    "collapsed",
+    collapsed
+  );
+
+}
+
+setSidebarState(
+  savedState === "true"
+);
+
+toggle.addEventListener(
+  "click",
+  () => {
+
+    const collapsed =
+      !sidebar.classList.contains(
+        "collapsed"
+      );
+
+    setSidebarState(
+      collapsed
+    );
+
+    localStorage.setItem(
+      "portalSidebarCollapsed",
+      String(collapsed)
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>
