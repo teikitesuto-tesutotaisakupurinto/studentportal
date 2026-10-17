@@ -1,10 +1,13 @@
 ```html
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>成績分析</title>
+
+<title>成績分析 | 管理画面</title>
+
 <link rel="stylesheet" href="../css/style.css">
 </head>
 
@@ -20,19 +23,49 @@
 </div>
 
 <nav>
-<a href="../dashboard/admin.html">ダッシュボード</a>
-<a href="../information/admin.html">お知らせ管理</a>
-<a href="../messages/admin.html">連絡管理</a>
-<a href="../documents/admin.html">配布文書管理</a>
-<a href="../calendar/admin.html">カレンダー管理</a>
-<a href="../scoreForms/admin.html">成績フォーム作成</a>
-<a href="../scores/admin.html">成績分析</a>
-<a href="../users/admin.html">生徒管理</a>
+
+<a href="../dashboard/admin.html">
+ダッシュボード
+</a>
+
+<a href="../information/admin.html">
+お知らせ管理
+</a>
+
+<a href="../messages/admin.html">
+連絡管理
+</a>
+
+<a href="../documents/admin.html">
+配布文書管理
+</a>
+
+<a href="../calendar/admin.html">
+カレンダー管理
+</a>
+
+<a href="../scoreForms/admin.html">
+成績フォーム作成
+</a>
+
+<a href="../scores/admin.html" class="active">
+成績分析
+</a>
+
+<a href="../users/admin.html">
+生徒管理
+</a>
+
 <hr>
-<button type="button" onclick="logout()">ログアウト</button>
+
+<button type="button" onclick="logout()">
+ログアウト
+</button>
+
 </nav>
 
 </aside>
+
 
 <main class="content">
 
@@ -40,111 +73,105 @@
 
 <h1>成績分析</h1>
 
-<!-- テスト選択 -->
+
+<!-- =========================
+     テスト選択
+========================= -->
+
 <div class="card">
 
 <h2>テストを選択</h2>
 
 <p>
-分析したいテストを選択してください。
+分析するテストを選択してください。
 </p>
 
-<label for="testSelect">テスト</label>
+<label for="testSelect">
+テスト
+</label>
 
 <select id="testSelect">
-<option value="">テストを読み込み中...</option>
+
+<option value="">
+テストを読み込んでいます...
+</option>
+
 </select>
 
 </div>
 
-<!-- 選択中のテスト -->
+
+<!-- =========================
+     選択中テスト
+========================= -->
+
 <div id="selectedTestArea"></div>
 
-<!-- 成績分析 -->
+
+<!-- =========================
+     成績分析結果
+========================= -->
+
 <div id="analysisArea">
 
 <div class="card">
-<p>テストを選択すると、成績分析結果が表示されます。</p>
-</div>
+
+<p>
+テストを選択すると、成績分析結果が表示されます。
+</p>
 
 </div>
 
-<!-- 提出・再回答管理 -->
+</div>
+
+
+<!-- =========================
+     提出・再回答管理
+========================= -->
+
 <div class="card">
 
-<h2>提出・再回答管理</h2>
+<h2>
+提出・再回答管理
+</h2>
 
 <div id="scoreSubmissionList">
-テストを選択すると、提出状況を表示します。
+
+テストを選択すると、
+そのテストの提出状況が表示されます。
+
 </div>
 
 </div>
+
 
 </section>
 
 </main>
+
 </div>
 
+
 <script type="module" src="../js/auth.js"></script>
+
 <script type="module" src="../js/admin.js"></script>
 
 <script type="module">
 
 import {
-  loadScoreAnalysis,
-  loadTestList,
-  changeAnalysisTest
+  loadScoreAnalysis
 } from "../js/scoreAnalysis.js";
+
 
 window.addEventListener("load", async () => {
 
-  try {
-
-    const testSelect = document.getElementById("testSelect");
-
-    await loadTestList();
-
-    testSelect.addEventListener("change", async () => {
-
-      const testId = testSelect.value;
-
-      if(!testId){
-        document.getElementById("analysisArea").innerHTML = `
-          <div class="card">
-            <p>テストを選択すると、成績分析結果が表示されます。</p>
-          </div>
-        `;
-
-        document.getElementById("selectedTestArea").innerHTML = "";
-
-        document.getElementById("scoreSubmissionList").innerHTML =
-          "テストを選択すると、提出状況を表示します。";
-
-        return;
-      }
-
-      await changeAnalysisTest(testId);
-
-    });
-
-  } catch(error) {
-
-    console.error(error);
-
-    document.getElementById("analysisArea").innerHTML = `
-      <div class="card">
-        <p class="error">
-          成績分析の読み込みに失敗しました。
-        </p>
-      </div>
-    `;
-
-  }
+  await loadScoreAnalysis();
 
 });
 
 </script>
 
 </body>
+
 </html>
 ```
