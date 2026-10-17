@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -28,7 +29,7 @@
 <a href="../scores/admin.html">成績分析</a>
 <a href="../users/admin.html">生徒管理</a>
 <hr>
-<button onclick="logout()">ログアウト</button>
+<button type="button" onclick="logout()">ログアウト</button>
 </nav>
 
 </aside>
@@ -39,16 +40,42 @@
 
 <h1>成績分析</h1>
 
-<div id="analysisArea">
-読み込み中...
+<!-- テスト選択 -->
+<div class="card">
+
+<h2>テストを選択</h2>
+
+<p>
+分析したいテストを選択してください。
+</p>
+
+<label for="testSelect">テスト</label>
+
+<select id="testSelect">
+<option value="">テストを読み込み中...</option>
+</select>
+
 </div>
 
+<!-- 選択中のテスト -->
+<div id="selectedTestArea"></div>
+
+<!-- 成績分析 -->
+<div id="analysisArea">
+
+<div class="card">
+<p>テストを選択すると、成績分析結果が表示されます。</p>
+</div>
+
+</div>
+
+<!-- 提出・再回答管理 -->
 <div class="card">
 
 <h2>提出・再回答管理</h2>
 
 <div id="scoreSubmissionList">
-読み込み中...
+テストを選択すると、提出状況を表示します。
 </div>
 
 </div>
@@ -60,13 +87,64 @@
 
 <script type="module" src="../js/auth.js"></script>
 <script type="module" src="../js/admin.js"></script>
-<script type="module">
-import { loadScoreAnalysis } from "../js/scoreAnalysis.js";
 
-window.addEventListener("load", () => {
-  loadScoreAnalysis();
+<script type="module">
+
+import {
+  loadScoreAnalysis,
+  loadTestList,
+  changeAnalysisTest
+} from "../js/scoreAnalysis.js";
+
+window.addEventListener("load", async () => {
+
+  try {
+
+    const testSelect = document.getElementById("testSelect");
+
+    await loadTestList();
+
+    testSelect.addEventListener("change", async () => {
+
+      const testId = testSelect.value;
+
+      if(!testId){
+        document.getElementById("analysisArea").innerHTML = `
+          <div class="card">
+            <p>テストを選択すると、成績分析結果が表示されます。</p>
+          </div>
+        `;
+
+        document.getElementById("selectedTestArea").innerHTML = "";
+
+        document.getElementById("scoreSubmissionList").innerHTML =
+          "テストを選択すると、提出状況を表示します。";
+
+        return;
+      }
+
+      await changeAnalysisTest(testId);
+
+    });
+
+  } catch(error) {
+
+    console.error(error);
+
+    document.getElementById("analysisArea").innerHTML = `
+      <div class="card">
+        <p class="error">
+          成績分析の読み込みに失敗しました。
+        </p>
+      </div>
+    `;
+
+  }
+
 });
+
 </script>
 
 </body>
 </html>
+```
