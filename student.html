@@ -1,14 +1,286 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta http-equiv="refresh" content="0;url=home/index.html">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
+
 <title>定期テスト対策ポータル</title>
+
+<link
+  rel="stylesheet"
+  href="css/style.css"
+>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  rel="stylesheet"
+>
+
 </head>
+
+
 <body>
-<script>
-location.replace("home/index.html");
-</script>
+
+<div class="layout">
+
+
+<aside class="sidebar">
+
+  <div class="logo">
+    定期テスト対策ポータル
+  </div>
+
+
+  <nav>
+
+    <button
+      type="button"
+      onclick="showPage('home')"
+    >
+      <span class="material-symbols-rounded">
+        home
+      </span>
+      <span>ホーム</span>
+    </button>
+
+
+    <button
+      type="button"
+      onclick="showPage('notice')"
+    >
+      <span class="material-symbols-rounded">
+        campaign
+      </span>
+      <span>お知らせ</span>
+    </button>
+
+
+    <button
+      type="button"
+      onclick="showPage('message')"
+    >
+      <span class="material-symbols-rounded">
+        mail
+      </span>
+      <span>連絡</span>
+    </button>
+
+
+    <button
+      type="button"
+      onclick="showPage('documents')"
+    >
+      <span class="material-symbols-rounded">
+        description
+      </span>
+      <span>配布文書</span>
+    </button>
+
+
+    <button
+      type="button"
+      onclick="showPage('calendar')"
+    >
+      <span class="material-symbols-rounded">
+        calendar_month
+      </span>
+      <span>カレンダー</span>
+    </button>
+
+
+    <button
+      type="button"
+      onclick="showPage('scores')"
+    >
+      <span class="material-symbols-rounded">
+        assignment
+      </span>
+      <span>テスト成績</span>
+    </button>
+
+
+    <button
+      type="button"
+      onclick="showPage('settings')"
+    >
+      <span class="material-symbols-rounded">
+        settings
+      </span>
+      <span>各種設定</span>
+    </button>
+
+
+    <hr>
+
+
+    <button
+      type="button"
+      onclick="logout()"
+    >
+      <span class="material-symbols-rounded">
+        logout
+      </span>
+      <span>ログアウト</span>
+    </button>
+
+  </nav>
+
+</aside>
+
+
+<main class="content">
+
+
+<section id="home">
+
+  <h1>ホーム</h1>
+
+  <div class="card">
+
+    <h2>お知らせ</h2>
+
+    <div id="dashboardNotices"></div>
+
+  </div>
+
+</section>
+
+
+<section
+  id="notice"
+  style="display:none"
+>
+
+  <h1>お知らせ</h1>
+
+  <div id="noticeList"></div>
+
+</section>
+
+
+<section
+  id="message"
+  style="display:none"
+>
+
+  <h1>連絡</h1>
+
+  <div class="card">
+
+    <textarea
+      id="messageText"
+      placeholder="運営への連絡内容"
+    ></textarea>
+
+    <button
+      type="button"
+      onclick="sendMessage()"
+    >
+
+      <span class="material-symbols-rounded">
+        send
+      </span>
+
+      送信
+
+    </button>
+
+  </div>
+
+</section>
+
+
+<section
+  id="documents"
+  style="display:none"
+>
+
+  <h1>配布文書</h1>
+
+  <div id="documentList"></div>
+
+</section>
+
+
+<section
+  id="calendar"
+  style="display:none"
+>
+
+  <h1>カレンダー</h1>
+
+  <div id="calendarArea"></div>
+
+</section>
+
+
+<section
+  id="scores"
+  style="display:none"
+>
+
+  <h1>テスト成績</h1>
+
+  <div id="scoreFormList"></div>
+
+</section>
+
+
+<section
+  id="settings"
+  style="display:none"
+>
+
+  <h1>各種設定</h1>
+
+  <div class="card">
+
+    <div id="userInfo"></div>
+
+    <button
+      type="button"
+      onclick="changePassword()"
+    >
+
+      <span class="material-symbols-rounded">
+        lock_reset
+      </span>
+
+      パスワード変更
+
+    </button>
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<script
+  type="module"
+  src="js/auth.js"
+></script>
+
+<script
+  type="module"
+  src="js/student.js"
+></script>
+
+<script
+  type="module"
+  src="js/settings.js"
+></script>
+
 </body>
+
 </html>
