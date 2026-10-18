@@ -1,6 +1,5 @@
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
 import {
   getAuth,
@@ -11,49 +10,26 @@ import {
   getFirestore
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-
 const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
-
-  authDomain:
-    "aitera-83486.firebaseapp.com",
-
-  projectId:
-    "aitera-83486",
-
-  storageBucket:
-    "aitera-83486.firebasestorage.app",
-
-  messagingSenderId:
-    "79405334766",
-
-  appId:
-    "1:79405334766:web:694c02a7abb407b50c73ff"
+  apiKey: "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
+  authDomain: "aitera-83486.firebaseapp.com",
+  projectId: "aitera-83486",
+  storageBucket: "aitera-83486.firebasestorage.app",
+  messagingSenderId: "79405334766",
+  appId: "1:79405334766:web:694c02a7abb407b50c73ff"
 };
 
+const app = initializeApp(firebaseConfig);
 
-const app =
-  initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-
-const auth =
-  getAuth(app);
-
-
-const googleProvider =
-  new GoogleAuthProvider();
-
+const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({
   prompt: "select_account"
 });
 
-
-const db =
-  getFirestore(app);
-
+const db = getFirestore(app);
 
 export {
   app,
