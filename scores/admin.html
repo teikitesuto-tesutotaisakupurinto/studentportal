@@ -1,224 +1,140 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
+<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<title>成績分析 | 管理画面</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 
-<link
-  rel="stylesheet"
-  href="../css/style.css"
->
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
 
-<link
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
-  rel="stylesheet"
->
+<link rel="stylesheet" href="../css/style.css">
 
 </head>
-
 
 <body>
 
 <div class="layout">
 
+<aside class="sidebar" id="sidebar">
 
-<aside class="sidebar">
+<div class="sidebar-header">
 
-  <div class="logo">
-    定期テスト対策ポータル<br>
-    管理画面
-  </div>
+<div class="sidebar-logo">
 
+<span class="material-symbols-outlined">
+school
+</span>
 
-  <nav>
+<span class="sidebar-title">
+定期テスト対策プリント運営事務局
+</span>
 
-    <a href="../dashboard/admin.html">
+</div>
 
-      <span class="material-symbols-rounded">
-        home
-      </span>
+<button
+class="menu-toggle"
+onclick="toggleSidebar()">
 
-      <span>ダッシュボード</span>
+<span class="material-symbols-outlined">
+menu
+</span>
 
-    </a>
+</button>
 
+</div>
 
-    <a href="../information/admin.html">
+<nav class="sidebar-nav">
 
-      <span class="material-symbols-rounded">
-        campaign
-      </span>
+<a href="../dashboard/admin.html" class="menu-item">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="menu-text">ダッシュボード</span>
+</a>
 
-      <span>お知らせ管理</span>
+<a href="../information/admin.html" class="menu-item">
+<span class="material-symbols-outlined">campaign</span>
+<span class="menu-text">お知らせ管理</span>
+</a>
 
-    </a>
+<a href="../messages/admin.html" class="menu-item">
+<span class="material-symbols-outlined">mail</span>
+<span class="menu-text">連絡管理</span>
+</a>
 
+<a href="../documents/admin.html" class="menu-item">
+<span class="material-symbols-outlined">description</span>
+<span class="menu-text">配布文書管理</span>
+</a>
 
-    <a href="../messages/admin.html">
+<a href="../calendar/admin.html" class="menu-item">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="menu-text">カレンダー管理</span>
+</a>
 
-      <span class="material-symbols-rounded">
-        mail
-      </span>
+<a href="../scoreForms/admin.html" class="menu-item">
+<span class="material-symbols-outlined">assignment</span>
+<span class="menu-text">成績フォーム作成</span>
+</a>
 
-      <span>連絡管理</span>
+<a href="../scores/admin.html" class="menu-item active">
+<span class="material-symbols-outlined">analytics</span>
+<span class="menu-text">成績分析</span>
+</a>
 
-    </a>
+<a href="../users/admin.html" class="menu-item">
+<span class="material-symbols-outlined">group</span>
+<span class="menu-text">生徒管理</span>
+</a>
 
+</nav>
 
-    <a href="../documents/admin.html">
+<div class="sidebar-bottom">
 
-      <span class="material-symbols-rounded">
-        description
-      </span>
+<button
+class="menu-item logout-button"
+onclick="logout()">
 
-      <span>配布文書管理</span>
+<span class="material-symbols-outlined">
+logout
+</span>
 
-    </a>
+<span class="menu-text">
+ログアウト
+</span>
 
+</button>
 
-    <a href="../calendar/admin.html">
-
-      <span class="material-symbols-rounded">
-        calendar_month
-      </span>
-
-      <span>カレンダー管理</span>
-
-    </a>
-
-
-    <a href="../scoreForms/admin.html">
-
-      <span class="material-symbols-rounded">
-        edit_note
-      </span>
-
-      <span>成績フォーム作成</span>
-
-    </a>
-
-
-    <a
-      href="../scores/admin.html"
-      class="active"
-    >
-
-      <span class="material-symbols-rounded">
-        analytics
-      </span>
-
-      <span>成績分析</span>
-
-    </a>
-
-
-    <a href="../users/admin.html">
-
-      <span class="material-symbols-rounded">
-        group
-      </span>
-
-      <span>生徒管理</span>
-
-    </a>
-
-
-    <hr>
-
-
-    <button
-      type="button"
-      onclick="logout()"
-    >
-
-      <span class="material-symbols-rounded">
-        logout
-      </span>
-
-      <span>ログアウト</span>
-
-    </button>
-
-  </nav>
+</div>
 
 </aside>
 
-
 <main class="content">
+
+<header class="page-header">
+
+<h1>
+成績分析
+</h1>
+
+</header>
 
 <section>
 
-
-<h1>成績分析</h1>
-
+<div id="analysisArea"></div>
 
 <div class="card">
 
-  <h2>
-    テストを選択
-  </h2>
+<h2>
+提出・再回答管理
+</h2>
 
-  <p>
-    分析するテストを選択してください。
-  </p>
-
-
-  <label for="testSelect">
-    テスト
-  </label>
-
-
-  <select id="testSelect">
-
-    <option value="">
-      テストを読み込んでいます...
-    </option>
-
-  </select>
+<div id="scoreSubmissionList"></div>
 
 </div>
-
-
-<div id="selectedTestArea"></div>
-
-
-<div id="analysisArea">
-
-  <div class="card">
-
-    <p>
-      テストを選択すると、
-      成績分析結果が表示されます。
-    </p>
-
-  </div>
-
-</div>
-
-
-<div class="card">
-
-  <h2>
-    提出・再回答管理
-  </h2>
-
-  <div id="scoreSubmissionList">
-
-    テストを選択すると、
-    そのテストの提出状況が表示されます。
-
-  </div>
-
-</div>
-
 
 </section>
 
@@ -226,16 +142,8 @@
 
 </div>
 
-
-<script
-  type="module"
-  src="../js/auth.js"
-></script>
-
-<script
-  type="module"
-  src="../js/admin.js"
-></script>
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/navigation.js"></script>
 
 <script type="module">
 
@@ -243,9 +151,8 @@ import {
   loadScoreAnalysis
 } from "../js/scoreAnalysis.js";
 
-
 window.addEventListener(
-  "load",
+  "DOMContentLoaded",
   () => {
 
     loadScoreAnalysis();
@@ -256,5 +163,4 @@ window.addEventListener(
 </script>
 
 </body>
-
 </html>
