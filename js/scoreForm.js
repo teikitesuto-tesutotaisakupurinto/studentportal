@@ -20,85 +20,79 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 import {
-  getUserRole
+  getUserData
 } from "./auth.js";
-
-let currentUser = null;
-let userData = null;
-let formData = null;
-let existingSubmission = null;
 
 const formId =
   new URLSearchParams(
     location.search
   ).get("id");
 
-const esc =
-  value =>
-    String(value ?? "").replace(
-      /[&<>\"]/g,
-      c => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;"
-      }[c])
-    );
+let currentUser = null;
+let userData = null;
+let formData = null;
+let existingSubmission = null;
 
-onAuthStateChanged(
-  auth,
-  async user=>{
+function esc(value){
 
-    if(!user){
+  return String(value ?? "")
+    .replace(/[&<>"']/g,char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[char]));
 
-      location.href =
-        "index.html";
+}
 
-      return;
-    }
+function canView(data){
 
-    const role =
-      await getUserRole(user);
-
-    if(role !== "student"){
-
-      alert(
-        "アクセス権限がありません"
-      );
-
-      location.href =
-        "dashboard/admin.html";
-
-      return;
-    }
-
-    currentUser = user;
-
-    const userSnap =
-      await getDoc(
-        doc(
-          db,
-          "users",
-          user.uid
-        )
-      );
-
-    if(!userSnap.exists()){
-
-      alert(
-        "ユーザー情報がありません"
-      );
-
-      return;
-    }
-
-    userData =
-      userSnap.data();
-
-    await loadForm();
-
+  if(
+    !data.targetType ||
+    data.targetType === "all"
+  ){
+    return true;
   }
-);
+
+  if(
+    data.targetType === "block"
+  ){
+    return data.block === userData.block;
+  }
+
+  if(
+    data.targetType === "grade"
+  ){
+    return data.grade === userData.grade;
+  }
+
+  if(
+    data.targetType === "block_grade"
+  ){
+    return (
+      data.block === userData.block &&
+      data.grade === userData.grade
+    );
+  }
+
+  if(
+    data.targetType === "individual"
+  ){
+    return data.uid === currentUser.uid;
+  }
+
+  return false;
+
+}
+
+function timestampMs(value){
+
+  return value?.toDate
+    ? value.toDate().getTime()
+    : 0;
+
+}
 
 async function loadForm(){
 
@@ -126,6 +120,7 @@ async function loadForm(){
       "フォームがありません";
 
     return;
+
   }
 
   formData =
@@ -133,74 +128,26 @@ async function loadForm(){
 
   title.textContent =
     formData.title ||
-    "テスト成績入力";
+    "テスト成績";
 
-  if(
-    formData.targetType &&
-    !canView(formData)
-  ){
+  if(!canView(formData)){
 
     document.getElementById(
       "scorePage"
     ).innerHTML = `
+
       <div class="card">
         この成績フォームの対象ではありません。
       </div>
+
     `;
 
     return;
+
   }
 
   await loadExistingSubmission();
 
-}
-
-function canView(data){
-
-  if(
-    !data.targetType ||
-    data.targetType === "all"
-  ){
-
-    return true;
-  }
-
-  if(data.targetType === "block"){
-
-    return (
-      data.block ===
-      userData.block
-    );
-
-  }
-
-  if(
-    data.targetType ===
-    "block_grade"
-  ){
-
-    return (
-      data.block ===
-      userData.block &&
-      data.grade ===
-      userData.grade
-    );
-
-  }
-
-  if(
-    data.targetType ===
-    "individual"
-  ){
-
-    return (
-      data.uid ===
-      currentUser.uid
-    );
-
-  }
-
-  return false;
 }
 
 async function loadExistingSubmission(){
@@ -208,7 +155,10 @@ async function loadExistingSubmission(){
   const snap =
     await getDocs(
       query(
-        collection(db,"scores"),
+        collection(
+          db,
+          "scores"
+        ),
         where(
           "formId",
           "==",
@@ -227,40 +177,37 @@ async function loadExistingSubmission(){
     renderInputForm();
 
     return;
+
   }
 
-  const docs = [];
+  const submissions = [];
 
-  snap.forEach(item=>{
+  snap.forEach(item => {
 
-    docs.push({
+    submissions.push({
       id:item.id,
       ...item.data()
     });
 
   });
 
-  docs.sort(
-    (a,b)=>
-      timestampMs(
-        b.createdAt
-      ) -
-      timestampMs(
-        a.createdAt
-      )
+  submissions.sort(
+    (a,b) =>
+      timestampMs(b.createdAt) -
+      timestampMs(a.createdAt)
   );
 
   existingSubmission =
-    docs[0];
+    submissions[0];
 
   if(
-    existingSubmission.resubmitAllowed ===
-    true
+    existingSubmission.resubmitAllowed === true
   ){
 
     renderInputForm(true);
 
     return;
+
   }
 
   renderSubmitted(
@@ -269,16 +216,8 @@ async function loadExistingSubmission(){
 
 }
 
-function timestampMs(ts){
-
-  return ts?.toDate
-    ? ts.toDate().getTime()
-    : 0;
-
-}
-
 function renderInputForm(
-  isResubmit=false
+  isResubmit = false
 ){
 
   const area =
@@ -312,37 +251,42 @@ function renderInputForm(
 
   area.innerHTML =
     (formData.subjects || [])
-      .map(subject=>`
+      .map(
+        subject => `
 
-        <div class="card">
+          <div class="card">
 
-          <label>
-            ${esc(subject)}
+            <div class="form-group">
 
-            <input
-              type="number"
-              min="0"
-              max="100"
-              class="scoreInput"
-              data-subject="${esc(subject)}"
-              placeholder="点数"
-            >
+              <label>
+                ${esc(subject)}
+              </label>
 
-          </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                class="score-input"
+                data-subject="${esc(subject)}"
+                placeholder="点数">
 
-        </div>
+            </div>
 
-      `)
+          </div>
+
+        `
+      )
       .join("");
 
   document.getElementById(
     "submitArea"
-  ).style.display =
-    "block";
+  ).style.display = "block";
 
 }
 
-function renderSubmitted(data){
+function renderSubmitted(
+  data
+){
 
   document.getElementById(
     "submissionStatus"
@@ -368,30 +312,31 @@ function renderSubmitted(data){
       "subjectArea"
     );
 
-  const subjects =
-    data.subjects || {};
-
   area.innerHTML = `
 
     <div class="card">
 
-      <h3>
+      <h2>
         回答内容の確認
-      </h3>
+      </h2>
 
       ${
-        Object.entries(subjects)
-          .map(
-            ([subject,score]) => `
-              <p>
-                ${esc(subject)}：
-                <strong>
-                  ${esc(score)}点
-                </strong>
-              </p>
-            `
-          )
-          .join("")
+        Object.entries(
+          data.subjects || {}
+        ).map(
+          ([subject,score]) => `
+
+            <p>
+
+              ${esc(subject)}：
+              <strong>
+                ${esc(score)}点
+              </strong>
+
+            </p>
+
+          `
+        ).join("")
       }
 
       <hr>
@@ -416,16 +361,27 @@ function renderSubmitted(data){
 
   document.getElementById(
     "submitArea"
-  ).style.display =
-    "none";
+  ).style.display = "none";
 
 }
 
-window.submitScore =
-async function(){
+async function submitScore(){
 
   if(!formData){
     return;
+  }
+
+  if(
+    existingSubmission &&
+    existingSubmission.resubmitAllowed !== true
+  ){
+
+    renderSubmitted(
+      existingSubmission
+    );
+
+    return;
+
   }
 
   const subjects = {};
@@ -434,9 +390,9 @@ async function(){
 
   document
     .querySelectorAll(
-      ".scoreInput"
+      ".score-input"
     )
-    .forEach(input=>{
+    .forEach(input => {
 
       const raw =
         input.value.trim();
@@ -469,10 +425,11 @@ async function(){
   if(count === 0){
 
     alert(
-      "点数を入力してください"
+      "点数を入力してください。"
     );
 
     return;
+
   }
 
   if(
@@ -481,17 +438,17 @@ async function(){
   ){
 
     alert(
-      "すべての教科の点数を入力してください"
+      "すべての教科の点数を入力してください。"
     );
 
     return;
+
   }
 
   try{
 
     if(
-      existingSubmission &&
-      existingSubmission.resubmitAllowed === true
+      existingSubmission?.resubmitAllowed === true
     ){
 
       await updateDoc(
@@ -509,46 +466,49 @@ async function(){
 
     }
 
-    const average =
-      Number(
-        (
-          total / count
-        ).toFixed(1)
+    const result = {
+
+      formId,
+
+      uid:
+        currentUser.uid,
+
+      name:
+        userData.name || "",
+
+      testName:
+        formData.title || "",
+
+      subjects,
+
+      total,
+
+      average:
+        Number(
+          (
+            total / count
+          ).toFixed(1)
+        ),
+
+      resubmitAllowed:false,
+
+      createdAt:
+        serverTimestamp()
+
+    };
+
+    const ref =
+      await addDoc(
+        collection(
+          db,
+          "scores"
+        ),
+        result
       );
 
-    await addDoc(
-      collection(db,"scores"),
-      {
-
-        formId,
-
-        uid:
-          currentUser.uid,
-
-        name:
-          userData.name || "",
-
-        testName:
-          formData.title || "",
-
-        subjects,
-
-        total,
-
-        average,
-
-        resubmitAllowed:false,
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
     existingSubmission = {
-      subjects,
-      total,
-      average,
+      id:ref.id,
+      ...result,
       resubmitAllowed:false
     };
 
@@ -556,19 +516,59 @@ async function(){
       existingSubmission
     );
 
-    alert(
-      "提出しました。"
-    );
-
   }catch(error){
 
     console.error(error);
 
     alert(
-      "提出できませんでした\n" +
-      error.message
+      "提出できませんでした。"
     );
 
   }
 
-};
+}
+
+document
+  .getElementById(
+    "submitScoreButton"
+  )
+  ?.addEventListener(
+    "click",
+    submitScore
+  );
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      location.href =
+        "/studentportal/index.html";
+
+      return;
+
+    }
+
+    currentUser = user;
+
+    userData =
+      await getUserData(user);
+
+    if(
+      !userData ||
+      userData.role !== "student"
+    ){
+
+      alert(
+        "アクセス権限がありません。"
+      );
+
+      return;
+
+    }
+
+    await loadForm();
+
+  }
+);
