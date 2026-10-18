@@ -1,268 +1,45 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
 
-<title>
-お知らせ詳細 | 定期テスト対策プリント運営事務局|ポータルサイト
-</title>
-
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
->
-
-<link
-  rel="stylesheet"
-  href="../css/style.css"
->
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..1,0..200">
 </head>
 
-<body>
+<body data-role="student">
 
-<div class="layout">
-
-<aside
-  class="sidebar"
-  id="sidebar"
->
-
-<div class="logo">
-定期テスト対策プリント<br>
-運営事務局
-</div>
-
-<nav>
-
-<a href="../dashboard/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-dashboard
-</span>
-</span>
-<span class="menu-text">
-ダッシュボード
-</span>
-</a>
-
-<a href="./admin.html" class="active">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-campaign
-</span>
-</span>
-<span class="menu-text">
-お知らせ
-</span>
-</a>
-
-<a href="../messages/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-mail
-</span>
-</span>
-<span class="menu-text">
-連絡
-</span>
-</a>
-
-<a href="../documents/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-description
-</span>
-</span>
-<span class="menu-text">
-配布文書
-</span>
-</a>
-
-<a href="../calendar/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-calendar_month
-</span>
-</span>
-<span class="menu-text">
-カレンダー
-</span>
-</a>
-
-<a href="../scoreForms/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-assignment
-</span>
-</span>
-<span class="menu-text">
-成績フォーム作成
-</span>
-</a>
-
-<a href="../scores/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-analytics
-</span>
-</span>
-<span class="menu-text">
-成績分析
-</span>
-</a>
-
-<a href="../users/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-group
-</span>
-</span>
-<span class="menu-text">
-生徒管理
-</span>
-</a>
-
-<hr>
-
-<button
-  type="button"
-  onclick="logout()"
->
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-logout
-</span>
-</span>
-
-<span class="menu-text">
-ログアウト
-</span>
-
-</button>
-
-</nav>
-
-</aside>
-
-
-<button
-  type="button"
-  id="sidebarToggle"
-  class="sidebar-toggle"
->
-
-<span class="material-symbols-outlined">
-menu
-</span>
-
-</button>
-
+<aside id="sidebar" class="sidebar"></aside>
 
 <main class="content">
+<div class="content-inner">
 
-<section>
+<a
+href="javascript:history.back()"
+class="secondary-button">
 
-<div
-  id="noticeDetail"
->
+<span class="material-symbols-rounded">
+arrow_back
+</span>
+
+戻る
+
+</a>
+
+<div id="noticeDetail" class="card"></div>
+
 </div>
-
-</section>
-
 </main>
 
-</div>
-
-
-<script
-  type="module"
-  src="../js/auth.js"
-></script>
-
-<script
-  type="module"
-  src="../js/informationDetail.js"
-></script>
-
-
-<script>
-
-const sidebar =
-  document.getElementById(
-    "sidebar"
-  );
-
-const content =
-  document.querySelector(
-    ".content"
-  );
-
-const toggle =
-  document.getElementById(
-    "sidebarToggle"
-  );
-
-const savedState =
-  localStorage.getItem(
-    "portalSidebarCollapsed"
-  );
-
-function setSidebarState(
-  collapsed
-){
-
-  sidebar.classList.toggle(
-    "collapsed",
-    collapsed
-  );
-
-  content.classList.toggle(
-    "sidebar-collapsed",
-    collapsed
-  );
-
-  toggle.classList.toggle(
-    "collapsed",
-    collapsed
-  );
-
-}
-
-setSidebarState(
-  savedState === "true"
-);
-
-toggle.addEventListener(
-  "click",
-  () => {
-
-    const collapsed =
-      !sidebar.classList.contains(
-        "collapsed"
-      );
-
-    setSidebarState(
-      collapsed
-    );
-
-    localStorage.setItem(
-      "portalSidebarCollapsed",
-      String(collapsed)
-    );
-
-  }
-);
-
-</script>
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/menu.js"></script>
+<script type="module" src="../js/notice.js"></script>
 
 </body>
 </html>
