@@ -12,136 +12,92 @@ import {
   addDoc,
   getDocs,
   doc,
-  deleteDoc,
   updateDoc,
-  serverTimestamp,
+  deleteDoc,
   query,
-  orderBy
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 import {
-  getUserRole
+  getUserData
 } from "./auth.js";
 
-import "./scoreAnalysis.js";
-
-
+let currentUser = null;
+let userData = null;
 let students = [];
 
+function esc(value){
 
-const esc =
-value =>
-String(
-  value ?? ""
-).replace(
-  /[&<>\"]/g,
-  c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;"
-  }[c])
-);
+  return String(value ?? "")
+    .replace(/[&<>"']/g,char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[char]));
 
+}
 
-window.showAdminPage =
-function(page){
+function formatDateTime(value){
 
-  document
-    .querySelectorAll(
-      ".content > section"
-    )
-    .forEach(
-      section =>
-        section.style.display =
-          "none"
+  if(!value) return "";
+
+  const date =
+    value?.toDate
+      ? value.toDate()
+      : new Date(value);
+
+  if(Number.isNaN(date.getTime())){
+    return "";
+  }
+
+  const p =
+    n => String(n).padStart(2,"0");
+
+  return `${date.getFullYear()}/${p(date.getMonth()+1)}/${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}:${p(date.getSeconds())}`;
+
+}
+
+function targetLabel(type){
+
+  switch(type){
+
+    case "individual":
+      return "個別送信";
+
+    case "block":
+      return "ブロック一斉送信";
+
+    case "block_grade":
+      return "ブロック＋学年";
+
+    case "grade":
+      return "学年一斉送信";
+
+    default:
+      return "全員";
+
+  }
+
+}
+
+function metaText(data){
+
+  const sender =
+    data.senderName ||
+    userData?.name ||
+    "管理者";
+
+  const time =
+    formatDateTime(
+      data.createdAt
     );
 
+  return `${esc(sender)} ⇒ ${esc(targetLabel(data.targetType))}${time ? ` [${time}]` : ""}`;
 
-  const target =
-    document.getElementById(page);
-
-
-  if(target){
-
-    target.style.display =
-      "block";
-  }
-
-
-  if(
-    page === "scores" &&
-    window.loadScoreAnalysis
-  ){
-
-    window.loadScoreAnalysis();
-  }
-
-};
-
-
-onAuthStateChanged(
-  auth,
-  async user => {
-
-    if(!user){
-
-      location.href =
-        "../index.html";
-
-      return;
-    }
-
-
-    const role =
-      await getUserRole(user);
-
-
-    if(role !== "admin"){
-
-      alert(
-        "管理者権限がありません。"
-      );
-
-      location.href =
-        "../student.html";
-
-      return;
-    }
-
-
-    try{
-
-      await loadStudents();
-
-      await loadBlocks();
-
-      await loadMessages();
-
-      await loadUsers();
-
-      await loadCalendarAdmin();
-
-      await loadDashboard();
-
-      await loadNoticeList();
-
-      await loadDocumentList();
-
-      await loadScoreForms();
-
-    }catch(error){
-
-      console.error(
-        "管理画面初期化エラー:",
-        error
-      );
-
-    }
-
-  }
-);
-
+}
 
 async function loadStudents(){
 
@@ -153,422 +109,320 @@ async function loadStudents(){
       )
     );
 
-
   students = [];
-
 
   snap.forEach(item => {
 
     const data =
       item.data();
 
-
-    if(
-      data.role ===
-      "student"
-    ){
+    if(data.role === "student"){
 
       students.push({
-
         id:item.id,
-
         ...data
-
       });
 
     }
 
   });
 
-
-  populateUserSelect(
-    "targetUser"
-  );
-
-  populateUserSelect(
-    "documentUser"
-  );
-
-  populateUserSelect(
-    "formUser"
-  );
-}
-
-
-function populateUserSelect(id){
-
-  const select =
-    document.getElementById(id);
-
-  if(!select) return;
-
-
-  select.innerHTML =
-    "";
-
-
-  const sorted =
-    [...students].sort(
-      (a,b) =>
-        String(a.name || "")
+  students.sort(
+    (a,b) =>
+      String(a.name || "")
         .localeCompare(
           String(b.name || ""),
           "ja"
         )
+  );
+
+}
+
+function targetSelectorHTML(
+  prefix
+){
+
+  return `
+
+    <div class="form-group">
+
+      <label>ブロック</label>
+
+      <select id="${prefix}Block">
+
+        <option value="">
+          選択してください
+        </option>
+
+        ${[
+          ...new Set(
+            students
+              .map(s => s.block)
+              .filter(Boolean)
+          )
+        ].map(block => `
+
+          <option value="${esc(block)}">
+            ${esc(block)}
+          </option>
+
+        `).join("")}
+
+      </select>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>学年</label>
+
+      <select id="${prefix}Grade">
+
+        <option value="">
+          選択してください
+        </option>
+
+        ${[
+          "中学1年",
+          "中学2年",
+          "中学3年"
+        ].map(grade => `
+
+          <option value="${grade}">
+            ${grade}
+          </option>
+
+        `).join("")}
+
+      </select>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>生徒</label>
+
+      <select id="${prefix}User">
+
+        <option value="">
+          選択してください
+        </option>
+
+        ${students.map(student => `
+
+          <option value="${student.id}">
+
+            ${esc(student.name || "")}
+            （${esc(student.grade || "")}・${esc(student.block || "")}）
+
+          </option>
+
+        `).join("")}
+
+      </select>
+
+    </div>
+
+  `;
+
+}
+
+function updateTargetDetail(
+  type,
+  areaId,
+  prefix
+){
+
+  const area =
+    document.getElementById(
+      areaId
     );
 
+  if(!area) return;
 
-  sorted.forEach(
-    student => {
+  if(type === "all"){
 
-      const option =
-        document.createElement(
-          "option"
-        );
+    area.innerHTML =
+      `<p>全員に配信します。</p>`;
 
+    return;
 
-      option.value =
-        student.id;
+  }
 
+  if(type === "block"){
 
-      option.textContent =
+    area.innerHTML = `
+      <div class="form-group">
 
-        `${student.name || "名前未設定"}` +
+        <label>ブロック</label>
 
-        `（${student.grade || "学年未設定"}` +
+        <select id="${prefix}Block">
 
-        `・${student.block || "ブロック未設定"}）`;
+          <option value="">
+            選択してください
+          </option>
 
+          ${[
+            ...new Set(
+              students
+                .map(s => s.block)
+                .filter(Boolean)
+            )
+          ].map(block => `
+            <option value="${esc(block)}">
+              ${esc(block)}
+            </option>
+          `).join("")}
 
-      select.appendChild(
-        option
+        </select>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+  if(type === "grade"){
+
+    area.innerHTML = `
+      <div class="form-group">
+
+        <label>学年</label>
+
+        <select id="${prefix}Grade">
+
+          <option value="">
+            選択してください
+          </option>
+
+          <option value="中学1年">
+            中学1年
+          </option>
+
+          <option value="中学2年">
+            中学2年
+          </option>
+
+          <option value="中学3年">
+            中学3年
+          </option>
+
+        </select>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+  if(type === "block_grade"){
+
+    area.innerHTML =
+      targetSelectorHTML(
+        prefix
       );
 
-    }
-  );
-}
-
-
-async function loadBlocks(){
-
-  const blocks =
-    [
-      ...new Set(
-        students
-          .map(
-            student =>
-              student.block
-          )
-          .filter(Boolean)
-      )
-    ]
-    .sort();
-
-
-  [
-    "block",
-    "documentBlock",
-    "formBlock"
-  ]
-  .forEach(id => {
-
-    const select =
-      document.getElementById(id);
-
-    if(!select) return;
-
-
-    select.innerHTML =
-      `<option value="">
-        選択してください
-      </option>`;
-
-
-    blocks.forEach(
-      block => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-
-        option.value =
-          block;
-
-        option.textContent =
-          block;
-
-
-        select.appendChild(
-          option
-        );
-
-      }
-    );
-
-  });
-}
-
-
-function setupTargetSelect(
-  selectId,
-  blockId,
-  gradeId,
-  userId
-){
-
-  const select =
-    document.getElementById(
-      selectId
-    );
-
-
-  if(!select) return;
-
-
-  const type =
-    select.value;
-
-
-  [
-    blockId,
-    gradeId,
-    userId
-  ]
-  .forEach(id => {
-
-    const area =
-      document.getElementById(id);
-
-    if(area){
-
-      area.style.display =
-        "none";
-    }
-
-  });
-
-
-  if(
-    type === "block"
-  ){
-
-    document.getElementById(
-      blockId
-    ).style.display =
-      "block";
+    return;
 
   }
 
+  if(type === "individual"){
 
-  if(
-    type === "grade"
-  ){
+    area.innerHTML = `
 
-    document.getElementById(
-      gradeId
-    ).style.display =
-      "block";
+      <div class="form-group">
 
-  }
+        <label>生徒</label>
 
+        <select id="${prefix}User">
 
-  if(
-    type === "block_grade"
-  ){
+          <option value="">
+            選択してください
+          </option>
 
-    document.getElementById(
-      blockId
-    ).style.display =
-      "block";
+          ${students.map(student => `
 
+            <option value="${student.id}">
 
-    document.getElementById(
-      gradeId
-    ).style.display =
-      "block";
+              ${esc(student.name || "")}
+              （${esc(student.grade || "")}・${esc(student.block || "")}）
 
-  }
+            </option>
 
+          `).join("")}
 
-  if(
-    type === "individual"
-  ){
+        </select>
 
-    document.getElementById(
-      userId
-    ).style.display =
-      "block";
+      </div>
+
+    `;
 
   }
 
 }
 
-
-window.changeTarget =
-function(){
-
-  setupTargetSelect(
-    "targetType",
-    "blockArea",
-    "gradeArea",
-    "userArea"
-  );
-
-};
-
-
-window.changeDocumentTarget =
-function(){
-
-  setupTargetSelect(
-    "documentTargetType",
-    "documentBlockArea",
-    "documentGradeArea",
-    "documentUserArea"
-  );
-
-};
-
-
-window.changeFormTarget =
-function(){
-
-  setupTargetSelect(
-    "formTargetType",
-    "formBlockArea",
-    "formGradeArea",
-    "formUserArea"
-  );
-
-};
-
-
-function targetData(
+function readTarget(
   type,
-  blockId,
-  gradeId,
-  userId
+  prefix
 ){
 
-  const result = {
+  const data = {
     targetType:type
   };
 
+  if(type === "block"){
 
-  if(
-    type === "block" ||
-    type === "block_grade"
-  ){
-
-    result.block =
+    data.block =
       document.getElementById(
-        blockId
+        `${prefix}Block`
       )?.value || "";
+
   }
 
+  if(type === "grade"){
 
-  if(
-    type === "grade" ||
-    type === "block_grade"
-  ){
-
-    result.grade =
+    data.grade =
       document.getElementById(
-        gradeId
+        `${prefix}Grade`
       )?.value || "";
+
   }
 
+  if(type === "block_grade"){
 
-  if(
-    type === "individual"
-  ){
-
-    result.uid =
+    data.block =
       document.getElementById(
-        userId
+        `${prefix}Block`
       )?.value || "";
+
+    data.grade =
+      document.getElementById(
+        `${prefix}Grade`
+      )?.value || "";
+
   }
 
+  if(type === "individual"){
 
-  return result;
+    data.uid =
+      document.getElementById(
+        `${prefix}User`
+      )?.value || "";
+
+  }
+
+  return data;
+
 }
 
-
-function getTargetLabel(data){
-
-  const type =
-    data.targetType ||
-    "all";
-
-
-  if(type === "all")
-    return "全生徒";
-
-
-  if(type === "block")
-    return `ブロック一斉送信（${data.block || ""}）`;
-
-
-  if(type === "grade")
-    return `学年一斉送信（${data.grade || ""}）`;
-
-
-  if(type === "block_grade")
-    return `ブロック＋学年（${data.block || ""}・${data.grade || ""}）`;
-
-
-  if(type === "individual")
-    return "個別送信";
-
-
-  return "指定なし";
-}
-
-
-window.createNotice =
-async function(){
-
-  const title =
-    document.getElementById(
-      "noticeTitle"
-    )?.value.trim();
-
-
-  const body =
-    document.getElementById(
-      "noticeBody"
-    )?.value.trim();
-
-
-  if(!title){
-
-    alert(
-      "タイトルを入力してください。"
-    );
-
-    return;
-  }
-
-
-  const targetType =
-    document.getElementById(
-      "targetType"
-    ).value;
-
-
-  const target =
-    targetData(
-      targetType,
-      "block",
-      "grade",
-      "targetUser"
-    );
-
+function validateTarget(
+  target
+){
 
   if(
-    targetType === "block" &&
+    target.targetType === "block" &&
     !target.block
   ){
 
@@ -576,12 +430,12 @@ async function(){
       "ブロックを選択してください。"
     );
 
-    return;
+    return false;
+
   }
 
-
   if(
-    targetType === "grade" &&
+    target.targetType === "grade" &&
     !target.grade
   ){
 
@@ -589,26 +443,25 @@ async function(){
       "学年を選択してください。"
     );
 
-    return;
+    return false;
+
   }
 
-
   if(
-    targetType === "block_grade" &&
-    (!target.block ||
-     !target.grade)
+    target.targetType === "block_grade" &&
+    (!target.block || !target.grade)
   ){
 
     alert(
       "ブロックと学年を選択してください。"
     );
 
-    return;
+    return false;
+
   }
 
-
   if(
-    targetType === "individual" &&
+    target.targetType === "individual" &&
     !target.uid
   ){
 
@@ -616,700 +469,728 @@ async function(){
       "生徒を選択してください。"
     );
 
-    return;
+    return false;
+
   }
 
+  return true;
 
-  try{
+}
 
-    await addDoc(
-      collection(
-        db,
-        "notices"
-      ),
-      {
+/* =========================
+   お知らせ
+========================= */
 
-        title,
+const targetType =
+  document.getElementById(
+    "targetType"
+  );
 
-        body,
+if(targetType){
 
-        importance:
-          document.getElementById(
-            "importance"
-          ).value,
+  targetType.addEventListener(
+    "change",
+    () => {
 
-        startDate:
-          document.getElementById(
-            "startDate"
-          ).value,
+      updateTargetDetail(
+        targetType.value,
+        "targetDetail",
+        "notice"
+      );
 
-        endDate:
-          document.getElementById(
-            "endDate"
-          ).value,
+    }
+  );
 
-        senderUid:
-          auth.currentUser.uid,
+  updateTargetDetail(
+    targetType.value,
+    "targetDetail",
+    "notice"
+  );
 
-        senderName:
-          auth.currentUser.displayName ||
-          auth.currentUser.email ||
-          "管理者",
+}
 
-        createdAt:
-          serverTimestamp(),
+const createNoticeButton =
+  document.getElementById(
+    "createNoticeButton"
+  );
 
-        ...target
+if(createNoticeButton){
+
+  createNoticeButton.addEventListener(
+    "click",
+    async () => {
+
+      const title =
+        document.getElementById(
+          "noticeTitle"
+        )?.value.trim();
+
+      const body =
+        document.getElementById(
+          "noticeBody"
+        )?.value.trim();
+
+      const type =
+        document.getElementById(
+          "targetType"
+        )?.value;
+
+      if(!title){
+
+        alert(
+          "タイトルを入力してください。"
+        );
+
+        return;
 
       }
-    );
 
+      const target =
+        readTarget(
+          type,
+          "notice"
+        );
 
-    document.getElementById(
-      "noticeTitle"
-    ).value = "";
+      if(!validateTarget(target)){
+        return;
+      }
 
+      try{
 
-    document.getElementById(
-      "noticeBody"
-    ).value = "";
-
-
-    alert(
-      "送信しました。"
-    );
-
-
-    await loadNoticeList();
-
-
-  }catch(error){
-
-    console.error(
-      "お知らせ作成エラー:",
-      error
-    );
-
-
-    alert(
-      "お知らせを送信できませんでした。\n\n" +
-      "Firestoreの権限設定も確認してください。"
-    );
-  }
-};
-
-
-async function loadNoticeList(){
-
-  const area =
-    document.getElementById(
-      "noticeList"
-    );
-
-
-  if(!area) return;
-
-
-  try{
-
-    const snap =
-      await getDocs(
-        query(
+        await addDoc(
           collection(
             db,
             "notices"
           ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
-        )
-      );
+          {
+            title,
+            body,
+            importance:
+              document.getElementById(
+                "importance"
+              )?.value || "normal",
 
+            startDate:
+              document.getElementById(
+                "startDate"
+              )?.value || "",
 
-    if(snap.empty){
+            endDate:
+              document.getElementById(
+                "endDate"
+              )?.value || "",
 
-      area.innerHTML =
-        `<div class="card">
-          お知らせはありません。
-        </div>`;
+            senderUid:
+              currentUser.uid,
 
-      return;
-    }
+            senderName:
+              userData.name || "",
 
+            createdAt:
+              serverTimestamp(),
 
-    let html = "";
+            ...target
+          }
+        );
 
+        document.getElementById(
+          "noticeTitle"
+        ).value = "";
 
-    snap.forEach(
-      item => {
+        document.getElementById(
+          "noticeBody"
+        ).value = "";
 
-        const data =
-          item.data();
+        document.getElementById(
+          "startDate"
+        ).value = "";
 
+        document.getElementById(
+          "endDate"
+        ).value = "";
 
-        html += `
+        document.getElementById(
+          "targetType"
+        ).value = "all";
 
-          <div class="notice-card">
+        updateTargetDetail(
+          "all",
+          "targetDetail",
+          "notice"
+        );
 
-            <a
-              class="notice-title-link"
-              href="admin.html?edit=${encodeURIComponent(item.id)}">
+        const status =
+          document.getElementById(
+            "createStatus"
+          );
 
-              ${esc(data.title)}
+        if(status){
 
-            </a>
+          status.innerHTML =
+            `<div class="status-box success">送信しました。</div>`;
 
-            <div class="notice-meta">
+        }else{
 
-              配信者：
-              ${esc(
-                data.senderName ||
-                "管理者"
-              )}
+          alert(
+            "送信しました。"
+          );
 
-              ⇒
+        }
 
-              配信範囲：
-              ${esc(
-                getTargetLabel(data)
-              )}
+      }catch(error){
 
-            </div>
+        console.error(error);
 
-          </div>
+        alert(
+          "送信できませんでした。\n" +
+          "Firebaseの権限設定を確認してください。"
+        );
 
-        `;
       }
-    );
 
+    }
+  );
 
-    area.innerHTML =
-      html;
-
-
-  }catch(error){
-
-    console.error(error);
-
-    area.innerHTML =
-      `<div class="card error">
-        お知らせを読み込めませんでした。
-      </div>`;
-  }
 }
 
+/* =========================
+   配布文書
+========================= */
 
-window.addDocument =
-async function(){
+const documentTargetType =
+  document.getElementById(
+    "documentTargetType"
+  );
 
-  const title =
-    document.getElementById(
-      "documentTitle"
-    ).value.trim();
+if(documentTargetType){
 
+  documentTargetType.addEventListener(
+    "change",
+    () => {
 
-  const body =
-    document.getElementById(
-      "documentBody"
-    ).value.trim();
+      updateTargetDetail(
+        documentTargetType.value,
+        "documentTargetDetail",
+        "document"
+      );
 
+    }
+  );
 
-  const url =
-    document.getElementById(
-      "documentUrl"
-    ).value.trim();
+  updateTargetDetail(
+    documentTargetType.value,
+    "documentTargetDetail",
+    "document"
+  );
 
+}
 
-  if(!title){
+const addDocumentButton =
+  document.getElementById(
+    "addDocumentButton"
+  );
 
-    alert(
-      "タイトルを入力してください。"
-    );
+if(addDocumentButton){
 
-    return;
-  }
+  addDocumentButton.addEventListener(
+    "click",
+    async () => {
 
+      const title =
+        document.getElementById(
+          "documentTitle"
+        )?.value.trim();
 
-  if(!url){
+      const body =
+        document.getElementById(
+          "documentBody"
+        )?.value.trim();
 
-    alert(
-      "配布文書URLを入力してください。"
-    );
+      const url =
+        document.getElementById(
+          "documentUrl"
+        )?.value.trim();
 
-    return;
-  }
+      const type =
+        document.getElementById(
+          "documentTargetType"
+        )?.value;
 
+      if(!title || !url){
 
-  const type =
-    document.getElementById(
-      "documentTargetType"
-    ).value;
+        alert(
+          "タイトルと配布文書URLを入力してください。"
+        );
 
-
-  const target =
-    targetData(
-      type,
-      "documentBlock",
-      "documentGrade",
-      "documentUser"
-    );
-
-
-  try{
-
-    await addDoc(
-      collection(
-        db,
-        "documents"
-      ),
-      {
-
-        title,
-
-        body,
-
-        url,
-
-        startDate:
-          document.getElementById(
-            "documentStartDate"
-          ).value,
-
-        endDate:
-          document.getElementById(
-            "documentEndDate"
-          ).value,
-
-        senderUid:
-          auth.currentUser.uid,
-
-        senderName:
-          auth.currentUser.displayName ||
-          auth.currentUser.email ||
-          "管理者",
-
-        createdAt:
-          serverTimestamp(),
-
-        ...target
+        return;
 
       }
-    );
 
+      const target =
+        readTarget(
+          type,
+          "document"
+        );
 
-    [
-      "documentTitle",
-      "documentBody",
-      "documentUrl"
-    ]
-    .forEach(id => {
+      if(!validateTarget(target)){
+        return;
+      }
 
-      document.getElementById(
-        id
-      ).value = "";
+      try{
 
-    });
-
-
-    alert(
-      "配布文書を登録しました。"
-    );
-
-
-    await loadDocumentList();
-
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      "配布文書を登録できませんでした。"
-    );
-  }
-};
-
-
-async function loadDocumentList(){
-
-  const area =
-    document.getElementById(
-      "documentList"
-    );
-
-
-  if(!area) return;
-
-
-  try{
-
-    const snap =
-      await getDocs(
-        query(
+        await addDoc(
           collection(
             db,
             "documents"
           ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
-        )
-      );
+          {
+            title,
+            body,
+            url,
 
+            startDate:
+              document.getElementById(
+                "documentStartDate"
+              )?.value || "",
 
-    let html = "";
+            endDate:
+              document.getElementById(
+                "documentEndDate"
+              )?.value || "",
 
+            senderUid:
+              currentUser.uid,
 
-    snap.forEach(
-      item => {
+            senderName:
+              userData.name || "",
 
-        const data =
-          item.data();
+            createdAt:
+              serverTimestamp(),
 
+            ...target
+          }
+        );
 
-        html += `
+        document.getElementById(
+          "documentTitle"
+        ).value = "";
 
-          <div class="card">
+        document.getElementById(
+          "documentBody"
+        ).value = "";
 
-            <div class="document-header">
+        document.getElementById(
+          "documentUrl"
+        ).value = "";
 
-              <div>
+        document.getElementById(
+          "documentStartDate"
+        ).value = "";
 
-                <h3>
-                  ${esc(data.title)}
-                </h3>
+        document.getElementById(
+          "documentEndDate"
+        ).value = "";
 
-                <p>
-                  ${esc(data.body || "")}
-                </p>
+        alert(
+          "配布しました。"
+        );
 
-              </div>
+      }catch(error){
 
-              <a
-                class="button-link"
-                href="${esc(data.url || "#")}"
-                target="_blank"
-                rel="noopener noreferrer">
+        console.error(error);
 
-                配布文書を開く
+        alert(
+          "配布できませんでした。"
+        );
 
-              </a>
-
-            </div>
-
-            <p class="document-period">
-
-              配信者：
-              ${esc(
-                data.senderName ||
-                "管理者"
-              )}
-
-              ⇒
-
-              配信範囲：
-              ${esc(
-                getTargetLabel(data)
-              )}
-
-            </p>
-
-          </div>
-
-        `;
       }
-    );
 
+    }
+  );
 
-    area.innerHTML =
-      html ||
-
-      `<div class="card">
-        配布文書はありません。
-      </div>`;
-
-
-  }catch(error){
-
-    console.error(error);
-
-    area.innerHTML =
-      `<div class="card error">
-        配布文書を読み込めませんでした。
-      </div>`;
-  }
 }
 
-
-window.addCalendar =
-async function(){
-
-  const title =
-    document.getElementById(
-      "calendarTitle"
-    ).value.trim();
-
-
-  const startDate =
-    document.getElementById(
-      "calendarStartDate"
-    ).value;
-
-
-  const endDate =
-    document.getElementById(
-      "calendarEndDate"
-    ).value ||
-    startDate;
-
-
-  if(
-    !title ||
-    !startDate
-  ){
-
-    alert(
-      "予定名と開始日を入力してください。"
-    );
-
-    return;
-  }
-
-
-  if(
-    endDate < startDate
-  ){
-
-    alert(
-      "終了日は開始日以降にしてください。"
-    );
-
-    return;
-  }
-
-
-  try{
-
-    await addDoc(
-      collection(
-        db,
-        "calendar"
-      ),
-      {
-
-        title,
-
-        startDate,
-
-        endDate,
-
-        date:startDate,
-
-        description:
-          document.getElementById(
-            "calendarDescription"
-          ).value.trim(),
-
-        createdBy:
-          auth.currentUser.uid,
-
-        createdAt:
-          serverTimestamp(),
-
-        updatedAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    [
-      "calendarTitle",
-      "calendarStartDate",
-      "calendarEndDate",
-      "calendarDescription"
-    ]
-    .forEach(id => {
-
-      document.getElementById(
-        id
-      ).value = "";
-
-    });
-
-
-    alert(
-      "予定を登録しました。"
-    );
-
-
-    loadCalendarAdmin();
-
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      "予定を登録できませんでした。"
-    );
-  }
-};
-
+/* =========================
+   カレンダー
+========================= */
 
 async function loadCalendarAdmin(){
 
   const area =
     document.getElementById(
-      "adminCalendar"
+      "calendarArea"
     );
 
+  if(!area){
+    return;
+  }
 
-  if(!area) return;
+  const snap =
+    await getDocs(
+      collection(
+        db,
+        "calendar"
+      )
+    );
 
+  const events = [];
 
-  try{
+  snap.forEach(item => {
 
-    const snap =
-      await getDocs(
-        query(
+    events.push({
+      id:item.id,
+      ...item.data()
+    });
+
+  });
+
+  renderAdminCalendar(
+    events
+  );
+
+}
+
+function renderAdminCalendar(
+  events
+){
+
+  const area =
+    document.getElementById(
+      "calendarArea"
+    );
+
+  if(!area){
+    return;
+  }
+
+  let current =
+    new Date();
+
+  function draw(){
+
+    const year =
+      current.getFullYear();
+
+    const month =
+      current.getMonth();
+
+    const first =
+      new Date(
+        year,
+        month,
+        1
+      );
+
+    const lastDay =
+      new Date(
+        year,
+        month + 1,
+        0
+      ).getDate();
+
+    let html = `
+
+      <div class="calendar-toolbar">
+
+        <button
+          class="secondary-button"
+          id="adminPrevMonth">
+
+          前月
+
+        </button>
+
+        <h2>
+          ${year}年${month+1}月
+        </h2>
+
+        <button
+          class="secondary-button"
+          id="adminNextMonth">
+
+          次月
+
+        </button>
+
+      </div>
+
+      <div class="calendar-wrap">
+
+      <table class="calendar">
+
+      <thead>
+      <tr>
+      <th>日</th>
+      <th>月</th>
+      <th>火</th>
+      <th>水</th>
+      <th>木</th>
+      <th>金</th>
+      <th>土</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <tr>
+    `;
+
+    for(
+      let i=0;
+      i<first.getDay();
+      i++
+    ){
+
+      html +=
+        `<td class="empty"></td>`;
+
+    }
+
+    for(
+      let day=1;
+      day<=lastDay;
+      day++
+    ){
+
+      const key =
+        `${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+      const dayEvents =
+        events.filter(
+          event => {
+
+            const start =
+              event.startDate ||
+              event.date;
+
+            const end =
+              event.endDate ||
+              event.date ||
+              start;
+
+            return (
+              start &&
+              end &&
+              key >= start &&
+              key <= end
+            );
+
+          }
+        );
+
+      html += `
+
+        <td>
+
+          <div class="day-number">
+            ${day}
+          </div>
+
+          ${dayEvents.map(event => `
+
+            <button
+              class="calendar-event"
+              data-event-id="${event.id}">
+
+              ${esc(event.title)}
+
+            </button>
+
+          `).join("")}
+
+        </td>
+
+      `;
+
+      if(
+        (first.getDay()+day)%7===0 &&
+        day!==lastDay
+      ){
+
+        html +=
+          `</tr><tr>`;
+
+      }
+
+    }
+
+    const cells =
+      first.getDay() +
+      lastDay;
+
+    const trailing =
+      (7 - cells%7)%7;
+
+    for(
+      let i=0;
+      i<trailing;
+      i++
+    ){
+
+      html +=
+        `<td class="empty"></td>`;
+
+    }
+
+    html +=
+      `</tr></tbody></table></div>`;
+
+    area.innerHTML =
+      html;
+
+    document
+      .getElementById(
+        "adminPrevMonth"
+      )
+      ?.addEventListener(
+        "click",
+        () => {
+
+          current.setMonth(
+            current.getMonth()-1
+          );
+
+          draw();
+
+        }
+      );
+
+    document
+      .getElementById(
+        "adminNextMonth"
+      )
+      ?.addEventListener(
+        "click",
+        () => {
+
+          current.setMonth(
+            current.getMonth()+1
+          );
+
+          draw();
+
+        }
+      );
+
+  }
+
+  draw();
+
+}
+
+const addCalendarButton =
+  document.getElementById(
+    "addCalendarButton"
+  );
+
+if(addCalendarButton){
+
+  addCalendarButton.addEventListener(
+    "click",
+    async () => {
+
+      const title =
+        document.getElementById(
+          "calendarTitle"
+        )?.value.trim();
+
+      const startDate =
+        document.getElementById(
+          "calendarStartDate"
+        )?.value;
+
+      const endDate =
+        document.getElementById(
+          "calendarEndDate"
+        )?.value ||
+        startDate;
+
+      const description =
+        document.getElementById(
+          "calendarDescription"
+        )?.value.trim();
+
+      if(!title || !startDate){
+
+        alert(
+          "予定の題名と開始日を入力してください。"
+        );
+
+        return;
+
+      }
+
+      if(endDate < startDate){
+
+        alert(
+          "終了日は開始日以降にしてください。"
+        );
+
+        return;
+
+      }
+
+      try{
+
+        await addDoc(
           collection(
             db,
             "calendar"
           ),
-          orderBy(
-            "startDate",
-            "asc"
-          )
-        )
-      );
+          {
+            title,
+            startDate,
+            endDate,
+            date:startDate,
+            description,
+            createdBy:
+              currentUser.uid,
+            createdAt:
+              serverTimestamp(),
+            updatedAt:
+              serverTimestamp()
+          }
+        );
 
+        document.getElementById(
+          "calendarTitle"
+        ).value = "";
 
-    let html = "";
+        document.getElementById(
+          "calendarStartDate"
+        ).value = "";
 
+        document.getElementById(
+          "calendarEndDate"
+        ).value = "";
 
-    snap.forEach(
-      item => {
+        document.getElementById(
+          "calendarDescription"
+        ).value = "";
 
-        const data =
-          item.data();
+        alert(
+          "予定を登録しました。"
+        );
 
+        loadCalendarAdmin();
 
-        html += `
+      }catch(error){
 
-          <div class="card">
+        console.error(error);
 
-            <h3>
-              ${esc(data.title)}
-            </h3>
+        alert(
+          "予定を登録できませんでした。"
+        );
 
-            <p>
-
-              ${esc(
-                data.startDate ||
-                data.date ||
-                ""
-              )}
-
-              ${
-                data.endDate &&
-                data.endDate !==
-                (
-                  data.startDate ||
-                  data.date
-                )
-
-                ?
-
-                "〜 " +
-                esc(data.endDate)
-
-                :
-
-                ""
-              }
-
-            </p>
-
-            <p>
-              ${esc(
-                data.description || ""
-              )}
-            </p>
-
-            <button
-              type="button"
-              class="danger-button"
-              onclick="deleteCalendar('${item.id}')">
-
-              削除
-
-            </button>
-
-          </div>
-
-        `;
       }
-    );
 
+    }
+  );
 
-    area.innerHTML =
-      html ||
-
-      `<div class="card">
-        登録済みの予定はありません。
-      </div>`;
-
-
-  }catch(error){
-
-    console.error(error);
-
-    area.innerHTML =
-      `<div class="card error">
-        カレンダーを読み込めませんでした。
-      </div>`;
-  }
 }
 
-
-window.deleteCalendar =
-async function(id){
-
-  if(
-    !confirm(
-      "この予定を削除しますか？"
-    )
-  )
-    return;
-
-
-  try{
-
-    await deleteDoc(
-      doc(
-        db,
-        "calendar",
-        id
-      )
-    );
-
-
-    await loadCalendarAdmin();
-
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      "削除できませんでした。"
-    );
-  }
-};
-
+/* =========================
+   連絡
+========================= */
 
 async function loadMessages(){
 
@@ -1318,9 +1199,9 @@ async function loadMessages(){
       "messageList"
     );
 
-
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   try{
 
@@ -1338,71 +1219,58 @@ async function loadMessages(){
         )
       );
 
+    if(snap.empty){
 
-    let html = "";
+      area.innerHTML =
+        `<div class="card">連絡はありません。</div>`;
 
+      return;
 
-    snap.forEach(
-      item => {
+    }
 
-        const data =
-          item.data();
+    area.innerHTML = "";
 
+    snap.forEach(item => {
 
-        html += `
+      const data =
+        item.data();
 
-          <div class="card">
+      area.innerHTML += `
 
-            <p>
-              送信者：
-              ${esc(
-                data.senderName
-              )}
-            </p>
+        <div class="card">
 
-            <p>
-              メール：
-              ${esc(
-                data.senderEmail
-              )}
-            </p>
+          <h3>
+            ${esc(data.senderName || "生徒")}
+          </h3>
 
-            <div class="message-body">
-              ${esc(
-                data.body
-              ).replace(
-                /\n/g,
-                "<br>"
-              )}
-            </div>
+          <p>
+            ${esc(data.body || "")}
+          </p>
 
-          </div>
+          <p class="document-period">
+            ${formatDateTime(data.createdAt)}
+          </p>
 
-        `;
+        </div>
 
-      }
-    );
+      `;
 
-
-    area.innerHTML =
-      html ||
-
-      `<div class="card">
-        連絡はありません。
-      </div>`;
-
+    });
 
   }catch(error){
 
     console.error(error);
 
     area.innerHTML =
-      `<div class="card error">
-        連絡を読み込めませんでした。
-      </div>`;
+      `<div class="card error">連絡を読み込めませんでした。</div>`;
+
   }
+
 }
 
+/* =========================
+   生徒
+========================= */
 
 async function loadUsers(){
 
@@ -1411,274 +1279,141 @@ async function loadUsers(){
       "userList"
     );
 
-
-  if(!area) return;
-
-
-  let html = "";
-
-
-  students.forEach(
-    student => {
-
-      html += `
-
-        <div class="card">
-
-          <h3>
-            ${esc(
-              student.name ||
-              "名前未設定"
-            )}
-          </h3>
-
-          <p>
-            ブロック：
-            ${esc(
-              student.block ||
-              ""
-            )}
-          </p>
-
-          <p>
-            学年：
-            ${esc(
-              student.grade ||
-              ""
-            )}
-          </p>
-
-        </div>
-
-      `;
-
-    }
-  );
-
-
-  area.innerHTML =
-    html ||
-
-    `<div class="card">
-      生徒が登録されていません。
-    </div>`;
-
-
   const count =
     document.getElementById(
       "studentCount"
     );
 
+  if(!area && !count){
+    return;
+  }
 
   if(count){
-
     count.textContent =
       `${students.length}人`;
   }
+
+  if(area){
+
+    area.innerHTML =
+      students.map(student => `
+
+        <div class="card">
+
+          <h3>
+            ${esc(student.name || "")}
+          </h3>
+
+          <p>
+            ブロック：
+            ${esc(student.block || "")}
+          </p>
+
+          <p>
+            学年：
+            ${esc(student.grade || "")}
+          </p>
+
+        </div>
+
+      `).join("");
+
+  }
+
 }
 
+/* =========================
+   ダッシュボード
+========================= */
 
 async function loadDashboard(){
-
-  const snap =
-    await getDocs(
-      collection(
-        db,
-        "scores"
-      )
-    );
-
 
   const count =
     document.getElementById(
       "scoreCount"
     );
 
-
-  if(count){
-
-    count.textContent =
-      `${snap.size}件`;
+  if(!count){
+    return;
   }
-}
-
-
-async function loadScoreForms(){
-
-  const area =
-    document.getElementById(
-      "scoreFormList"
-    );
-
-
-  if(!area) return;
-
 
   try{
 
     const snap =
       await getDocs(
-        query(
-          collection(
-            db,
-            "scoreForms"
-          ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
+        collection(
+          db,
+          "scores"
         )
       );
 
-
-    let html = "";
-
-
-    snap.forEach(
-      item => {
-
-        const data =
-          item.data();
-
-
-        html += `
-
-          <div class="card">
-
-            <h3>
-              ${esc(data.title)}
-            </h3>
-
-            <p>
-              ${esc(
-                data.testType ||
-                ""
-              )}
-            </p>
-
-          </div>
-
-        `;
-      }
-    );
-
-
-    area.innerHTML =
-      html ||
-
-      `<div class="card">
-        成績フォームはありません。
-      </div>`;
-
+    count.textContent =
+      `${snap.size}件`;
 
   }catch(error){
 
     console.error(error);
+
+    count.textContent =
+      "取得不可";
+
   }
+
 }
 
+onAuthStateChanged(
+  auth,
+  async user => {
 
-window.createScoreForm =
-async function(){
+    if(!user){
 
-  const subjects =
-    [
-      ...document.querySelectorAll(
-        "#subjectList input:checked"
-      )
-    ]
-    .map(
-      input =>
-        input.value
-    );
+      location.href =
+        "/studentportal/index.html";
 
+      return;
 
-  if(!subjects.length){
+    }
 
-    alert(
-      "科目を1つ以上選択してください。"
-    );
+    currentUser = user;
 
-    return;
+    userData =
+      await getUserData(user);
+
+    if(!userData){
+
+      alert(
+        "ユーザー情報がありません。"
+      );
+
+      return;
+
+    }
+
+    if(userData.role !== "admin"){
+
+      location.href =
+        "/studentportal/dashboard/student.html";
+
+      return;
+
+    }
+
+    try{
+
+      await loadStudents();
+      await loadUsers();
+      await loadMessages();
+      await loadCalendarAdmin();
+      await loadDashboard();
+
+    }catch(error){
+
+      console.error(
+        "admin initialization error",
+        error
+      );
+
+    }
+
   }
-
-
-  const type =
-    document.getElementById(
-      "formTargetType"
-    ).value;
-
-
-  const target =
-    targetData(
-      type,
-      "formBlock",
-      "formGrade",
-      "formUser"
-    );
-
-
-  try{
-
-    await addDoc(
-      collection(
-        db,
-        "scoreForms"
-      ),
-      {
-
-        title:
-          document.getElementById(
-            "formTitle"
-          ).value.trim(),
-
-        testType:
-          document.getElementById(
-            "testType"
-          ).value,
-
-        subjects,
-
-        startDate:
-          document.getElementById(
-            "formStartDate"
-          ).value,
-
-        endDate:
-          document.getElementById(
-            "formEndDate"
-          ).value,
-
-        published:true,
-
-        createdBy:
-          auth.currentUser.uid,
-
-        createdAt:
-          serverTimestamp(),
-
-        ...target
-
-      }
-    );
-
-
-    document.getElementById(
-      "formTitle"
-    ).value = "";
-
-
-    alert(
-      "成績フォームを作成しました。"
-    );
-
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      "成績フォームを作成できませんでした。"
-    );
-  }
-};
+);
