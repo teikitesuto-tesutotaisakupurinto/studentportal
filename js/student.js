@@ -1,257 +1,801 @@
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-import {
-  collection, doc, getDoc, getDocs, query, where,
-  addDoc, updateDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-import { getUserData } from "./auth.js";
+*{
+  box-sizing:border-box;
+}
 
-let currentUser = null, userData = null;
-let forms = [], scores = [], selectedForm = null, submitting = false;
+html,
+body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:"Noto Sans JP","Yu Gothic",sans-serif;
+  background:#f5f6f8;
+  color:#1f2937;
+}
 
-const $ = id => document.getElementById(id);
-const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-const dateMs = value => {
-  if (value?.toDate) return value.toDate().getTime();
-  const d = value ? new Date(value) : null;
-  return d && !Number.isNaN(d.getTime()) ? d.getTime() : 0;
-};
-const dateText = value => {
-  const ms = dateMs(value); if (!ms) return "—";
-  const d = new Date(ms);
-  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}`;
-};
-const isBeforeStart = f => !!f.startDate && dateMs(f.startDate) > Date.now();
-const isAfterEnd = f => !!f.endDate && dateMs(f.endDate) < Date.now();
+body{
+  min-height:100vh;
+}
 
-function targetMatches(f) {
-  const type = f.targetType || "all";
-  if (type === "all") return true;
-  if (type === "block") return !!userData.block && f.block === userData.block;
-  if (type === "grade") return !!userData.grade && String(f.grade) === String(userData.grade);
-  if (type === "block_grade") return !!userData.block && !!userData.grade &&
-    f.block === userData.block && String(f.grade) === String(userData.grade);
-  if (type === "individual") {
-    const ids = [f.uid, f.targetUid, ...(Array.isArray(f.uids) ? f.uids : []),
-      ...(Array.isArray(f.targetUids) ? f.targetUids : [])].filter(Boolean);
-    return ids.includes(currentUser.uid);
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+a{
+  color:inherit;
+}
+
+.material-symbols-rounded{
+  font-family:"Material Symbols Rounded";
+  font-weight:normal;
+  font-style:normal;
+  font-size:22px;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  display:inline-block;
+  white-space:nowrap;
+  word-wrap:normal;
+  direction:ltr;
+  -webkit-font-feature-settings:"liga";
+  -webkit-font-smoothing:antialiased;
+}
+
+/* =========================
+   共通
+========================= */
+
+.site-title{
+  font-size:18px;
+  font-weight:700;
+  margin:0;
+}
+
+.page-title{
+  font-size:28px;
+  line-height:1.3;
+  margin:0 0 24px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:0;
+  border-radius:8px;
+  padding:11px 17px;
+  font-weight:600;
+}
+
+.primary-button{
+  background:#2563eb;
+  color:#fff;
+}
+
+.secondary-button{
+  background:#eef2f7;
+  color:#374151;
+}
+
+.danger-button{
+  background:#dc2626;
+  color:#fff;
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.danger-button:hover{
+  opacity:.9;
+}
+
+.error{
+  color:#b91c1c;
+}
+
+.success{
+  color:#047857;
+}
+
+.status-box{
+  padding:14px 16px;
+  border-radius:8px;
+  margin-bottom:18px;
+}
+
+.status-box.success{
+  background:#ecfdf5;
+  border:1px solid #a7f3d0;
+  color:#065f46;
+}
+
+.status-box.warning{
+  background:#fffbeb;
+  border:1px solid #fde68a;
+  color:#92400e;
+}
+
+/* =========================
+   ログイン
+========================= */
+
+.login-container{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:24px;
+}
+
+.login-box{
+  width:420px;
+  max-width:100%;
+  background:#fff;
+  padding:36px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 10px 35px rgba(0,0,0,.09);
+}
+
+.login-box h1{
+  font-size:23px;
+  line-height:1.45;
+  text-align:center;
+  margin:0 0 8px;
+}
+
+.login-box > p{
+  text-align:center;
+  color:#6b7280;
+  margin:0 0 28px;
+}
+
+.login-box label{
+  display:block;
+  font-weight:600;
+  margin:0 0 7px;
+}
+
+.login-box input{
+  width:100%;
+  height:46px;
+  padding:10px 12px;
+  margin:0 0 18px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  outline:none;
+}
+
+.login-box input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.login-box .primary-button{
+  width:100%;
+  height:46px;
+}
+
+.separator{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:22px 0;
+  color:#9ca3af;
+}
+
+.separator::before,
+.separator::after{
+  content:"";
+  height:1px;
+  flex:1;
+  background:#e5e7eb;
+}
+
+.google-btn{
+  width:100%;
+  height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  background:#fff;
+  color:#374151;
+  font-weight:600;
+}
+
+.google-btn:hover{
+  background:#f9fafb;
+}
+
+.google-mark{
+  font-weight:800;
+  font-size:20px;
+  color:#4285f4;
+}
+
+.login-error{
+  min-height:20px;
+  margin:14px 0 0;
+  text-align:center;
+}
+
+/* =========================
+   レイアウト
+========================= */
+
+.layout{
+  min-height:100vh;
+}
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:250px;
+  background:#fff;
+  border-right:1px solid #e5e7eb;
+  z-index:1000;
+  transition:width .2s ease;
+  overflow:hidden;
+}
+
+.sidebar.collapsed{
+  width:72px;
+}
+
+.sidebar-top{
+  height:70px;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.menu-toggle{
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:8px;
+  background:#fff;
+  color:#374151;
+  padding:0;
+}
+
+.menu-toggle:hover{
+  background:#eef2ff;
+}
+
+.sidebar-brand{
+  margin-left:12px;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.35;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.sidebar nav{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:14px 10px;
+}
+
+.menu-item{
+  width:100%;
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 12px;
+  border:0;
+  border-radius:8px;
+  background:#fff;
+  color:#374151;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.menu-item:hover{
+  background:#eef2ff;
+  color:#1d4ed8;
+}
+
+.menu-item.active{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.menu-item .material-symbols-rounded{
+  flex:0 0 22px;
+}
+
+.menu-label{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.sidebar.collapsed .sidebar-brand,
+.sidebar.collapsed .menu-label{
+  display:none;
+}
+
+.sidebar.collapsed .sidebar-top{
+  justify-content:center;
+  padding:0;
+}
+
+.sidebar.collapsed nav{
+  padding:14px 10px;
+}
+
+.sidebar.collapsed .menu-item{
+  justify-content:center;
+  padding:0;
+}
+
+.sidebar-divider{
+  height:1px;
+  border:0;
+  background:#e5e7eb;
+  margin:10px 0;
+}
+
+.content{
+  margin-left:250px;
+  width:calc(100% - 250px);
+  min-height:100vh;
+  padding:30px;
+  transition:margin-left .2s ease,width .2s ease;
+}
+
+.sidebar.collapsed ~ .content{
+  margin-left:72px;
+  width:calc(100% - 72px);
+}
+
+.content-inner{
+  max-width:1200px;
+  margin:0 auto;
+}
+
+/* =========================
+   お知らせ
+========================= */
+
+.notice-list{
+  display:flex;
+  flex-direction:column;
+}
+
+.notice-item{
+  padding:17px 0;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.notice-item:first-child{
+  padding-top:0;
+}
+
+.notice-title{
+  display:inline;
+  color:#2563eb;
+  text-decoration:underline;
+  font-weight:700;
+  font-size:17px;
+  cursor:pointer;
+}
+
+.notice-title:hover{
+  color:#1d4ed8;
+}
+
+.notice-meta{
+  margin-top:7px;
+  color:#6b7280;
+  font-size:13px;
+}
+
+.notice-body{
+  white-space:pre-wrap;
+  line-height:1.9;
+}
+
+.important,
+.normal-tag{
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:5px;
+  font-size:12px;
+  margin-right:7px;
+}
+
+.important{
+  background:#fee2e2;
+  color:#b91c1c;
+}
+
+.normal-tag{
+  background:#e5e7eb;
+  color:#374151;
+}
+
+/* =========================
+   文書
+========================= */
+
+.document-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.document-open{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:9px 14px;
+  border:0;
+  border-radius:8px;
+  background:#2563eb;
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+  font-size:13px;
+}
+
+.document-open:hover{
+  background:#1d4ed8;
+}
+
+.document-body{
+  white-space:pre-wrap;
+  line-height:1.8;
+}
+
+.document-period{
+  color:#6b7280;
+  font-size:13px;
+}
+
+/* =========================
+   フォーム
+========================= */
+
+.form-group{
+  margin-bottom:18px;
+}
+
+.form-group label{
+  display:block;
+  font-weight:600;
+  margin-bottom:7px;
+}
+
+input,
+textarea,
+select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  background:#fff;
+}
+
+textarea{
+  min-height:130px;
+  resize:vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  outline:none;
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.target-options{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:10px;
+}
+
+.target-options label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:12px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.target-options input{
+  width:auto;
+  margin:0;
+}
+
+.target-detail{
+  padding:15px;
+  margin-top:12px;
+  background:#f8fafc;
+  border-radius:8px;
+}
+
+/* =========================
+   カレンダー
+========================= */
+
+.calendar-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.calendar-toolbar h2{
+  margin:0;
+  font-size:22px;
+}
+
+.calendar-actions{
+  display:flex;
+  gap:7px;
+}
+
+.calendar-range{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:end;
+  gap:10px;
+  padding:14px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+.calendar-range .form-group{
+  margin:0;
+  flex:1 1 180px;
+}
+
+.calendar-wrap{
+  overflow-x:auto;
+}
+
+.calendar{
+  width:100%;
+  min-width:820px;
+  table-layout:fixed;
+  border-collapse:collapse;
+  background:#fff;
+}
+
+.calendar th{
+  height:42px;
+  background:#f3f4f6;
+  border:1px solid #e5e7eb;
+}
+
+.calendar td{
+  height:125px;
+  padding:6px;
+  vertical-align:top;
+  border:1px solid #e5e7eb;
+}
+
+.calendar td.empty{
+  background:#fafafa;
+}
+
+.calendar-day.today{
+  background:#eff6ff;
+}
+
+.day-number{
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.calendar-event{
+  display:block;
+  width:100%;
+  padding:5px 7px;
+  margin:3px 0;
+  border:0;
+  border-left:3px solid #2563eb;
+  border-radius:4px;
+  background:#e8f0fe;
+  color:#1f2937;
+  text-align:left;
+  font-size:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  cursor:pointer;
+}
+
+.calendar-event:hover{
+  background:#dbeafe;
+}
+
+.event-detail{
+  margin-top:18px;
+}
+
+/* =========================
+   成績
+========================= */
+
+.analysis-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+}
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+}
+
+.data-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.data-table th,
+.data-table td{
+  border:1px solid #e5e7eb;
+  padding:9px;
+  text-align:left;
+  white-space:nowrap;
+}
+
+.data-table th{
+  background:#f3f4f6;
+}
+
+.distribution{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+
+.distribution > div{
+  padding:10px;
+  text-align:center;
+  border:1px solid #e5e7eb;
+  background:#fafafa;
+  border-radius:6px;
+}
+
+.distribution strong{
+  display:block;
+  font-size:20px;
+  margin-top:5px;
+}
+
+/* =========================
+   スマホ
+========================= */
+
+@media(max-width:768px){
+
+  .sidebar{
+    width:72px;
   }
-  return false;
-}
-function isPublished(f) {
-  // Existing records use published=true. Never expose an unpublished form.
-  return f.published === true && targetMatches(f) && !isBeforeStart(f) && !isAfterEnd(f);
-}
-function createdSort(a,b) { return dateMs(b.createdAt)-dateMs(a.createdAt); }
-function latestScoreForForm(formId) {
-  return scores.filter(s => s.formId === formId).sort(createdSort)[0] || null;
-}
-function formStatus(form) {
-  const score = latestScoreForForm(form.id);
-  if (!score) return {label:"未提出", canAnswer:true, score:null};
-  if (score.resubmitAllowed === true) return {label:"再回答許可中", canAnswer:true, score};
-  return {label:"提出済み", canAnswer:false, score};
-}
-function setMessage(message, type="") {
-  $("pageMessage").innerHTML = message ? `<div class="status-box ${type}">${esc(message)}</div>` : "";
-}
-function renderForms() {
-  const area = $("scoreFormList");
-  if (!forms.length) {
-    area.innerHTML = '<div class="card">現在、回答対象のフォームはありません。</div>';
-    return;
+
+  .sidebar-brand,
+  .menu-label{
+    display:none;
   }
-  area.innerHTML = forms.map(f => {
-    const st = formStatus(f);
-    const subjects = Array.isArray(f.subjects) ? f.subjects.join("・") : "";
-    return `<article class="card score-item">
-      <h3>${esc(f.title || "名称未設定のテスト")}</h3>
-      <p>対象教科：${esc(subjects || "未設定")}</p>
-      <p>回答状況：<strong>${esc(st.label)}</strong></p>
-      <p>提出期限：${esc(dateText(f.endDate))}</p>
-      <button type="button" class="primary-button" data-open-form="${esc(f.id)}">${st.canAnswer ? "フォームを開いて回答" : "提出内容を確認"}</button>
-      <div id="form-area-${esc(f.id)}"></div>
-    </article>`;
-  }).join("");
-  area.querySelectorAll("[data-open-form]").forEach(btn => btn.addEventListener("click", () => {
-    const f = forms.find(x => x.id === btn.dataset.openForm);
-    if (f) openForm(f);
-  }));
-}
-function renderHistory() {
-  const area = $("scoreHistoryList");
-  if (!scores.length) {
-    area.innerHTML = '<div class="card">保存されている成績はまだありません。</div>';
-    return;
+
+  .sidebar-top{
+    justify-content:center;
+    padding:0;
   }
-  const byTest = new Map();
-  for (const s of [...scores].sort(createdSort)) {
-    const key = s.formId || s.id;
-    if (!byTest.has(key)) byTest.set(key, s);
+
+  .menu-item{
+    justify-content:center;
+    padding:0;
   }
-  area.innerHTML = [...byTest.entries()].map(([key,s]) => {
-    const title = s.testName || s.title || "テスト成績";
-    return `<article class="card score-item">
-      <h3>${esc(title)}</h3>
-      <p>合計点：<strong>${Number.isFinite(Number(s.total)) ? esc(s.total) : "—"}点</strong>
-      ／ 平均点：${Number.isFinite(Number(s.average)) ? esc(s.average) : "—"}点</p>
-      <p>提出日：${esc(dateText(s.createdAt))}</p>
-      <button type="button" class="secondary-button" data-open-score="${esc(key)}">このテストの成績を開く</button>
-    </article>`;
-  }).join("");
-  area.querySelectorAll("[data-open-score]").forEach(btn => btn.addEventListener("click", () => {
-    const id = btn.dataset.openScore;
-    const item = scores.find(s => (s.formId || s.id) === id) || scores.find(s => s.id === id);
-    if (!item) return;
-    history.pushState({scoreId:id}, "", `${location.pathname}?id=${encodeURIComponent(id)}`);
-    renderDetail(item);
-  }));
-}
-function scoreSubjects(score) {
-  if (score.subjects && !Array.isArray(score.subjects) && typeof score.subjects === "object") return score.subjects;
-  return {};
-}
-function renderDetail(score) {
-  $("scoreDetail").hidden = false;
-  $("detailHeading").textContent = score.testName || score.title || "成績詳細";
-  const subjectScores = scoreSubjects(score);
-  const keys = Object.keys(subjectScores);
-  const rows = keys.map(k => `<tr><th>${esc(k)}</th><td>${esc(subjectScores[k])}点</td><td>${esc(previousDifference(score,k,subjectScores[k]))}</td></tr>`).join("");
-  const previous = getPreviousScore(score);
-  const totalDiff = previous && Number.isFinite(Number(score.total)) && Number.isFinite(Number(previous.total))
-    ? signed(Number(score.total)-Number(previous.total))+"点" : "比較できる前回の成績はありません";
-  $("scoreDetailContent").innerHTML = `<div class="card">
-    <p>合計点：<strong>${Number.isFinite(Number(score.total)) ? esc(score.total)+"点" : "—"}</strong></p>
-    <p>前回との差：${esc(totalDiff)}</p>
-    <p>平均点：${Number.isFinite(Number(score.average)) ? esc(score.average)+"点" : "保存データから計算できません"}</p>
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>教科</th><th>点数</th><th>前回との差</th></tr></thead><tbody>${rows || '<tr><td colspan="3">教科別の点数データがありません。</td></tr>'}</tbody></table></div>
-    <p><button type="button" class="secondary-button" id="closeDetail">詳細を閉じる</button></p>
-  </div>`;
-  $("closeDetail").addEventListener("click", () => {
-    history.pushState({}, "", location.pathname);
-    $("scoreDetail").hidden = true;
-  });
-  $("scoreDetail").scrollIntoView({behavior:"smooth",block:"start"});
-}
-function getPreviousScore(score) {
-  const own = scores.filter(s => s.id !== score.id && s.uid === currentUser.uid)
-    .sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt));
-  const currentTime = dateMs(score.createdAt);
-  return own.find(s => dateMs(s.createdAt) < currentTime) || null;
-}
-function signed(n) { return `${n > 0 ? "+" : ""}${n}`; }
-function previousDifference(score, subject, value) {
-  const prev = getPreviousScore(score);
-  const p = prev && scoreSubjects(prev)[subject];
-  return p !== undefined && Number.isFinite(Number(value)) && Number.isFinite(Number(p))
-    ? signed(Number(value)-Number(p))+"点" : "—";
-}
-function openForm(form) {
-  selectedForm = form;
-  const host = $(`form-area-${form.id}`);
-  const status = formStatus(form);
-  if (!status.canAnswer) {
-    host.innerHTML = `<div class="status-box success">提出しました。<br>管理者が再回答を許可していないため、再提出できません。</div>`;
-    if (status.score) renderDetail(status.score);
-    return;
+
+  .content,
+  .sidebar.collapsed ~ .content{
+    margin-left:72px;
+    width:calc(100% - 72px);
+    padding:18px;
   }
-  const subjects = Array.isArray(form.subjects) ? form.subjects : [];
-  if (!subjects.length) {
-    host.innerHTML = '<div class="status-box warning">このフォームには教科が設定されていません。管理者に確認してください。</div>';
-    return;
+
+  .content{
+    min-width:0;
   }
-  host.innerHTML = `<div class="card"><h4>${esc(form.title || "成績入力")}</h4>
-    ${status.score ? '<div class="status-box warning">管理者から再回答が許可されています。入力内容を確認して再提出してください。</div>' : ""}
-    <form id="scoreEntryForm">
-      ${subjects.map((subject,i)=>`<div class="form-group"><label for="subject-${i}">${esc(subject)}（0〜100点）</label><input id="subject-${i}" name="subject-${i}" type="number" min="0" max="100" step="1" required data-subject="${esc(subject)}" value="${status.score && scoreSubjects(status.score)[subject] !== undefined ? esc(scoreSubjects(status.score)[subject]) : ""}"></div>`).join("")}
-      <button class="primary-button" type="submit">入力内容を確認して提出</button>
-      <button class="secondary-button" type="button" id="cancelEntry">閉じる</button>
-    </form><div id="confirmArea"></div></div>`;
-  $("cancelEntry").addEventListener("click",()=>{host.innerHTML="";selectedForm=null;});
-  $("scoreEntryForm").addEventListener("submit", async ev => {
-    ev.preventDefault();
-    const inputs = [...ev.currentTarget.querySelectorAll("input[data-subject]")];
-    const subjectsObj = {};
-    for (const input of inputs) {
-      const n = Number(input.value);
-      if (input.value.trim()==="" || !Number.isInteger(n) || n<0 || n>100) {
-        input.focus(); setMessage("すべての教科に0〜100の整数を入力してください。","warning"); return;
-      }
-      subjectsObj[input.dataset.subject]=n;
-    }
-    const vals=Object.values(subjectsObj), total=vals.reduce((a,b)=>a+b,0);
-    const average=Number((total/vals.length).toFixed(1));
-    $("confirmArea").innerHTML = `<div class="status-box warning"><h4>提出前の確認</h4>${Object.entries(subjectsObj).map(([k,v])=>`<p>${esc(k)}：${esc(v)}点</p>`).join("")}<p>合計：${total}点 ／ 平均：${average}点</p><button type="button" class="primary-button" id="confirmSubmit">この内容で提出</button></div>`;
-    $("confirmSubmit").addEventListener("click",()=>saveSubmission(form, status.score, subjectsObj,total,average));
-  });
-}
-async function saveSubmission(form, existing, subjects,total,average) {
-  if (submitting) return;
-  submitting=true;
-  const btn=$("confirmSubmit"); if(btn) btn.disabled=true;
-  try {
-    // Re-read immediately before write to reduce accidental duplicate submissions.
-    const latestSnap=await getDocs(query(collection(db,"scores"),where("formId","==",form.id),where("uid","==",currentUser.uid)));
-    const latest=latestSnap.docs.map(d=>({id:d.id,...d.data()})).sort(createdSort)[0] || null;
-    if (latest && latest.resubmitAllowed !== true) {
-      setMessage("すでに提出済みです。管理者の再回答許可が必要です。","warning");
-      await loadData(); return;
-    }
-    const payload={formId:form.id,uid:currentUser.uid,name:userData.name||"",testName:form.title||"",subjects,total,average,resubmitAllowed:false,createdAt:serverTimestamp()};
-    if (latest && latest.resubmitAllowed === true) {
-      await updateDoc(doc(db,"scores",latest.id),{...payload,resubmittedAt:serverTimestamp()});
-    } else {
-      await addDoc(collection(db,"scores"),payload);
-    }
-    setMessage("提出しました。","success");
-    await loadData();
-    const fresh=latestScoreForForm(form.id);
-    if (fresh) renderDetail(fresh);
-  } catch (e) {
-    console.error("成績提出エラー",e);
-    setMessage(e?.code==="permission-denied" ? "提出権限がありません。Firestore Security Rulesを確認してください。" : "提出できませんでした。通信状態と権限を確認して、もう一度お試しください。","warning");
-  } finally { submitting=false; }
-}
-async function loadData() {
-  setMessage("");
-  const [formSnap,scoreSnap] = await Promise.all([
-    getDocs(collection(db,"scoreForms")),
-    getDocs(query(collection(db,"scores"),where("uid","==",currentUser.uid)))
-  ]);
-  forms=formSnap.docs.map(d=>({id:d.id,...d.data()})).filter(isPublished).sort((a,b)=>dateMs(b.createdAt)-dateMs(a.createdAt));
-  scores=scoreSnap.docs.map(d=>({id:d.id,...d.data()})).sort(createdSort);
-  renderForms(); renderHistory();
-}
-function handleUrl() {
-  const id=new URLSearchParams(location.search).get("id");
-  if (!id) { $("scoreDetail").hidden=true; return; }
-  const item=scores.find(s=>s.id===id || s.formId===id);
-  if (item) renderDetail(item);
-  else {
-    $("scoreDetail").hidden=false;
-    $("detailHeading").textContent="成績詳細";
-    $("scoreDetailContent").innerHTML='<div class="status-box warning">指定された成績が見つからないか、まだ提出されていません。</div>';
+
+  .page-title{
+    font-size:24px;
   }
-}
-if ($("scoreFormList")) {
-window.addEventListener("popstate",handleUrl);
-onAuthStateChanged(auth,async user=>{
-  if (!user) { location.href="../index.html"; return; }
-  currentUser=user;
-  try {
-    userData=await getUserData(user);
-    if (!userData || userData.role!=="student") {
-      setMessage("生徒アカウントでログインしてください。","warning"); return;
-    }
-    await loadData();
-    handleUrl();
-  } catch(e) {
-    console.error("成績読み込みエラー",e);
-    setMessage(e?.code==="permission-denied" ? "成績を読み込む権限がありません。Firestore Security Rulesを確認してください。" : "データの読み込みに失敗しました。時間をおいて再読み込みしてください。","warning");
-    $("scoreFormList").innerHTML='<div class="card">フォームを読み込めませんでした。</div>';
-    $("scoreHistoryList").innerHTML='<div class="card">成績を読み込めませんでした。</div>';
+
+  .distribution{
+    grid-template-columns:repeat(3,1fr);
   }
-});
+
+  .calendar-toolbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+}
+
+@media(max-width:480px){
+
+  .login-box{
+    padding:26px 20px;
+  }
+
+  .login-box h1{
+    font-size:20px;
+  }
+
+  .content{
+    padding:12px;
+  }
+
+}
+
+
+/* 成績確認画面：レスポンシブ */
+.score-item h3{margin:0 0 12px;font-size:19px;overflow-wrap:anywhere}
+.score-item p{line-height:1.7;overflow-wrap:anywhere}
+.score-item button{max-width:100%;white-space:normal}
+#scoreDetail{margin-top:28px}
+#scoreDetail[hidden]{display:none}
+#scoreFormList,#scoreHistoryList{min-width:0}
+#scoreEntryForm .form-group{max-width:480px}
+#scoreEntryForm input{width:100%;min-height:44px}
+#confirmArea{margin-top:16px}
+button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:768px){
+  .score-item{padding:15px}
+  .score-item button{width:100%;margin:4px 0}
+  .table-wrap .data-table{min-width:480px}
 }
