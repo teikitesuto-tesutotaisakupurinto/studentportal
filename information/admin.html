@@ -1,147 +1,38 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-
-<link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
-
 <link rel="stylesheet" href="../css/style.css">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0..200">
 </head>
 
-<body>
+<body data-role="admin">
 
-<div class="layout">
-
-<aside class="sidebar" id="sidebar">
-
-<div class="sidebar-header">
-
-<div class="sidebar-logo">
-
-<span class="material-symbols-outlined">
-school
-</span>
-
-<span class="sidebar-title">
-定期テスト対策プリント運営事務局
-</span>
-
-</div>
-
-<button
-class="menu-toggle"
-onclick="toggleSidebar()">
-
-<span class="material-symbols-outlined">
-menu
-</span>
-
-</button>
-
-</div>
-
-<nav class="sidebar-nav">
-
-<a href="../dashboard/admin.html" class="menu-item">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="menu-text">ダッシュボード</span>
-</a>
-
-<a href="../information/admin.html" class="menu-item active">
-<span class="material-symbols-outlined">campaign</span>
-<span class="menu-text">お知らせ管理</span>
-</a>
-
-<a href="../messages/admin.html" class="menu-item">
-<span class="material-symbols-outlined">mail</span>
-<span class="menu-text">連絡管理</span>
-</a>
-
-<a href="../documents/admin.html" class="menu-item">
-<span class="material-symbols-outlined">description</span>
-<span class="menu-text">配布文書管理</span>
-</a>
-
-<a href="../calendar/admin.html" class="menu-item">
-<span class="material-symbols-outlined">calendar_month</span>
-<span class="menu-text">カレンダー管理</span>
-</a>
-
-<a href="../scoreForms/admin.html" class="menu-item">
-<span class="material-symbols-outlined">assignment</span>
-<span class="menu-text">成績フォーム作成</span>
-</a>
-
-<a href="../scores/admin.html" class="menu-item">
-<span class="material-symbols-outlined">analytics</span>
-<span class="menu-text">成績分析</span>
-</a>
-
-<a href="../users/admin.html" class="menu-item">
-<span class="material-symbols-outlined">group</span>
-<span class="menu-text">生徒管理</span>
-</a>
-
-</nav>
-
-<div class="sidebar-bottom">
-
-<button
-class="menu-item logout-button"
-onclick="logout()">
-
-<span class="material-symbols-outlined">
-logout
-</span>
-
-<span class="menu-text">
-ログアウト
-</span>
-
-</button>
-
-</div>
-
-</aside>
+<aside id="sidebar" class="sidebar"></aside>
 
 <main class="content">
+<div class="content-inner">
 
-<header class="page-header">
-
-<h1>
-お知らせ
-</h1>
-
-</header>
-
-<section>
+<h1 class="page-title">お知らせ</h1>
 
 <div class="card">
 
-<h2>
-配信済みのお知らせ
-</h2>
-
-<div id="noticeList">
-</div>
+<div id="noticeList" class="notice-list"></div>
 
 </div>
-
-<div class="card create-notice-card">
 
 <a
-href="create.html"
+href="../information/create.html"
 class="primary-button">
 
-<span class="material-symbols-outlined">
+<span class="material-symbols-rounded">
 add
 </span>
 
@@ -150,16 +41,12 @@ add
 </a>
 
 </div>
-
-</section>
-
 </main>
 
-</div>
-
 <script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/navigation.js"></script>
+<script type="module" src="../js/menu.js"></script>
 <script type="module" src="../js/admin.js"></script>
+<script type="module" src="../js/student.js"></script>
 
 </body>
 </html>
