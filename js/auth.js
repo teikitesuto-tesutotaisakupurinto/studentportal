@@ -1,170 +1,34 @@
 import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  auth,
+  googleProvider,
+  db
+} from "./firebase.js";
 
 import {
-  getAuth,
   signInWithEmailAndPassword,
   signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
 import {
-  getFirestore,
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-/*
-=========================================
-Firebase設定
-=========================================
-現在使っているFirebase Console
-プロジェクト設定 > マイアプリ > Firebase SDK snippet
-の設定値を入れてください。
-*/
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
-  authDomain: "aitera-83486.firebaseapp.com",
-  projectId: "aitera-83486",
-  storageBucket: "aitera-83486.firebasestorage.app",
-  messagingSenderId: "79405334766",
-  appId: "1:79405334766:web:694c02a7abb407b50c73ff"
-};
+export async function getUserRole(user){
 
-const app = initializeApp(firebaseConfig);
-
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-
-const provider = new GoogleAuthProvider();
-
-provider.setCustomParameters({
-  prompt:"select_account"
-});
-
-/* =====================================
-   ログイン
-===================================== */
-
-export async function loginEmail(email,password){
-
-  return await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-}
-
-/* =====================================
-   Googleログイン
-===================================== */
-
-export async function loginGoogle(){
+  if(!user) return null;
 
   try{
-
-    const result =
-      await signInWithPopup(
-        auth,
-        provider
-      );
-
-    return result;
-
-  }catch(error){
-
-    console.error(
-      "Googleログインエラー:",
-      error
-    );
-
-    throw error;
-  }
-}
-
-/* =====================================
-   ログアウト
-===================================== */
-
-export async function logout(){
-
-  try{
-
-    await signOut(auth);
-
-    location.href =
-      getRootPath() + "index.html";
-
-  }catch(error){
-
-    console.error(
-      "ログアウトエラー:",
-      error
-    );
-
-    alert(
-      "ログアウトに失敗しました。"
-    );
-  }
-}
-
-window.logout = logout;
-
-/* =====================================
-   認証状態
-===================================== */
-
-export function requireLogin(
-  callback
-){
-
-  onAuthStateChanged(
-    auth,
-    async user => {
-
-      if(!user){
-
-        location.href =
-          getRootPath() + "index.html";
-
-        return;
-      }
-
-      if(callback){
-
-        await callback(user);
-      }
-
-    }
-  );
-}
-
-/* =====================================
-   管理者確認
-===================================== */
-
-export async function getUserRole(
-  user
-){
-
-  try{
-
-    const ref =
-      doc(
-        db,
-        "users",
-        user.uid
-      );
 
     const snap =
-      await getDoc(ref);
+      await getDoc(
+        doc(db,"users",user.uid)
+      );
 
     if(!snap.exists()){
-
       return null;
     }
 
@@ -173,7 +37,7 @@ export async function getUserRole(
   }catch(error){
 
     console.error(
-      "権限確認エラー:",
+      "ユーザー権限取得エラー:",
       error
     );
 
@@ -181,54 +45,218 @@ export async function getUserRole(
   }
 }
 
-export async function requireAdmin(
-  callback
-){
 
-  onAuthStateChanged(
-    auth,
-    async user => {
+async function redirectUser(user){
 
-      if(!user){
+  const role =
+    await getUserRole(user);
 
-        location.href =
-          getRootPath() + "index.html";
+  if(role === "admin"){
 
-        return;
-      }
+    location.href =
+      "dashboard/admin.html";
 
-      const role =
-        await getUserRole(user);
+    return;
+  }
 
-      if(
-        role !== "admin" &&
-        role !== "administrator"
-      ){
+  if(role === "student"){
 
-        alert(
-          "管理者権限が必要です。"
-        );
+    location.href =
+      "student.html";
 
-        location.href =
-          getRootPath() + "dashboard/admin.html";
+    return;
+  }
 
-        return;
-      }
-
-      if(callback){
-
-        await callback(user);
-      }
-
-    }
+  alert(
+    "このアカウントにはポータルサイトの権限が設定されていません。\n管理者に確認してください。"
   );
 }
 
-/* =====================================
-   パス
-===================================== */
+
+window.login = async function(){
+
+  const email =
+    document
+      .getElementById("email")
+      ?.value
+      .trim();
+
+  const password =
+    document
+      .getElementById("password")
+      ?.value;
+
+  const errorArea =
+    document.getElementById("loginError");
+
+  if(errorArea){
+    errorArea.textContent = "";
+  }
+
+  if(!email || !password){
+
+    if(errorArea){
+      errorArea.textContent =
+        "メールアドレスとパスワードを入力してください。";
+    }
+
+    return;
+  }
+
+  try{
+
+    const result =
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+    await redirectUser(
+      result.user
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    if(errorArea){
+
+      if(
+        error.code ===
+        "auth/invalid-credential"
+      ){
+
+        errorArea.textContent =
+          "メールアドレスまたはパスワードが正しくありません。";
+
+      }else{
+
+        errorArea.textContent =
+          "ログインできませんでした。";
+
+      }
+
+    }
+  }
+};
+
+
+window.googleLogin = async function(){
+
+  const errorArea =
+    document.getElementById("loginError");
+
+  if(errorArea){
+    errorArea.textContent = "";
+  }
+
+  try{
+
+    const result =
+      await signInWithPopup(
+        auth,
+        googleProvider
+      );
+
+    await redirectUser(
+      result.user
+    );
+
+  }catch(error){
+
+    console.error(
+      "Googleログインエラー:",
+      error
+    );
+
+    if(errorArea){
+
+      if(
+        error.code ===
+        "auth/popup-closed-by-user"
+      ){
+
+        errorArea.textContent =
+          "Googleログインをキャンセルしました。";
+
+      }else if(
+        error.code ===
+        "auth/popup-blocked"
+      ){
+
+        errorArea.textContent =
+          "ポップアップがブロックされています。ブラウザのポップアップを許可してください。";
+
+      }else{
+
+        errorArea.textContent =
+          "Googleログインに失敗しました。Firebase AuthenticationのGoogleプロバイダ設定も確認してください。";
+
+      }
+
+    }
+  }
+};
+
+
+window.logout = async function(){
+
+  try{
+
+    await signOut(auth);
+
+    location.href =
+      getRootPath();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "ログアウトできませんでした。"
+    );
+  }
+};
+
 
 function getRootPath(){
 
-  return "/studentportal/";
+  const pathname =
+    location.pathname;
+
+  const index =
+    pathname.indexOf(
+      "/studentportal/"
+    );
+
+  if(index >= 0){
+
+    return (
+      pathname.substring(
+        0,
+        index + "/studentportal/".length
+      ) +
+      "index.html"
+    );
+  }
+
+  return "../index.html";
 }
+
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    if(user){
+
+      console.log(
+        "ログイン中:",
+        user.email
+      );
+
+    }
+
+  }
+);
