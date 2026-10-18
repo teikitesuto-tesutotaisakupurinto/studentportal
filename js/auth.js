@@ -16,89 +16,84 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
+export async function getUserData(user){
+
+  const snap = await getDoc(
+    doc(db,"users",user.uid)
+  );
+
+  if(!snap.exists()){
+    return null;
+  }
+
+  return {
+    id:user.uid,
+    ...snap.data()
+  };
+}
 
 export async function getUserRole(user){
 
-  if(!user) return null;
+  const data = await getUserData(user);
 
-  try{
-
-    const snap =
-      await getDoc(
-        doc(db,"users",user.uid)
-      );
-
-    if(!snap.exists()){
-      return null;
-    }
-
-    return snap.data().role || null;
-
-  }catch(error){
-
-    console.error(
-      "ユーザー権限取得エラー:",
-      error
-    );
-
-    return null;
-  }
+  return data?.role || null;
 }
-
 
 async function redirectUser(user){
 
-  const role =
-    await getUserRole(user);
+  const data = await getUserData(user);
 
-  if(role === "admin"){
+  if(!data){
 
-    location.href =
-      "dashboard/admin.html";
+    showError("ユーザー情報が登録されていません。");
 
-    return;
-  }
-
-  if(role === "student"){
-
-    location.href =
-      "student.html";
+    await signOut(auth);
 
     return;
   }
 
-  alert(
-    "このアカウントにはポータルサイトの権限が設定されていません。\n管理者に確認してください。"
-  );
+  if(data.role === "admin"){
+
+    location.href =
+      "/studentportal/dashboard/admin.html";
+
+    return;
+  }
+
+  if(data.role === "student"){
+
+    location.href =
+      "/studentportal/dashboard/student.html";
+
+    return;
+  }
+
+  showError("権限が設定されていません。");
 }
 
+function showError(message){
+
+  const area =
+    document.getElementById("loginError");
+
+  if(area){
+    area.textContent = message;
+  }else{
+    alert(message);
+  }
+}
 
 window.login = async function(){
 
   const email =
-    document
-      .getElementById("email")
-      ?.value
-      .trim();
+    document.getElementById("email")?.value.trim();
 
   const password =
-    document
-      .getElementById("password")
-      ?.value;
-
-  const errorArea =
-    document.getElementById("loginError");
-
-  if(errorArea){
-    errorArea.textContent = "";
-  }
+    document.getElementById("password")?.value;
 
   if(!email || !password){
 
-    if(errorArea){
-      errorArea.textContent =
-        "メールアドレスとパスワードを入力してください。";
-    }
+    showError("メールアドレスとパスワードを入力してください。");
 
     return;
   }
@@ -112,46 +107,28 @@ window.login = async function(){
         password
       );
 
-    await redirectUser(
-      result.user
-    );
+    await redirectUser(result.user);
 
   }catch(error){
 
     console.error(error);
 
-    if(errorArea){
-
-      if(
-        error.code ===
-        "auth/invalid-credential"
-      ){
-
-        errorArea.textContent =
-          "メールアドレスまたはパスワードが正しくありません。";
-
-      }else{
-
-        errorArea.textContent =
-          "ログインできませんでした。";
-
-      }
-
-    }
+    showError(
+      "ログインできませんでした。"
+    );
   }
 };
 
-
 window.googleLogin = async function(){
 
-  const errorArea =
-    document.getElementById("loginError");
-
-  if(errorArea){
-    errorArea.textContent = "";
-  }
+  const button =
+    document.getElementById("googleLoginButton");
 
   try{
+
+    if(button){
+      button.disabled = true;
+    }
 
     const result =
       await signInWithPopup(
@@ -159,46 +136,32 @@ window.googleLogin = async function(){
         googleProvider
       );
 
-    await redirectUser(
-      result.user
-    );
+    await redirectUser(result.user);
 
   }catch(error){
 
-    console.error(
-      "Googleログインエラー:",
-      error
-    );
+    console.error(error);
 
-    if(errorArea){
-
-      if(
-        error.code ===
-        "auth/popup-closed-by-user"
-      ){
-
-        errorArea.textContent =
-          "Googleログインをキャンセルしました。";
-
-      }else if(
-        error.code ===
-        "auth/popup-blocked"
-      ){
-
-        errorArea.textContent =
-          "ポップアップがブロックされています。ブラウザのポップアップを許可してください。";
-
-      }else{
-
-        errorArea.textContent =
-          "Googleログインに失敗しました。Firebase AuthenticationのGoogleプロバイダ設定も確認してください。";
-
-      }
-
+    if(error.code === "auth/popup-closed-by-user"){
+      showError("Googleログインをキャンセルしました。");
+    }else if(error.code === "auth/unauthorized-domain"){
+      showError(
+        "このサイトのドメインがFirebase Authenticationで承認されていません。"
+      );
+    }else{
+      showError(
+        "Googleログインに失敗しました。"
+      );
     }
+
+  }finally{
+
+    if(button){
+      button.disabled = false;
+    }
+
   }
 };
-
 
 window.logout = async function(){
 
@@ -207,56 +170,54 @@ window.logout = async function(){
     await signOut(auth);
 
     location.href =
-      getRootPath();
+      "/studentportal/index.html";
 
   }catch(error){
 
     console.error(error);
 
-    alert(
-      "ログアウトできませんでした。"
-    );
+    alert("ログアウトできませんでした。");
   }
 };
 
+const loginForm =
+  document.getElementById("loginForm");
 
-function getRootPath(){
+if(loginForm){
 
-  const pathname =
-    location.pathname;
+  loginForm.addEventListener(
+    "submit",
+    event => {
 
-  const index =
-    pathname.indexOf(
-      "/studentportal/"
-    );
+      event.preventDefault();
 
-  if(index >= 0){
-
-    return (
-      pathname.substring(
-        0,
-        index + "/studentportal/".length
-      ) +
-      "index.html"
-    );
-  }
-
-  return "../index.html";
-}
-
-
-onAuthStateChanged(
-  auth,
-  user => {
-
-    if(user){
-
-      console.log(
-        "ログイン中:",
-        user.email
-      );
+      window.login();
 
     }
+  );
+}
+
+const googleButton =
+  document.getElementById("googleLoginButton");
+
+if(googleButton){
+
+  googleButton.addEventListener(
+    "click",
+    () => window.googleLogin()
+  );
+
+}
+
+onAuthStateChanged(auth,user => {
+
+  if(user){
+
+    console.log(
+      "ログイン中:",
+      user.email
+    );
 
   }
-);
+
+});
