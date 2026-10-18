@@ -2,48 +2,34 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>テスト成績 | 定期テスト対策ポータル</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>テスト成績 | 定期テスト対策プリント運営事務局|ポータルサイト</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0">
 </head>
-
-<body>
-
+<body data-role="student">
 <div class="layout">
-
-<aside class="sidebar">
-<div class="logo">定期テスト対策ポータル</div>
-
-<nav>
-<a href="../home/index.html">ホーム</a>
-<a href="../information/index.html">お知らせ</a>
-<a href="../messages/index.html">連絡</a>
-<a href="../documents/index.html">配布文書</a>
-<a href="../calendar/index.html">カレンダー</a>
-<a href="../scores/index.html">テスト成績</a>
-<a href="../settings/index.html">各種設定</a>
-<hr>
-<button onclick="logout()">ログアウト</button>
-</nav>
-</aside>
-
-<main class="content">
-
-<section>
-
-<h1>テスト成績</h1>
-
-<div id="scoreFormList">
-読み込み中...
+  <aside id="sidebar" class="sidebar"></aside>
+  <main class="content"><div class="content-inner">
+    <h1 class="page-title">テスト成績確認</h1>
+    <div id="pageMessage" role="status" aria-live="polite"></div>
+    <section aria-labelledby="formsHeading">
+      <h2 id="formsHeading">回答対象フォーム</h2>
+      <div id="scoreFormList"><p>フォームを読み込んでいます…</p></div>
+    </section>
+    <section aria-labelledby="scoresHeading">
+      <h2 id="scoresHeading">過去を含むテスト成績一覧</h2>
+      <div id="scoreHistoryList"><p>成績を読み込んでいます…</p></div>
+    </section>
+    <section id="scoreDetail" aria-live="polite" hidden>
+      <h2 id="detailHeading">成績詳細</h2>
+      <div id="scoreDetailContent"></div>
+    </section>
+  </div></main>
 </div>
-
-</section>
-
-</main>
-</div>
-
 <script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/menu.js"></script>
 <script type="module" src="../js/student.js"></script>
-
-</body>
-</html>
+</body></html>
