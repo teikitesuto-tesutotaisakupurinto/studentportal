@@ -3,68 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>定期テスト対策プリント運営事務局|ポータルサイト</title>
-
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
-
 <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="login-page">
+<body>
 
 <div class="login-container">
 
   <div class="login-box">
 
-    <h1>
-      定期テスト対策プリント運営事務局
-    </h1>
+    <h1>定期テスト対策プリント運営事務局</h1>
+    <p>ポータルサイトにログイン</p>
 
-    <p class="login-subtitle">
-      ポータルサイト
-    </p>
+    <form id="loginForm">
 
-    <div id="loginError" class="error"></div>
+      <label for="email">メールアドレス</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        placeholder="メールアドレス"
+        required
+      >
 
-    <label for="email">メールアドレス</label>
-    <input
-      id="email"
-      type="email"
-      autocomplete="username"
-      placeholder="メールアドレス">
+      <label for="password">パスワード</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        placeholder="パスワード"
+        required
+      >
 
-    <label for="password">パスワード</label>
-    <input
-      id="password"
-      type="password"
-      autocomplete="current-password"
-      placeholder="パスワード">
+      <button type="submit" class="primary-button">
+        <span class="material-symbols-rounded">login</span>
+        ログイン
+      </button>
 
-    <button
-      type="button"
-      class="primary-button"
-      onclick="login()">
-      <span class="material-symbols-outlined">login</span>
-      ログイン
-    </button>
+    </form>
 
     <div class="separator">
-      または
+      <span>または</span>
     </div>
 
-    <button
-      type="button"
-      class="google-btn"
-      onclick="googleLogin()">
-
+    <button id="googleLoginButton" type="button" class="google-btn">
       <span class="google-mark">G</span>
-
       Googleでログイン
-
     </button>
+
+    <p id="loginError" class="error login-error"></p>
 
   </div>
 
