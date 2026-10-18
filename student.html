@@ -1,286 +1,198 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
+<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<title>定期テスト対策ポータル</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 
-<link
-  rel="stylesheet"
-  href="css/style.css"
->
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
 
-<link
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
-  rel="stylesheet"
->
+<link rel="stylesheet" href="css/style.css">
 
 </head>
-
 
 <body>
 
 <div class="layout">
 
+  <aside class="sidebar" id="sidebar">
 
-<aside class="sidebar">
-
-  <div class="logo">
-    定期テスト対策ポータル
-  </div>
-
-
-  <nav>
-
-    <button
-      type="button"
-      onclick="showPage('home')"
-    >
-      <span class="material-symbols-rounded">
-        home
-      </span>
-      <span>ホーム</span>
-    </button>
+    <div class="sidebar-header">
 
+      <div class="sidebar-logo">
+        <span class="material-symbols-outlined">school</span>
 
-    <button
-      type="button"
-      onclick="showPage('notice')"
-    >
-      <span class="material-symbols-rounded">
-        campaign
-      </span>
-      <span>お知らせ</span>
-    </button>
+        <span class="sidebar-title">
+          定期テスト対策プリント運営事務局
+        </span>
+      </div>
 
+      <button
+        class="menu-toggle"
+        type="button"
+        onclick="toggleSidebar()"
+        title="メニューを開閉">
 
-    <button
-      type="button"
-      onclick="showPage('message')"
-    >
-      <span class="material-symbols-rounded">
-        mail
-      </span>
-      <span>連絡</span>
-    </button>
+        <span class="material-symbols-outlined">
+          menu
+        </span>
 
+      </button>
 
-    <button
-      type="button"
-      onclick="showPage('documents')"
-    >
-      <span class="material-symbols-rounded">
-        description
-      </span>
-      <span>配布文書</span>
-    </button>
+    </div>
 
+    <nav class="sidebar-nav">
 
-    <button
-      type="button"
-      onclick="showPage('calendar')"
-    >
-      <span class="material-symbols-rounded">
-        calendar_month
-      </span>
-      <span>カレンダー</span>
-    </button>
+      <a href="student.html"
+         class="menu-item active">
 
+        <span class="material-symbols-outlined">
+          home
+        </span>
 
-    <button
-      type="button"
-      onclick="showPage('scores')"
-    >
-      <span class="material-symbols-rounded">
-        assignment
-      </span>
-      <span>テスト成績</span>
-    </button>
+        <span class="menu-text">
+          ホーム
+        </span>
 
+      </a>
 
-    <button
-      type="button"
-      onclick="showPage('settings')"
-    >
-      <span class="material-symbols-rounded">
-        settings
-      </span>
-      <span>各種設定</span>
-    </button>
+      <a href="information/index.html"
+         class="menu-item">
 
+        <span class="material-symbols-outlined">
+          campaign
+        </span>
 
-    <hr>
+        <span class="menu-text">
+          お知らせ
+        </span>
 
+      </a>
 
-    <button
-      type="button"
-      onclick="logout()"
-    >
-      <span class="material-symbols-rounded">
-        logout
-      </span>
-      <span>ログアウト</span>
-    </button>
+      <a href="messages/index.html"
+         class="menu-item">
 
-  </nav>
+        <span class="material-symbols-outlined">
+          mail
+        </span>
 
-</aside>
+        <span class="menu-text">
+          連絡
+        </span>
 
+      </a>
 
-<main class="content">
+      <a href="documents/index.html"
+         class="menu-item">
 
+        <span class="material-symbols-outlined">
+          description
+        </span>
 
-<section id="home">
+        <span class="menu-text">
+          配布文書
+        </span>
 
-  <h1>ホーム</h1>
+      </a>
 
-  <div class="card">
+      <a href="calendar/index.html"
+         class="menu-item">
 
-    <h2>お知らせ</h2>
+        <span class="material-symbols-outlined">
+          calendar_month
+        </span>
 
-    <div id="dashboardNotices"></div>
+        <span class="menu-text">
+          カレンダー
+        </span>
 
-  </div>
+      </a>
 
-</section>
+      <a href="scores/index.html"
+         class="menu-item">
 
+        <span class="material-symbols-outlined">
+          analytics
+        </span>
 
-<section
-  id="notice"
-  style="display:none"
->
+        <span class="menu-text">
+          テスト成績
+        </span>
 
-  <h1>お知らせ</h1>
+      </a>
 
-  <div id="noticeList"></div>
+      <a href="settings/index.html"
+         class="menu-item">
 
-</section>
+        <span class="material-symbols-outlined">
+          settings
+        </span>
 
+        <span class="menu-text">
+          各種設定
+        </span>
 
-<section
-  id="message"
-  style="display:none"
->
+      </a>
 
-  <h1>連絡</h1>
+    </nav>
 
-  <div class="card">
+    <div class="sidebar-bottom">
 
-    <textarea
-      id="messageText"
-      placeholder="運営への連絡内容"
-    ></textarea>
+      <button
+        type="button"
+        class="menu-item logout-button"
+        onclick="logout()">
 
-    <button
-      type="button"
-      onclick="sendMessage()"
-    >
+        <span class="material-symbols-outlined">
+          logout
+        </span>
 
-      <span class="material-symbols-rounded">
-        send
-      </span>
+        <span class="menu-text">
+          ログアウト
+        </span>
 
-      送信
+      </button>
 
-    </button>
+    </div>
 
-  </div>
+  </aside>
 
-</section>
+  <main class="content">
 
+    <header class="page-header">
 
-<section
-  id="documents"
-  style="display:none"
->
+      <h1>
+        ホーム
+      </h1>
 
-  <h1>配布文書</h1>
+    </header>
 
-  <div id="documentList"></div>
+    <section>
 
-</section>
+      <div class="card">
 
+        <h2>
+          お知らせ
+        </h2>
 
-<section
-  id="calendar"
-  style="display:none"
->
+        <div id="dashboardNotices"></div>
 
-  <h1>カレンダー</h1>
+      </div>
 
-  <div id="calendarArea"></div>
+    </section>
 
-</section>
-
-
-<section
-  id="scores"
-  style="display:none"
->
-
-  <h1>テスト成績</h1>
-
-  <div id="scoreFormList"></div>
-
-</section>
-
-
-<section
-  id="settings"
-  style="display:none"
->
-
-  <h1>各種設定</h1>
-
-  <div class="card">
-
-    <div id="userInfo"></div>
-
-    <button
-      type="button"
-      onclick="changePassword()"
-    >
-
-      <span class="material-symbols-rounded">
-        lock_reset
-      </span>
-
-      パスワード変更
-
-    </button>
-
-  </div>
-
-</section>
-
-
-</main>
+  </main>
 
 </div>
 
-
-<script
-  type="module"
-  src="js/auth.js"
-></script>
-
-<script
-  type="module"
-  src="js/student.js"
-></script>
-
-<script
-  type="module"
-  src="js/settings.js"
-></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/navigation.js"></script>
+<script type="module" src="js/student.js"></script>
 
 </body>
-
 </html>
