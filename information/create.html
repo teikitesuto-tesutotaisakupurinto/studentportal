@@ -1,33 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
+<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<title>
-お知らせ作成 | 定期テスト対策プリント運営事務局|ポータルサイト
-</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 
-<link
-  rel="icon"
-  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Cpath d='M18 16h28v7H25v10h18v7H25v8h21v7H18z' fill='white'/%3E%3C/svg%3E"
->
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
 
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
->
-
-<link
-  rel="stylesheet"
-  href="../css/style.css"
->
+<link rel="stylesheet" href="../css/style.css">
 
 </head>
 
@@ -35,135 +20,25 @@
 
 <div class="layout">
 
-<aside
-  class="sidebar admin-sidebar"
-  id="sidebar"
->
+<aside class="sidebar" id="sidebar">
 
-<div class="logo">
-定期テスト対策プリント<br>
-運営事務局
+<div class="sidebar-header">
+
+<div class="sidebar-logo">
+
+<span class="material-symbols-outlined">
+school
+</span>
+
+<span class="sidebar-title">
+定期テスト対策プリント運営事務局
+</span>
+
 </div>
 
-<nav>
-
-<a href="../dashboard/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-dashboard
-</span>
-</span>
-<span class="menu-text">
-ダッシュボード
-</span>
-</a>
-
-<a href="./admin.html" class="active">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-campaign
-</span>
-</span>
-<span class="menu-text">
-お知らせ
-</span>
-</a>
-
-<a href="../messages/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-mail
-</span>
-</span>
-<span class="menu-text">
-連絡
-</span>
-</a>
-
-<a href="../documents/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-description
-</span>
-</span>
-<span class="menu-text">
-配布文書
-</span>
-</a>
-
-<a href="../calendar/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-calendar_month
-</span>
-</span>
-<span class="menu-text">
-カレンダー
-</span>
-</a>
-
-<a href="../scoreForms/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-assignment
-</span>
-</span>
-<span class="menu-text">
-成績フォーム作成
-</span>
-</a>
-
-<a href="../scores/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-analytics
-</span>
-</span>
-<span class="menu-text">
-成績分析
-</span>
-</a>
-
-<a href="../users/admin.html">
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-group
-</span>
-</span>
-<span class="menu-text">
-生徒管理
-</span>
-</a>
-
-<hr>
-
 <button
-  type="button"
-  onclick="logout()"
->
-
-<span class="menu-icon">
-<span class="material-symbols-outlined">
-logout
-</span>
-</span>
-
-<span class="menu-text">
-ログアウト
-</span>
-
-</button>
-
-</nav>
-
-</aside>
-
-
-<button
-  type="button"
-  id="sidebarToggle"
-  class="sidebar-toggle"
->
+class="menu-toggle"
+onclick="toggleSidebar()">
 
 <span class="material-symbols-outlined">
 menu
@@ -171,118 +46,231 @@ menu
 
 </button>
 
+</div>
+
+<nav class="sidebar-nav">
+
+<a href="../dashboard/admin.html" class="menu-item">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="menu-text">ダッシュボード</span>
+</a>
+
+<a href="admin.html" class="menu-item active">
+<span class="material-symbols-outlined">campaign</span>
+<span class="menu-text">お知らせ管理</span>
+</a>
+
+<a href="../messages/admin.html" class="menu-item">
+<span class="material-symbols-outlined">mail</span>
+<span class="menu-text">連絡管理</span>
+</a>
+
+<a href="../documents/admin.html" class="menu-item">
+<span class="material-symbols-outlined">description</span>
+<span class="menu-text">配布文書管理</span>
+</a>
+
+<a href="../calendar/admin.html" class="menu-item">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="menu-text">カレンダー管理</span>
+</a>
+
+<a href="../scoreForms/admin.html" class="menu-item">
+<span class="material-symbols-outlined">assignment</span>
+<span class="menu-text">成績フォーム作成</span>
+</a>
+
+<a href="../scores/admin.html" class="menu-item">
+<span class="material-symbols-outlined">analytics</span>
+<span class="menu-text">成績分析</span>
+</a>
+
+<a href="../users/admin.html" class="menu-item">
+<span class="material-symbols-outlined">group</span>
+<span class="menu-text">生徒管理</span>
+</a>
+
+</nav>
+
+</aside>
 
 <main class="content">
 
-<section>
-
-<div class="page-header">
+<header class="page-header">
 
 <h1>
 お知らせを作成
 </h1>
 
-<a
-  href="./admin.html"
-  class="btn btn-light"
->
+</header>
 
-<span class="material-symbols-outlined">
-arrow_back
-</span>
-
-戻る
-
-</a>
-
-</div>
-
-
-<div
-  id="successMessage"
-  class="success-message"
-  style="display:none;"
->
-送信しました。
-</div>
-
+<section>
 
 <div class="card">
 
-<form id="noticeForm">
-
-
-<label for="title">
+<label>
 タイトル
 </label>
 
 <input
-  id="title"
-  type="text"
-  maxlength="100"
-  required
->
+id="noticeTitle"
+type="text"
+placeholder="お知らせのタイトル">
 
 
-<label for="body">
-本文
+<label>
+本文（任意）
 </label>
 
 <textarea
-  id="body"
-  placeholder="お知らせ本文"
-></textarea>
+id="noticeBody"
+placeholder="本文を入力してください"></textarea>
 
 
-<label for="scope">
-配信範囲
+<label>
+重要度
 </label>
 
-<select
-  id="scope"
->
+<select id="importance">
 
-<option value="全員">
-全員
+<option value="normal">
+通常
 </option>
 
-<option value="生徒">
-生徒
-</option>
-
-<option value="保護者">
-保護者
+<option value="important">
+重要
 </option>
 
 </select>
 
 
+<label>
+公開開始日
+</label>
+
+<input
+id="startDate"
+type="date">
+
+
+<label>
+公開終了日
+</label>
+
+<input
+id="endDate"
+type="date">
+
+
+<label>
+配信範囲
+</label>
+
+<select
+id="targetType"
+onchange="changeTarget()">
+
+<option value="all">
+全生徒
+</option>
+
+<option value="block">
+ブロック一斉送信
+</option>
+
+<option value="grade">
+学年一斉送信
+</option>
+
+<option value="block_grade">
+ブロック＋学年
+</option>
+
+<option value="individual">
+個別送信
+</option>
+
+</select>
+
+
+<div
+id="blockArea"
+style="display:none">
+
+<label>
+ブロック
+</label>
+
+<select id="block">
+</select>
+
+</div>
+
+
+<div
+id="gradeArea"
+style="display:none">
+
+<label>
+学年
+</label>
+
+<select id="grade">
+
+<option value="">
+選択してください
+</option>
+
+<option>
+中学1年
+</option>
+
+<option>
+中学2年
+</option>
+
+<option>
+中学3年
+</option>
+
+</select>
+
+</div>
+
+
+<div
+id="userArea"
+style="display:none">
+
+<label>
+生徒
+</label>
+
+<select id="targetUser">
+</select>
+
+</div>
+
+
 <div class="form-actions">
 
-<button
-  type="submit"
-  class="btn"
->
+<a
+href="admin.html"
+class="secondary-button">
 
-<span class="material-symbols-outlined">
-send
-</span>
+戻る
+
+</a>
+
+<button
+type="button"
+onclick="createNotice()">
 
 送信
 
 </button>
 
-
-<a
-  href="./admin.html"
-  class="btn btn-secondary"
->
-戻る
-</a>
-
 </div>
-
-</form>
 
 </div>
 
@@ -292,87 +280,9 @@ send
 
 </div>
 
-
-<script
-  type="module"
-  src="../js/auth.js"
-></script>
-
-<script
-  type="module"
-  src="../js/informationCreate.js"
-></script>
-
-
-<script>
-
-const sidebar =
-  document.getElementById(
-    "sidebar"
-  );
-
-const content =
-  document.querySelector(
-    ".content"
-  );
-
-const toggle =
-  document.getElementById(
-    "sidebarToggle"
-  );
-
-const savedState =
-  localStorage.getItem(
-    "portalSidebarCollapsed"
-  );
-
-function setSidebarState(
-  collapsed
-){
-
-  sidebar.classList.toggle(
-    "collapsed",
-    collapsed
-  );
-
-  content.classList.toggle(
-    "sidebar-collapsed",
-    collapsed
-  );
-
-  toggle.classList.toggle(
-    "collapsed",
-    collapsed
-  );
-
-}
-
-setSidebarState(
-  savedState === "true"
-);
-
-toggle.addEventListener(
-  "click",
-  () => {
-
-    const collapsed =
-      !sidebar.classList.contains(
-        "collapsed"
-      );
-
-    setSidebarState(
-      collapsed
-    );
-
-    localStorage.setItem(
-      "portalSidebarCollapsed",
-      String(collapsed)
-    );
-
-  }
-);
-
-</script>
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/navigation.js"></script>
+<script type="module" src="../js/admin.js"></script>
 
 </body>
 </html>
