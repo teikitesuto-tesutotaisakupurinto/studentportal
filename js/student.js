@@ -11,17 +11,18 @@ import {
   collection,
   addDoc,
   getDocs,
-  query,
-  orderBy,
-  doc,
   getDoc,
+  doc,
+  query,
+  where,
+  orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 import {
+  getUserData,
   getUserRole
 } from "./auth.js";
-
 
 let currentUser = null;
 let userData = null;
@@ -31,182 +32,126 @@ let calendarEvents = [];
 let calendarDate =
   new Date();
 
-let calendarRangeStart = "";
-let calendarRangeEnd = "";
-
-
-window.showPage = function(page){
-
-  document
-    .querySelectorAll(
-      ".content > section"
-    )
-    .forEach(
-      section =>
-        section.style.display =
-          "none"
-    );
-
-  const target =
-    document.getElementById(page);
-
-  if(target){
-
-    target.style.display =
-      "block";
-  }
-
-  if(page === "calendar"){
-
-    renderCalendar();
-  }
-};
-
-
-onAuthStateChanged(
-  auth,
-  async user => {
-
-    if(!user){
-
-      location.href =
-        "index.html";
-
-      return;
-    }
-
-    const role =
-      await getUserRole(user);
-
-    if(
-      role !== "student" &&
-      role !== "admin"
-    ){
-
-      alert(
-        "このアカウントにはポータルサイトの権限がありません。"
-      );
-
-      return;
-    }
-
-    currentUser = user;
-
-    const snap =
-      await getDoc(
-        doc(
-          db,
-          "users",
-          user.uid
-        )
-      );
-
-    if(!snap.exists()){
-
-      alert(
-        "ユーザー情報が登録されていません。"
-      );
-
-      return;
-    }
-
-    userData =
-      snap.data();
-
-    loadUserInfo();
-
-    await Promise.all([
-      loadNotices(),
-      loadDocuments(),
-      loadCalendar(),
-      loadScoreForms()
-    ]);
-
-  }
-);
-
+let rangeStart = "";
+let rangeEnd = "";
 
 function esc(value){
 
-  return String(
-    value ?? ""
-  ).replace(
-    /[&<>\"]/g,
-    c => ({
+  return String(value ?? "")
+    .replace(/[&<>"']/g,char => ({
       "&":"&amp;",
       "<":"&lt;",
       ">":"&gt;",
-      '"':"&quot;"
-    }[c])
-  );
+      '"':"&quot;",
+      "'":"&#39;"
+    }[char]));
+
 }
 
+function timestampMs(value){
 
-function loadUserInfo(){
+  if(value?.toDate){
+    return value.toDate().getTime();
+  }
 
-  const area =
-    document.getElementById(
-      "userInfo"
+  if(value instanceof Date){
+    return value.getTime();
+  }
+
+  return 0;
+}
+
+function formatDateTime(value){
+
+  if(!value){
+    return "";
+  }
+
+  let date;
+
+  if(value?.toDate){
+    date = value.toDate();
+  }else{
+    date = new Date(value);
+  }
+
+  if(Number.isNaN(date.getTime())){
+    return "";
+  }
+
+  const p =
+    n => String(n).padStart(2,"0");
+
+  return `${date.getFullYear()}/${p(date.getMonth()+1)}/${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}:${p(date.getSeconds())}`;
+
+}
+
+function targetText(data){
+
+  const type =
+    data.targetType || "all";
+
+  switch(type){
+
+    case "individual":
+      return "個別送信";
+
+    case "block":
+      return "ブロック一斉送信";
+
+    case "block_grade":
+      return "ブロック＋学年";
+
+    case "grade":
+      return "学年一斉送信";
+
+    default:
+      return "全員";
+
+  }
+
+}
+
+function metaText(data){
+
+  const sender =
+    data.senderName ||
+    data.createdByName ||
+    "管理者";
+
+  const created =
+    formatDateTime(
+      data.createdAt
     );
 
-  if(!area) return;
+  return `${esc(sender)} ⇒ ${esc(targetText(data))}${created ? ` [${created}]` : ""}`;
 
-  area.innerHTML = `
-
-    <p>
-      名前：${esc(userData.name)}
-    </p>
-
-    <p>
-      メール：${esc(currentUser.email)}
-    </p>
-
-    <p>
-      ブロック：${esc(userData.block)}
-    </p>
-
-    <p>
-      学年：${esc(userData.grade)}
-    </p>
-
-  `;
 }
 
+function toDate(value,endOfDay=false){
 
-function toDate(
-  value,
-  endOfDay = false
-){
+  if(!value){
+    return null;
+  }
 
-  if(!value) return null;
-
-  const d =
+  const date =
     new Date(value);
 
-  if(
-    Number.isNaN(
-      d.getTime()
-    )
-  ){
-
+  if(Number.isNaN(date.getTime())){
     return null;
   }
 
   if(endOfDay){
-
-    d.setHours(
-      23,
-      59,
-      59,
-      999
+    date.setHours(
+      23,59,59,999
     );
   }
 
-  return d;
+  return date;
+
 }
 
-
-function isVisibleByPeriod(data){
+function visibleByPeriod(data){
 
   const now =
     new Date();
@@ -224,212 +169,249 @@ function isVisibleByPeriod(data){
     (!start || now >= start) &&
     (!end || now <= end)
   );
+
 }
 
-
-/*
-配信対象
-
-all
-→ 全生徒
-
-block
-→ ブロック一斉送信
-
-grade
-→ 学年一斉送信
-
-block_grade
-→ ブロック＋学年
-
-individual
-→ 個別送信
-*/
-function canViewTarget(data){
-
-  const type =
-    data.targetType ||
-    "all";
-
-
-  if(type === "all"){
-
-    return true;
-  }
-
-
-  if(type === "block"){
-
-    return (
-      data.block ===
-      userData.block
-    );
-  }
-
-
-  if(type === "grade"){
-
-    return (
-      data.grade ===
-      userData.grade
-    );
-  }
-
-
-  if(type === "block_grade"){
-
-    return (
-      data.block ===
-      userData.block &&
-      data.grade ===
-      userData.grade
-    );
-  }
-
-
-  if(type === "individual"){
-
-    return (
-      data.uid ===
-      currentUser.uid
-    );
-  }
-
-
-  return false;
-}
-
-
-function noticeCard(
-  id,
-  data
+function createTargetQuery(
+  collectionName
 ){
 
+  const ref =
+    collection(db,collectionName);
+
+  const common = [
+    where(
+      "targetType",
+      "==",
+      "all"
+    )
+  ];
+
+  if(!userData){
+    return query(ref,...common);
+  }
+
+  const conditions = [
+    where(
+      "targetType",
+      "==",
+      "all"
+    ),
+    where(
+      "targetType",
+      "==",
+      "block"
+    ),
+    where(
+      "block",
+      "==",
+      userData.block
+    ),
+    where(
+      "targetType",
+      "==",
+      "block_grade"
+    ),
+    where(
+      "block",
+      "==",
+      userData.block
+    ),
+    where(
+      "grade",
+      "==",
+      userData.grade
+    ),
+    where(
+      "targetType",
+      "==",
+      "grade"
+    ),
+    where(
+      "grade",
+      "==",
+      userData.grade
+    ),
+    where(
+      "targetType",
+      "==",
+      "individual"
+    ),
+    where(
+      "uid",
+      "==",
+      currentUser.uid
+    )
+  ];
+
+  /*
+    Firestoreでは複雑なOR条件を
+    1本の単純queryにまとめず、
+    個別条件ごとに取得して重複を除去します。
+  */
+
+  return {
+    ref,
+    conditions
+  };
+
+}
+
+async function loadTargeted(
+  collectionName
+){
+
+  const result = new Map();
+
+  if(!userData){
+    return [];
+  }
+
+  const ref =
+    collection(
+      db,
+      collectionName
+    );
+
+  const queries = [
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "all"
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "block"
+      ),
+      where(
+        "block",
+        "==",
+        userData.block
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "block_grade"
+      ),
+      where(
+        "block",
+        "==",
+        userData.block
+      ),
+      where(
+        "grade",
+        "==",
+        userData.grade
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "grade"
+      ),
+      where(
+        "grade",
+        "==",
+        userData.grade
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "individual"
+      ),
+      where(
+        "uid",
+        "==",
+        currentUser.uid
+      )
+    )
+
+  ];
+
+  for(const q of queries){
+
+    const snap =
+      await getDocs(q);
+
+    snap.forEach(item => {
+
+      result.set(
+        item.id,
+        {
+          id:item.id,
+          ...item.data()
+        }
+      );
+
+    });
+
+  }
+
+  return [...result.values()]
+    .filter(visibleByPeriod)
+    .sort(
+      (a,b) =>
+        timestampMs(b.createdAt) -
+        timestampMs(a.createdAt)
+    );
+
+}
+
+function renderNotice(item){
+
   const tag =
-    data.importance === "important"
+    item.importance === "important"
       ? `<span class="important">重要</span>`
       : `<span class="normal-tag">通常</span>`;
 
-
   return `
 
-    <div class="notice-card">
+    <div class="notice-item">
 
       <div>
+
         ${tag}
+
+        <a
+          class="notice-title"
+          href="/studentportal/information/detail.html?id=${encodeURIComponent(item.id)}">
+
+          ${esc(item.title)}
+
+        </a>
+
       </div>
-
-      <a
-        class="notice-title-link"
-        href="notice.html?id=${encodeURIComponent(id)}">
-
-        ${esc(data.title)}
-
-      </a>
 
       <div class="notice-meta">
 
-        配信者：${esc(
-          data.senderName ||
-          "定期テスト対策プリント運営事務局"
-        )}
-
-        ⇒
-
-        配信範囲：
-        ${esc(
-          getTargetLabel(data)
-        )}
-
-        [${esc(
-          formatTimestamp(
-            data.createdAt
-          )
-        )}]
+        ${metaText(item)}
 
       </div>
 
     </div>
 
   `;
+
 }
-
-
-function getTargetLabel(data){
-
-  const type =
-    data.targetType ||
-    "all";
-
-
-  if(type === "all")
-    return "全生徒";
-
-
-  if(type === "block")
-    return `ブロック一斉送信（${data.block || ""}）`;
-
-
-  if(type === "grade")
-    return `学年一斉送信（${data.grade || ""}）`;
-
-
-  if(type === "block_grade")
-    return `ブロック＋学年（${data.block || ""}・${data.grade || ""}）`;
-
-
-  if(type === "individual")
-    return "個別送信";
-
-
-  return "指定なし";
-}
-
-
-function formatTimestamp(value){
-
-  if(!value) return "";
-
-  let date;
-
-  if(
-    typeof value.toDate ===
-    "function"
-  ){
-
-    date =
-      value.toDate();
-
-  }else{
-
-    date =
-      new Date(value);
-  }
-
-  if(
-    Number.isNaN(
-      date.getTime()
-    )
-  ){
-
-    return "";
-  }
-
-  const p =
-    n =>
-      String(n)
-        .padStart(2,"0");
-
-  return (
-    `${date.getFullYear()}/` +
-    `${p(date.getMonth()+1)}/` +
-    `${p(date.getDate())} ` +
-    `${p(date.getHours())}:` +
-    `${p(date.getMinutes())}:` +
-    `${p(date.getSeconds())}`
-  );
-}
-
 
 async function loadNotices(){
 
@@ -443,171 +425,51 @@ async function loadNotices(){
       "dashboardNotices"
     );
 
-
-  if(!area && !dashboard)
+  if(!area && !dashboard){
     return;
-
+  }
 
   try{
 
-    const snap =
-      await getDocs(
-        query(
-          collection(
-            db,
-            "notices"
-          ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
-        )
+    const list =
+      await loadTargeted(
+        "notices"
       );
 
-
-    const list = [];
-
-
-    snap.forEach(item => {
-
-      const data =
-        item.data();
-
-      if(
-        isVisibleByPeriod(data) &&
-        canViewTarget(data)
-      ){
-
-        list.push({
-          id:item.id,
-          data
-        });
-      }
-
-    });
-
-
     const html =
-      list
-        .map(
-          x =>
-            noticeCard(
-              x.id,
-              x.data
-            )
-        )
-        .join("");
+      list.length
+        ? list.map(renderNotice).join("")
+        : `<div class="card">現在表示できるお知らせはありません。</div>`;
 
+    if(area){
+      area.innerHTML = html;
+    }
 
-    const empty =
-      `<div class="card">
-        現在表示できるお知らせはありません。
-      </div>`;
-
-
-    if(area)
-      area.innerHTML =
-        html || empty;
-
-
-    if(dashboard)
-      dashboard.innerHTML =
-        html || empty;
-
+    if(dashboard){
+      dashboard.innerHTML = html;
+    }
 
   }catch(error){
 
     console.error(
-      "お知らせ取得エラー:",
+      "notice error",
       error
     );
 
+    const html =
+      `<div class="card error">お知らせを読み込めませんでした。</div>`;
 
-    const message =
-      `<div class="card error">
-        お知らせを読み込めませんでした。
-      </div>`;
+    if(area){
+      area.innerHTML = html;
+    }
 
+    if(dashboard){
+      dashboard.innerHTML = html;
+    }
 
-    if(area)
-      area.innerHTML =
-        message;
-
-
-    if(dashboard)
-      dashboard.innerHTML =
-        message;
   }
+
 }
-
-
-window.sendMessage =
-async function(){
-
-  const input =
-    document.getElementById(
-      "messageText"
-    );
-
-  const text =
-    input?.value.trim();
-
-
-  if(!text){
-
-    alert(
-      "内容を入力してください。"
-    );
-
-    return;
-  }
-
-
-  try{
-
-    await addDoc(
-      collection(
-        db,
-        "messages"
-      ),
-      {
-
-        senderUid:
-          currentUser.uid,
-
-        senderName:
-          userData.name || "",
-
-        senderEmail:
-          currentUser.email || "",
-
-        body:
-          text,
-
-        createdAt:
-          serverTimestamp()
-      }
-    );
-
-
-    input.value = "";
-
-
-    alert(
-      "送信しました。"
-    );
-
-
-  }catch(error){
-
-    console.error(error);
-
-    alert(
-      "送信できませんでした。"
-    );
-  }
-};
-
 
 async function loadDocuments(){
 
@@ -616,130 +478,81 @@ async function loadDocuments(){
       "documentList"
     );
 
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   try{
 
-    const snap =
-      await getDocs(
-        query(
-          collection(
-            db,
-            "documents"
-          ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
-        )
+    const list =
+      await loadTargeted(
+        "documents"
       );
 
+    if(!list.length){
 
-    const list = [];
+      area.innerHTML =
+        `<div class="card">現在表示できる配布文書はありません。</div>`;
 
-
-    snap.forEach(item => {
-
-      const data =
-        item.data();
-
-      if(
-        isVisibleByPeriod(data) &&
-        canViewTarget(data)
-      ){
-
-        list.push({
-          id:item.id,
-          data
-        });
-      }
-
-    });
-
+      return;
+    }
 
     area.innerHTML =
-      list.length
+      list.map(item => `
 
-      ?
+        <div class="card">
 
-      list.map(
-        ({id,data}) => `
+          <div class="document-header">
 
-          <div class="card document-card">
+            <h3>
+              ${esc(item.title)}
+            </h3>
 
-            <div class="document-header">
+            <a
+              class="document-open"
+              href="${esc(item.url || "#")}"
+              target="_blank"
+              rel="noopener noreferrer">
 
-              <div>
+              <span class="material-symbols-rounded">
+                open_in_new
+              </span>
 
-                <h3>
-                  ${esc(data.title)}
-                </h3>
+              配布文書を開く
 
-                <div class="document-body">
-                  ${esc(data.body || "")}
-                </div>
-
-              </div>
-
-              <a
-                class="button-link"
-                href="${esc(data.url || "#")}"
-                target="_blank"
-                rel="noopener noreferrer">
-
-                配布文書を開く
-
-              </a>
-
-            </div>
-
-            <p class="document-period">
-
-              配信者：
-              ${esc(
-                data.senderName ||
-                "定期テスト対策プリント運営事務局"
-              )}
-
-              ⇒
-
-              配信範囲：
-              ${esc(
-                getTargetLabel(data)
-              )}
-
-              [${esc(
-                formatTimestamp(
-                  data.createdAt
-                )
-              )}]
-
-            </p>
+            </a>
 
           </div>
 
-        `
-      ).join("")
+          ${
+            item.body
+              ? `<div class="document-body">${esc(item.body)}</div>`
+              : ""
+          }
 
-      :
+          <p class="document-period">
 
-      `<div class="card">
-        現在表示できる配布文書はありません。
-      </div>`;
+            ${metaText(item)}
 
+          </p>
+
+        </div>
+
+      `).join("");
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "document error",
+      error
+    );
 
     area.innerHTML =
-      `<div class="card error">
-        配布文書を読み込めませんでした。
-      </div>`;
-  }
-}
+      `<div class="card error">配布文書を読み込めませんでした。</div>`;
 
+  }
+
+}
 
 async function loadCalendar(){
 
@@ -748,8 +561,9 @@ async function loadCalendar(){
       "calendarArea"
     );
 
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   try{
 
@@ -761,59 +575,38 @@ async function loadCalendar(){
         )
       );
 
-
     calendarEvents = [];
-
 
     snap.forEach(item => {
 
       calendarEvents.push({
-
         id:item.id,
-
         ...item.data()
-
       });
 
     });
 
-
     renderCalendar();
-
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "calendar error",
+      error
+    );
 
     area.innerHTML =
-      `<div class="card error">
-        カレンダーを読み込めませんでした。
-      </div>`;
-  }
-}
+      `<div class="card error">カレンダーを読み込めませんでした。</div>`;
 
+  }
+
+}
 
 function dateKey(date){
 
-  return (
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 
-    date.getFullYear() +
-
-    "-" +
-
-    String(
-      date.getMonth()+1
-    ).padStart(2,"0") +
-
-    "-" +
-
-    String(
-      date.getDate()
-    ).padStart(2,"0")
-
-  );
 }
-
 
 function eventCoversDate(
   event,
@@ -829,15 +622,14 @@ function eventCoversDate(
     event.date ||
     start;
 
-
   return (
     start &&
     end &&
     key >= start &&
     key <= end
   );
-}
 
+}
 
 function renderCalendar(){
 
@@ -846,15 +638,15 @@ function renderCalendar(){
       "calendarArea"
     );
 
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   const year =
     calendarDate.getFullYear();
 
   const month =
     calendarDate.getMonth();
-
 
   const first =
     new Date(
@@ -863,7 +655,6 @@ function renderCalendar(){
       1
     );
 
-
   const lastDay =
     new Date(
       year,
@@ -871,109 +662,102 @@ function renderCalendar(){
       0
     ).getDate();
 
-
-  const todayKey =
-    dateKey(
-      new Date()
-    );
-
+  const today =
+    dateKey(new Date());
 
   let html = `
 
-    <div class="calendar-tools">
+    <div class="calendar-toolbar">
 
-      <div class="calendar-header">
+      <button
+        class="secondary-button"
+        type="button"
+        id="prevMonthButton">
 
-        <button
-          type="button"
-          onclick="prevMonth()">
+        <span class="material-symbols-rounded">
+          chevron_left
+        </span>
 
-          前月
+        前月
 
-        </button>
+      </button>
 
-        <h2>
-          ${year}年${month+1}月
-        </h2>
+      <h2>
+        ${year}年${month+1}月
+      </h2>
 
-        <button
-          type="button"
-          onclick="nextMonth()">
+      <button
+        class="secondary-button"
+        type="button"
+        id="nextMonthButton">
 
-          次月
+        次月
 
-        </button>
+        <span class="material-symbols-rounded">
+          chevron_right
+        </span>
 
-      </div>
-
-
-      <div class="calendar-range-filter">
-
-        <label>
-          開始日
-          <input
-            id="calendarRangeStart"
-            type="date"
-            value="${calendarRangeStart}">
-        </label>
-
-        <span>〜</span>
-
-        <label>
-          終了日
-          <input
-            id="calendarRangeEnd"
-            type="date"
-            value="${calendarRangeEnd}">
-        </label>
-
-        <button
-          type="button"
-          onclick="applyCalendarRange()">
-
-          期間を適用
-
-        </button>
-
-        <button
-          type="button"
-          class="secondary-button"
-          onclick="clearCalendarRange()">
-
-          解除
-
-        </button>
-
-      </div>
+      </button>
 
     </div>
 
+    <div class="calendar-range">
+
+      <div class="form-group">
+        <label>表示開始</label>
+        <input
+          id="calendarRangeStart"
+          type="date"
+          value="${rangeStart}">
+      </div>
+
+      <div class="form-group">
+        <label>表示終了</label>
+        <input
+          id="calendarRangeEnd"
+          type="date"
+          value="${rangeEnd}">
+      </div>
+
+      <button
+        class="primary-button"
+        type="button"
+        id="applyRangeButton">
+
+        期間を適用
+
+      </button>
+
+      <button
+        class="secondary-button"
+        type="button"
+        id="clearRangeButton">
+
+        解除
+
+      </button>
+
+    </div>
 
     <div class="calendar-wrap">
 
-    <table class="calendar">
+      <table class="calendar">
 
-      <thead>
+        <thead>
+          <tr>
+            <th>日</th>
+            <th>月</th>
+            <th>火</th>
+            <th>水</th>
+            <th>木</th>
+            <th>金</th>
+            <th>土</th>
+          </tr>
+        </thead>
 
-        <tr>
-
-          <th>日</th>
-          <th>月</th>
-          <th>火</th>
-          <th>水</th>
-          <th>木</th>
-          <th>金</th>
-          <th>土</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        <tr>
+        <tbody>
+          <tr>
   `;
-
 
   for(
     let i=0;
@@ -983,8 +767,8 @@ function renderCalendar(){
 
     html +=
       `<td class="empty"></td>`;
-  }
 
+  }
 
   for(
     let day=1;
@@ -1001,41 +785,30 @@ function renderCalendar(){
         )
       );
 
-
-    const visible =
-      (
-        !calendarRangeStart ||
-        key >= calendarRangeStart
-      ) &&
-      (
-        !calendarRangeEnd ||
-        key <= calendarRangeEnd
-      );
-
+    const inRange =
+      (!rangeStart ||
+        key >= rangeStart) &&
+      (!rangeEnd ||
+        key <= rangeEnd);
 
     const events =
-      visible
-
-      ?
-
-      calendarEvents.filter(
-        event =>
-          eventCoversDate(
-            event,
-            key
+      inRange
+        ? calendarEvents.filter(
+            event =>
+              eventCoversDate(
+                event,
+                key
+              )
           )
-      )
-
-      :
-
-      [];
-
+        : [];
 
     html += `
 
-      <td
-        class="calendar-day
-        ${key === todayKey ? "today" : ""}">
+      <td class="calendar-day ${
+        key === today
+          ? "today"
+          : ""
+      }">
 
         <div class="day-number">
           ${day}
@@ -1043,55 +816,43 @@ function renderCalendar(){
 
     `;
 
+    events.forEach(event => {
 
-    events.forEach(
-      event => {
+      html += `
 
-        html += `
+        <button
+          type="button"
+          class="calendar-event"
+          data-event-id="${esc(event.id)}">
 
-          <button
-            type="button"
-            class="calendar-event"
-            onclick="showCalendarEvent('${esc(event.id)}')">
+          ${esc(event.title)}
 
-            ${esc(event.title)}
+        </button>
 
-          </button>
+      `;
 
-        `;
-      }
-    );
+    });
 
-
-    html +=
-      `</td>`;
-
+    html += `</td>`;
 
     if(
-      (
-        first.getDay()+day
-      ) % 7 === 0 &&
+      (first.getDay()+day)%7 === 0 &&
       day !== lastDay
     ){
 
       html +=
         `</tr><tr>`;
+
     }
 
   }
-
 
   const cells =
     first.getDay() +
     lastDay;
 
-
   const trailing =
-    (
-      7 -
-      cells % 7
-    ) % 7;
-
+    (7 - cells % 7) % 7;
 
   for(
     let i=0;
@@ -1101,161 +862,176 @@ function renderCalendar(){
 
     html +=
       `<td class="empty"></td>`;
+
   }
 
-
   html += `
-
         </tr>
-
-      </tbody>
-
-    </table>
-
-    </div>
-
-    <div
-      id="calendarEventDetail"
-      class="event-detail">
+        </tbody>
+      </table>
     </div>
   `;
 
+  area.innerHTML = html;
 
-  area.innerHTML =
-    html;
-}
+  document
+    .getElementById(
+      "prevMonthButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
 
+        calendarDate.setMonth(
+          calendarDate.getMonth()-1
+        );
 
-window.showCalendarEvent =
-function(id){
+        renderCalendar();
 
-  const event =
-    calendarEvents.find(
-      x => x.id === id
+      }
     );
 
-  if(!event) return;
+  document
+    .getElementById(
+      "nextMonthButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
 
+        calendarDate.setMonth(
+          calendarDate.getMonth()+1
+        );
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .getElementById(
+      "applyRangeButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        const start =
+          document.getElementById(
+            "calendarRangeStart"
+          )?.value || "";
+
+        const end =
+          document.getElementById(
+            "calendarRangeEnd"
+          )?.value || "";
+
+        if(
+          start &&
+          end &&
+          start > end
+        ){
+
+          alert(
+            "開始日は終了日以前にしてください。"
+          );
+
+          return;
+        }
+
+        rangeStart = start;
+        rangeEnd = end;
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .getElementById(
+      "clearRangeButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        rangeStart = "";
+        rangeEnd = "";
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .querySelectorAll(
+      ".calendar-event"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const id =
+            button.dataset.eventId;
+
+          const event =
+            calendarEvents.find(
+              item => item.id === id
+            );
+
+          showEventDetail(event);
+
+        }
+      );
+
+    });
+
+}
+
+function showEventDetail(event){
 
   const area =
     document.getElementById(
-      "calendarEventDetail"
+      "eventDetail"
     );
 
-
-  if(!area) return;
-
+  if(!area || !event){
+    return;
+  }
 
   area.innerHTML = `
 
     <div class="card">
 
-      <h3>
+      <h2>
         ${esc(event.title)}
-      </h3>
+      </h2>
 
       <p>
-        ${esc(event.startDate || event.date || "")}
+        ${esc(event.startDate || "")}
 
         ${
           event.endDate &&
-          event.endDate !==
-          (event.startDate || event.date)
-
-          ?
-
-          "〜 " +
-          esc(event.endDate)
-
-          :
-
-          ""
+          event.endDate !== event.startDate
+            ? `〜 ${esc(event.endDate)}`
+            : ""
         }
 
       </p>
 
-      <div class="event-description">
-
-        ${esc(
-          event.description || ""
-        ).replace(
-          /\n/g,
-          "<br>"
-        )}
-
-      </div>
+      ${
+        event.description
+          ? `<div class="notice-body">${esc(event.description)}</div>`
+          : ""
+      }
 
     </div>
 
   `;
-};
 
-
-window.prevMonth =
-function(){
-
-  calendarDate.setMonth(
-    calendarDate.getMonth() - 1
-  );
-
-  renderCalendar();
-};
-
-
-window.nextMonth =
-function(){
-
-  calendarDate.setMonth(
-    calendarDate.getMonth() + 1
-  );
-
-  renderCalendar();
-};
-
-
-window.applyCalendarRange =
-function(){
-
-  calendarRangeStart =
-    document.getElementById(
-      "calendarRangeStart"
-    )?.value || "";
-
-
-  calendarRangeEnd =
-    document.getElementById(
-      "calendarRangeEnd"
-    )?.value || "";
-
-
-  if(
-    calendarRangeStart &&
-    calendarRangeEnd &&
-    calendarRangeStart >
-    calendarRangeEnd
-  ){
-
-    alert(
-      "開始日は終了日以前にしてください。"
-    );
-
-    return;
-  }
-
-
-  renderCalendar();
-};
-
-
-window.clearCalendarRange =
-function(){
-
-  calendarRangeStart = "";
-  calendarRangeEnd = "";
-
-  renderCalendar();
-};
-
+}
 
 async function loadScoreForms(){
 
@@ -1264,120 +1040,203 @@ async function loadScoreForms(){
       "scoreFormList"
     );
 
-  if(!area) return;
-
+  if(!area){
+    return;
+  }
 
   try{
 
-    const snap =
-      await getDocs(
-        query(
-          collection(
-            db,
-            "scoreForms"
-          ),
-          orderBy(
-            "createdAt",
-            "desc"
-          )
-        )
+    const list =
+      await loadTargeted(
+        "scoreForms"
       );
 
-
-    const today =
+    const now =
       new Date();
 
+    const visible =
+      list.filter(
+        data => {
 
-    const cards = [];
+          if(
+            data.published === false
+          ){
+            return false;
+          }
 
+          const start =
+            toDate(
+              data.startDate
+            );
 
-    snap.forEach(item => {
+          const end =
+            toDate(
+              data.endDate,
+              true
+            );
 
-      const data =
-        item.data();
+          return (
+            (!start || now >= start) &&
+            (!end || now <= end)
+          );
 
-
-      if(
-        data.published === false
-      )
-        return;
-
-
-      const start =
-        toDate(
-          data.startDate
-        );
-
-
-      const end =
-        toDate(
-          data.endDate,
-          true
-        );
-
-
-      if(
-        start &&
-        today < start
-      )
-        return;
-
-
-      if(
-        end &&
-        today > end
-      )
-        return;
-
-
-      if(
-        !canViewTarget(data)
-      )
-        return;
-
-
-      cards.push(`
-
-        <div class="card">
-
-          <h3>
-            ${esc(data.title)}
-          </h3>
-
-          <p>
-            ${esc(data.testType || "")}
-          </p>
-
-          <a
-            class="button-link"
-            href="scoreForm.html?id=${encodeURIComponent(item.id)}">
-
-            成績を提出・確認
-
-          </a>
-
-        </div>
-
-      `);
-
-    });
-
+        }
+      );
 
     area.innerHTML =
-      cards.join("") ||
+      visible.length
+        ? visible.map(item => `
 
-      `<div class="card">
-        現在提出できるテスト成績はありません。
-      </div>`;
+            <div class="card">
 
+              <h3>
+                ${esc(item.title)}
+              </h3>
+
+              <p>
+                ${esc(item.testType || "")}
+              </p>
+
+              <a
+                class="primary-button"
+                href="/studentportal/scoreForms/form.html?id=${encodeURIComponent(item.id)}">
+
+                成績を提出・確認
+
+              </a>
+
+            </div>
+
+          `).join("")
+        : `<div class="card">現在提出できるテスト成績はありません。</div>`;
+
+  }catch(error){
+
+    console.error(
+      "score form error",
+      error
+    );
+
+    area.innerHTML =
+      `<div class="card error">成績フォームを読み込めませんでした。</div>`;
+
+  }
+
+}
+
+async function sendMessage(){
+
+  const input =
+    document.getElementById(
+      "messageText"
+    );
+
+  const text =
+    input?.value.trim();
+
+  if(!text){
+
+    alert(
+      "内容を入力してください。"
+    );
+
+    return;
+  }
+
+  try{
+
+    await addDoc(
+      collection(
+        db,
+        "messages"
+      ),
+      {
+        senderUid:
+          currentUser.uid,
+
+        senderName:
+          userData.name || "",
+
+        senderEmail:
+          currentUser.email || "",
+
+        body:text,
+
+        createdAt:
+          serverTimestamp()
+      }
+    );
+
+    input.value = "";
+
+    alert(
+      "送信しました。"
+    );
 
   }catch(error){
 
     console.error(error);
 
-    area.innerHTML =
-      `<div class="card error">
-        テスト成績を読み込めませんでした。
-      </div>`;
+    alert(
+      "送信できませんでした。"
+    );
+
   }
+
 }
+
+const sendMessageButton =
+  document.getElementById(
+    "sendMessageButton"
+  );
+
+if(sendMessageButton){
+
+  sendMessageButton.addEventListener(
+    "click",
+    sendMessage
+  );
+
+}
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      location.href =
+        "/studentportal/index.html";
+
+      return;
+    }
+
+    currentUser = user;
+
+    userData =
+      await getUserData(user);
+
+    if(!userData){
+
+      alert(
+        "ユーザー情報がありません。"
+      );
+
+      return;
+    }
+
+    if(userData.role !== "student"){
+
+      return;
+
+    }
+
+    await Promise.all([
+      loadNotices(),
+      loadDocuments(),
+      loadCalendar(),
+      loadScoreForms()
+    ]);
+
+  }
+);
