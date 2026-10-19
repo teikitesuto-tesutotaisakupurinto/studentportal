@@ -1,801 +1,1242 @@
-*{
-  box-sizing:border-box;
-}
-
-html,
-body{
-  margin:0;
-  padding:0;
-  min-height:100%;
-  font-family:"Noto Sans JP","Yu Gothic",sans-serif;
-  background:#f5f6f8;
-  color:#1f2937;
-}
-
-body{
-  min-height:100vh;
-}
-
-button,
-input,
-textarea,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-a{
-  color:inherit;
-}
-
-.material-symbols-rounded{
-  font-family:"Material Symbols Rounded";
-  font-weight:normal;
-  font-style:normal;
-  font-size:22px;
-  line-height:1;
-  letter-spacing:normal;
-  text-transform:none;
-  display:inline-block;
-  white-space:nowrap;
-  word-wrap:normal;
-  direction:ltr;
-  -webkit-font-feature-settings:"liga";
-  -webkit-font-smoothing:antialiased;
-}
-
-/* =========================
-   共通
-========================= */
-
-.site-title{
-  font-size:18px;
-  font-weight:700;
-  margin:0;
-}
-
-.page-title{
-  font-size:28px;
-  line-height:1.3;
-  margin:0 0 24px;
-}
-
-.card{
-  background:#fff;
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:18px;
-  box-shadow:0 2px 8px rgba(0,0,0,.04);
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:18px;
-}
-
-.primary-button,
-.secondary-button,
-.danger-button{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  border:0;
-  border-radius:8px;
-  padding:11px 17px;
-  font-weight:600;
-}
-
-.primary-button{
-  background:#2563eb;
-  color:#fff;
-}
-
-.secondary-button{
-  background:#eef2f7;
-  color:#374151;
-}
-
-.danger-button{
-  background:#dc2626;
-  color:#fff;
-}
-
-.primary-button:hover,
-.secondary-button:hover,
-.danger-button:hover{
-  opacity:.9;
-}
-
-.error{
-  color:#b91c1c;
-}
-
-.success{
-  color:#047857;
-}
-
-.status-box{
-  padding:14px 16px;
-  border-radius:8px;
-  margin-bottom:18px;
-}
-
-.status-box.success{
-  background:#ecfdf5;
-  border:1px solid #a7f3d0;
-  color:#065f46;
-}
-
-.status-box.warning{
-  background:#fffbeb;
-  border:1px solid #fde68a;
-  color:#92400e;
-}
-
-/* =========================
-   ログイン
-========================= */
-
-.login-container{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:24px;
-}
-
-.login-box{
-  width:420px;
-  max-width:100%;
-  background:#fff;
-  padding:36px;
-  border-radius:14px;
-  border:1px solid #e5e7eb;
-  box-shadow:0 10px 35px rgba(0,0,0,.09);
-}
-
-.login-box h1{
-  font-size:23px;
-  line-height:1.45;
-  text-align:center;
-  margin:0 0 8px;
-}
-
-.login-box > p{
-  text-align:center;
-  color:#6b7280;
-  margin:0 0 28px;
-}
-
-.login-box label{
-  display:block;
-  font-weight:600;
-  margin:0 0 7px;
-}
-
-.login-box input{
-  width:100%;
-  height:46px;
-  padding:10px 12px;
-  margin:0 0 18px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  outline:none;
-}
-
-.login-box input:focus{
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,.1);
-}
-
-.login-box .primary-button{
-  width:100%;
-  height:46px;
-}
-
-.separator{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin:22px 0;
-  color:#9ca3af;
-}
-
-.separator::before,
-.separator::after{
-  content:"";
-  height:1px;
-  flex:1;
-  background:#e5e7eb;
-}
-
-.google-btn{
-  width:100%;
-  height:46px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  background:#fff;
-  color:#374151;
-  font-weight:600;
-}
-
-.google-btn:hover{
-  background:#f9fafb;
-}
-
-.google-mark{
-  font-weight:800;
-  font-size:20px;
-  color:#4285f4;
-}
-
-.login-error{
-  min-height:20px;
-  margin:14px 0 0;
-  text-align:center;
-}
-
-/* =========================
-   レイアウト
-========================= */
-
-.layout{
-  min-height:100vh;
-}
-
-.sidebar{
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  width:250px;
-  background:#fff;
-  border-right:1px solid #e5e7eb;
-  z-index:1000;
-  transition:width .2s ease;
-  overflow:hidden;
-}
-
-.sidebar.collapsed{
-  width:72px;
-}
-
-.sidebar-top{
-  height:70px;
-  display:flex;
-  align-items:center;
-  padding:0 14px;
-  border-bottom:1px solid #e5e7eb;
-}
-
-.menu-toggle{
-  width:44px;
-  height:44px;
-  flex:0 0 44px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:0;
-  border-radius:8px;
-  background:#fff;
-  color:#374151;
-  padding:0;
-}
-
-.menu-toggle:hover{
-  background:#eef2ff;
-}
-
-.sidebar-brand{
-  margin-left:12px;
-  font-size:14px;
-  font-weight:700;
-  line-height:1.35;
-  white-space:nowrap;
-  overflow:hidden;
-}
-
-.sidebar nav{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  padding:14px 10px;
-}
-
-.menu-item{
-  width:100%;
-  min-height:46px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:0 12px;
-  border:0;
-  border-radius:8px;
-  background:#fff;
-  color:#374151;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:600;
-  text-align:left;
-  white-space:nowrap;
-  overflow:hidden;
-}
-
-.menu-item:hover{
-  background:#eef2ff;
-  color:#1d4ed8;
-}
-
-.menu-item.active{
-  background:#dbeafe;
-  color:#1d4ed8;
-}
-
-.menu-item .material-symbols-rounded{
-  flex:0 0 22px;
-}
-
-.menu-label{
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.sidebar.collapsed .sidebar-brand,
-.sidebar.collapsed .menu-label{
-  display:none;
-}
-
-.sidebar.collapsed .sidebar-top{
-  justify-content:center;
-  padding:0;
-}
-
-.sidebar.collapsed nav{
-  padding:14px 10px;
-}
-
-.sidebar.collapsed .menu-item{
-  justify-content:center;
-  padding:0;
-}
-
-.sidebar-divider{
-  height:1px;
-  border:0;
-  background:#e5e7eb;
-  margin:10px 0;
-}
-
-.content{
-  margin-left:250px;
-  width:calc(100% - 250px);
-  min-height:100vh;
-  padding:30px;
-  transition:margin-left .2s ease,width .2s ease;
-}
-
-.sidebar.collapsed ~ .content{
-  margin-left:72px;
-  width:calc(100% - 72px);
-}
-
-.content-inner{
-  max-width:1200px;
-  margin:0 auto;
-}
-
-/* =========================
-   お知らせ
-========================= */
-
-.notice-list{
-  display:flex;
-  flex-direction:column;
-}
-
-.notice-item{
-  padding:17px 0;
-  border-bottom:1px solid #e5e7eb;
-}
-
-.notice-item:first-child{
-  padding-top:0;
-}
-
-.notice-title{
-  display:inline;
-  color:#2563eb;
-  text-decoration:underline;
-  font-weight:700;
-  font-size:17px;
-  cursor:pointer;
-}
-
-.notice-title:hover{
-  color:#1d4ed8;
-}
-
-.notice-meta{
-  margin-top:7px;
-  color:#6b7280;
-  font-size:13px;
-}
-
-.notice-body{
-  white-space:pre-wrap;
-  line-height:1.9;
-}
-
-.important,
-.normal-tag{
-  display:inline-block;
-  padding:3px 8px;
-  border-radius:5px;
-  font-size:12px;
-  margin-right:7px;
-}
-
-.important{
-  background:#fee2e2;
-  color:#b91c1c;
-}
-
-.normal-tag{
-  background:#e5e7eb;
-  color:#374151;
-}
-
-/* =========================
-   文書
-========================= */
-
-.document-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.document-open{
-  flex:0 0 auto;
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:9px 14px;
-  border:0;
-  border-radius:8px;
-  background:#2563eb;
-  color:#fff;
-  text-decoration:none;
-  font-weight:600;
-  font-size:13px;
-}
-
-.document-open:hover{
-  background:#1d4ed8;
-}
-
-.document-body{
-  white-space:pre-wrap;
-  line-height:1.8;
-}
-
-.document-period{
-  color:#6b7280;
-  font-size:13px;
-}
-
-/* =========================
-   フォーム
-========================= */
-
-.form-group{
-  margin-bottom:18px;
-}
-
-.form-group label{
-  display:block;
-  font-weight:600;
-  margin-bottom:7px;
-}
-
-input,
-textarea,
-select{
-  width:100%;
-  padding:11px 12px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  background:#fff;
-}
-
-textarea{
-  min-height:130px;
-  resize:vertical;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-  outline:none;
-  border-color:#2563eb;
-  box-shadow:0 0 0 3px rgba(37,99,235,.1);
-}
-
-.target-options{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:10px;
-}
-
-.target-options label{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:12px;
-  border:1px solid #e5e7eb;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-.target-options input{
-  width:auto;
-  margin:0;
-}
-
-.target-detail{
-  padding:15px;
-  margin-top:12px;
-  background:#f8fafc;
-  border-radius:8px;
-}
-
-/* =========================
-   カレンダー
-========================= */
-
-.calendar-toolbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:15px;
-}
-
-.calendar-toolbar h2{
-  margin:0;
-  font-size:22px;
-}
-
-.calendar-actions{
-  display:flex;
-  gap:7px;
-}
-
-.calendar-range{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:end;
-  gap:10px;
-  padding:14px;
-  background:#fff;
-  border:1px solid #e5e7eb;
-  border-radius:10px;
-  margin-bottom:15px;
-}
-
-.calendar-range .form-group{
-  margin:0;
-  flex:1 1 180px;
-}
-
-.calendar-wrap{
-  overflow-x:auto;
-}
-
-.calendar{
-  width:100%;
-  min-width:820px;
-  table-layout:fixed;
-  border-collapse:collapse;
-  background:#fff;
-}
-
-.calendar th{
-  height:42px;
-  background:#f3f4f6;
-  border:1px solid #e5e7eb;
-}
-
-.calendar td{
-  height:125px;
-  padding:6px;
-  vertical-align:top;
-  border:1px solid #e5e7eb;
-}
-
-.calendar td.empty{
-  background:#fafafa;
-}
-
-.calendar-day.today{
-  background:#eff6ff;
-}
-
-.day-number{
-  font-weight:700;
-  margin-bottom:6px;
-}
-
-.calendar-event{
-  display:block;
-  width:100%;
-  padding:5px 7px;
-  margin:3px 0;
-  border:0;
-  border-left:3px solid #2563eb;
-  border-radius:4px;
-  background:#e8f0fe;
-  color:#1f2937;
-  text-align:left;
-  font-size:12px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  cursor:pointer;
-}
-
-.calendar-event:hover{
-  background:#dbeafe;
-}
-
-.event-detail{
-  margin-top:18px;
-}
-
-/* =========================
-   成績
-========================= */
-
-.analysis-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:16px;
-}
-
-.table-wrap{
-  width:100%;
-  overflow-x:auto;
-}
-
-.data-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.data-table th,
-.data-table td{
-  border:1px solid #e5e7eb;
-  padding:9px;
-  text-align:left;
-  white-space:nowrap;
-}
-
-.data-table th{
-  background:#f3f4f6;
-}
-
-.distribution{
-  display:grid;
-  grid-template-columns:repeat(6,1fr);
-  gap:8px;
-}
-
-.distribution > div{
-  padding:10px;
-  text-align:center;
-  border:1px solid #e5e7eb;
-  background:#fafafa;
-  border-radius:6px;
-}
-
-.distribution strong{
-  display:block;
-  font-size:20px;
-  margin-top:5px;
-}
-
-/* =========================
-   スマホ
-========================= */
-
-@media(max-width:768px){
-
-  .sidebar{
-    width:72px;
+import {
+  auth,
+  db
+} from "./firebase.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+import {
+  collection,
+  addDoc,
+  getDocs,
+  getDoc,
+  doc,
+  query,
+  where,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+
+import {
+  getUserData,
+  getUserRole
+} from "./auth.js";
+
+let currentUser = null;
+let userData = null;
+
+let calendarEvents = [];
+
+let calendarDate =
+  new Date();
+
+let rangeStart = "";
+let rangeEnd = "";
+
+function esc(value){
+
+  return String(value ?? "")
+    .replace(/[&<>"']/g,char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[char]));
+
+}
+
+function timestampMs(value){
+
+  if(value?.toDate){
+    return value.toDate().getTime();
   }
 
-  .sidebar-brand,
-  .menu-label{
-    display:none;
+  if(value instanceof Date){
+    return value.getTime();
   }
 
-  .sidebar-top{
-    justify-content:center;
-    padding:0;
+  return 0;
+}
+
+function formatDateTime(value){
+
+  if(!value){
+    return "";
   }
 
-  .menu-item{
-    justify-content:center;
-    padding:0;
+  let date;
+
+  if(value?.toDate){
+    date = value.toDate();
+  }else{
+    date = new Date(value);
   }
 
-  .content,
-  .sidebar.collapsed ~ .content{
-    margin-left:72px;
-    width:calc(100% - 72px);
-    padding:18px;
+  if(Number.isNaN(date.getTime())){
+    return "";
   }
 
-  .content{
-    min-width:0;
-  }
+  const p =
+    n => String(n).padStart(2,"0");
 
-  .page-title{
-    font-size:24px;
-  }
+  return `${date.getFullYear()}/${p(date.getMonth()+1)}/${p(date.getDate())} ${p(date.getHours())}:${p(date.getMinutes())}:${p(date.getSeconds())}`;
 
-  .distribution{
-    grid-template-columns:repeat(3,1fr);
-  }
+}
 
-  .calendar-toolbar{
-    align-items:flex-start;
-    flex-direction:column;
+function targetText(data){
+
+  const type =
+    data.targetType || "all";
+
+  switch(type){
+
+    case "individual":
+      return "個別送信";
+
+    case "block":
+      return "ブロック一斉送信";
+
+    case "block_grade":
+      return "ブロック＋学年";
+
+    case "grade":
+      return "学年一斉送信";
+
+    default:
+      return "全員";
+
   }
 
 }
 
-@media(max-width:480px){
+function metaText(data){
 
-  .login-box{
-    padding:26px 20px;
+  const sender =
+    data.senderName ||
+    data.createdByName ||
+    "管理者";
+
+  const created =
+    formatDateTime(
+      data.createdAt
+    );
+
+  return `${esc(sender)} ⇒ ${esc(targetText(data))}${created ? ` [${created}]` : ""}`;
+
+}
+
+function toDate(value,endOfDay=false){
+
+  if(!value){
+    return null;
   }
 
-  .login-box h1{
-    font-size:20px;
+  const date =
+    new Date(value);
+
+  if(Number.isNaN(date.getTime())){
+    return null;
   }
 
-  .content{
-    padding:12px;
+  if(endOfDay){
+    date.setHours(
+      23,59,59,999
+    );
+  }
+
+  return date;
+
+}
+
+function visibleByPeriod(data){
+
+  const now =
+    new Date();
+
+  const start =
+    toDate(data.startDate);
+
+  const end =
+    toDate(
+      data.endDate,
+      true
+    );
+
+  return (
+    (!start || now >= start) &&
+    (!end || now <= end)
+  );
+
+}
+
+function createTargetQuery(
+  collectionName
+){
+
+  const ref =
+    collection(db,collectionName);
+
+  const common = [
+    where(
+      "targetType",
+      "==",
+      "all"
+    )
+  ];
+
+  if(!userData){
+    return query(ref,...common);
+  }
+
+  const conditions = [
+    where(
+      "targetType",
+      "==",
+      "all"
+    ),
+    where(
+      "targetType",
+      "==",
+      "block"
+    ),
+    where(
+      "block",
+      "==",
+      userData.block
+    ),
+    where(
+      "targetType",
+      "==",
+      "block_grade"
+    ),
+    where(
+      "block",
+      "==",
+      userData.block
+    ),
+    where(
+      "grade",
+      "==",
+      userData.grade
+    ),
+    where(
+      "targetType",
+      "==",
+      "grade"
+    ),
+    where(
+      "grade",
+      "==",
+      userData.grade
+    ),
+    where(
+      "targetType",
+      "==",
+      "individual"
+    ),
+    where(
+      "uid",
+      "==",
+      currentUser.uid
+    )
+  ];
+
+  /*
+    Firestoreでは複雑なOR条件を
+    1本の単純queryにまとめず、
+    個別条件ごとに取得して重複を除去します。
+  */
+
+  return {
+    ref,
+    conditions
+  };
+
+}
+
+async function loadTargeted(
+  collectionName
+){
+
+  const result = new Map();
+
+  if(!userData){
+    return [];
+  }
+
+  const ref =
+    collection(
+      db,
+      collectionName
+    );
+
+  const queries = [
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "all"
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "block"
+      ),
+      where(
+        "block",
+        "==",
+        userData.block
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "block_grade"
+      ),
+      where(
+        "block",
+        "==",
+        userData.block
+      ),
+      where(
+        "grade",
+        "==",
+        userData.grade
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "grade"
+      ),
+      where(
+        "grade",
+        "==",
+        userData.grade
+      )
+    ),
+
+    query(
+      ref,
+      where(
+        "targetType",
+        "==",
+        "individual"
+      ),
+      where(
+        "uid",
+        "==",
+        currentUser.uid
+      )
+    )
+
+  ];
+
+  for(const q of queries){
+
+    const snap =
+      await getDocs(q);
+
+    snap.forEach(item => {
+
+      result.set(
+        item.id,
+        {
+          id:item.id,
+          ...item.data()
+        }
+      );
+
+    });
+
+  }
+
+  return [...result.values()]
+    .filter(visibleByPeriod)
+    .sort(
+      (a,b) =>
+        timestampMs(b.createdAt) -
+        timestampMs(a.createdAt)
+    );
+
+}
+
+function renderNotice(item){
+
+  const tag =
+    item.importance === "important"
+      ? `<span class="important">重要</span>`
+      : `<span class="normal-tag">通常</span>`;
+
+  return `
+
+    <div class="notice-item">
+
+      <div>
+
+        ${tag}
+
+        <a
+          class="notice-title"
+          href="/studentportal/information/detail.html?id=${encodeURIComponent(item.id)}">
+
+          ${esc(item.title)}
+
+        </a>
+
+      </div>
+
+      <div class="notice-meta">
+
+        ${metaText(item)}
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+async function loadNotices(){
+
+  const area =
+    document.getElementById(
+      "noticeList"
+    );
+
+  const dashboard =
+    document.getElementById(
+      "dashboardNotices"
+    );
+
+  if(!area && !dashboard){
+    return;
+  }
+
+  try{
+
+    const list =
+      await loadTargeted(
+        "notices"
+      );
+
+    const html =
+      list.length
+        ? list.map(renderNotice).join("")
+        : `<div class="card">現在表示できるお知らせはありません。</div>`;
+
+    if(area){
+      area.innerHTML = html;
+    }
+
+    if(dashboard){
+      dashboard.innerHTML = html;
+    }
+
+  }catch(error){
+
+    console.error(
+      "notice error",
+      error
+    );
+
+    const html =
+      `<div class="card error">お知らせを読み込めませんでした。</div>`;
+
+    if(area){
+      area.innerHTML = html;
+    }
+
+    if(dashboard){
+      dashboard.innerHTML = html;
+    }
+
   }
 
 }
 
+async function loadDocuments(){
 
-/* 成績確認画面：レスポンシブ */
-.score-item h3{margin:0 0 12px;font-size:19px;overflow-wrap:anywhere}
-.score-item p{line-height:1.7;overflow-wrap:anywhere}
-.score-item button{max-width:100%;white-space:normal}
-#scoreDetail{margin-top:28px}
-#scoreDetail[hidden]{display:none}
-#scoreFormList,#scoreHistoryList{min-width:0}
-#scoreEntryForm .form-group{max-width:480px}
-#scoreEntryForm input{width:100%;min-height:44px}
-#confirmArea{margin-top:16px}
-button:disabled{opacity:.55;cursor:not-allowed}
-@media(max-width:768px){
-  .score-item{padding:15px}
-  .score-item button{width:100%;margin:4px 0}
-  .table-wrap .data-table{min-width:480px}
+  const area =
+    document.getElementById(
+      "documentList"
+    );
+
+  if(!area){
+    return;
+  }
+
+  try{
+
+    const list =
+      await loadTargeted(
+        "documents"
+      );
+
+    if(!list.length){
+
+      area.innerHTML =
+        `<div class="card">現在表示できる配布文書はありません。</div>`;
+
+      return;
+    }
+
+    area.innerHTML =
+      list.map(item => `
+
+        <div class="card">
+
+          <div class="document-header">
+
+            <h3>
+              ${esc(item.title)}
+            </h3>
+
+            <a
+              class="document-open"
+              href="${esc(item.url || "#")}"
+              target="_blank"
+              rel="noopener noreferrer">
+
+              <span class="material-symbols-rounded">
+                open_in_new
+              </span>
+
+              配布文書を開く
+
+            </a>
+
+          </div>
+
+          ${
+            item.body
+              ? `<div class="document-body">${esc(item.body)}</div>`
+              : ""
+          }
+
+          <p class="document-period">
+
+            ${metaText(item)}
+
+          </p>
+
+        </div>
+
+      `).join("");
+
+  }catch(error){
+
+    console.error(
+      "document error",
+      error
+    );
+
+    area.innerHTML =
+      `<div class="card error">配布文書を読み込めませんでした。</div>`;
+
+  }
+
 }
+
+async function loadCalendar(){
+
+  const area =
+    document.getElementById(
+      "calendarArea"
+    );
+
+  if(!area){
+    return;
+  }
+
+  try{
+
+    const snap =
+      await getDocs(
+        collection(
+          db,
+          "calendar"
+        )
+      );
+
+    calendarEvents = [];
+
+    snap.forEach(item => {
+
+      calendarEvents.push({
+        id:item.id,
+        ...item.data()
+      });
+
+    });
+
+    renderCalendar();
+
+  }catch(error){
+
+    console.error(
+      "calendar error",
+      error
+    );
+
+    area.innerHTML =
+      `<div class="card error">カレンダーを読み込めませんでした。</div>`;
+
+  }
+
+}
+
+function dateKey(date){
+
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+
+}
+
+function eventCoversDate(
+  event,
+  key
+){
+
+  const start =
+    event.startDate ||
+    event.date;
+
+  const end =
+    event.endDate ||
+    event.date ||
+    start;
+
+  return (
+    start &&
+    end &&
+    key >= start &&
+    key <= end
+  );
+
+}
+
+function renderCalendar(){
+
+  const area =
+    document.getElementById(
+      "calendarArea"
+    );
+
+  if(!area){
+    return;
+  }
+
+  const year =
+    calendarDate.getFullYear();
+
+  const month =
+    calendarDate.getMonth();
+
+  const first =
+    new Date(
+      year,
+      month,
+      1
+    );
+
+  const lastDay =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+  const today =
+    dateKey(new Date());
+
+  let html = `
+
+    <div class="calendar-toolbar">
+
+      <button
+        class="secondary-button"
+        type="button"
+        id="prevMonthButton">
+
+        <span class="material-symbols-rounded">
+          chevron_left
+        </span>
+
+        前月
+
+      </button>
+
+      <h2>
+        ${year}年${month+1}月
+      </h2>
+
+      <button
+        class="secondary-button"
+        type="button"
+        id="nextMonthButton">
+
+        次月
+
+        <span class="material-symbols-rounded">
+          chevron_right
+        </span>
+
+      </button>
+
+    </div>
+
+    <div class="calendar-range">
+
+      <div class="form-group">
+        <label>表示開始</label>
+        <input
+          id="calendarRangeStart"
+          type="date"
+          value="${rangeStart}">
+      </div>
+
+      <div class="form-group">
+        <label>表示終了</label>
+        <input
+          id="calendarRangeEnd"
+          type="date"
+          value="${rangeEnd}">
+      </div>
+
+      <button
+        class="primary-button"
+        type="button"
+        id="applyRangeButton">
+
+        期間を適用
+
+      </button>
+
+      <button
+        class="secondary-button"
+        type="button"
+        id="clearRangeButton">
+
+        解除
+
+      </button>
+
+    </div>
+
+    <div class="calendar-wrap">
+
+      <table class="calendar">
+
+        <thead>
+          <tr>
+            <th>日</th>
+            <th>月</th>
+            <th>火</th>
+            <th>水</th>
+            <th>木</th>
+            <th>金</th>
+            <th>土</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+  `;
+
+  for(
+    let i=0;
+    i<first.getDay();
+    i++
+  ){
+
+    html +=
+      `<td class="empty"></td>`;
+
+  }
+
+  for(
+    let day=1;
+    day<=lastDay;
+    day++
+  ){
+
+    const key =
+      dateKey(
+        new Date(
+          year,
+          month,
+          day
+        )
+      );
+
+    const inRange =
+      (!rangeStart ||
+        key >= rangeStart) &&
+      (!rangeEnd ||
+        key <= rangeEnd);
+
+    const events =
+      inRange
+        ? calendarEvents.filter(
+            event =>
+              eventCoversDate(
+                event,
+                key
+              )
+          )
+        : [];
+
+    html += `
+
+      <td class="calendar-day ${
+        key === today
+          ? "today"
+          : ""
+      }">
+
+        <div class="day-number">
+          ${day}
+        </div>
+
+    `;
+
+    events.forEach(event => {
+
+      html += `
+
+        <button
+          type="button"
+          class="calendar-event"
+          data-event-id="${esc(event.id)}">
+
+          ${esc(event.title)}
+
+        </button>
+
+      `;
+
+    });
+
+    html += `</td>`;
+
+    if(
+      (first.getDay()+day)%7 === 0 &&
+      day !== lastDay
+    ){
+
+      html +=
+        `</tr><tr>`;
+
+    }
+
+  }
+
+  const cells =
+    first.getDay() +
+    lastDay;
+
+  const trailing =
+    (7 - cells % 7) % 7;
+
+  for(
+    let i=0;
+    i<trailing;
+    i++
+  ){
+
+    html +=
+      `<td class="empty"></td>`;
+
+  }
+
+  html += `
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  area.innerHTML = html;
+
+  document
+    .getElementById(
+      "prevMonthButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        calendarDate.setMonth(
+          calendarDate.getMonth()-1
+        );
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .getElementById(
+      "nextMonthButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        calendarDate.setMonth(
+          calendarDate.getMonth()+1
+        );
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .getElementById(
+      "applyRangeButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        const start =
+          document.getElementById(
+            "calendarRangeStart"
+          )?.value || "";
+
+        const end =
+          document.getElementById(
+            "calendarRangeEnd"
+          )?.value || "";
+
+        if(
+          start &&
+          end &&
+          start > end
+        ){
+
+          alert(
+            "開始日は終了日以前にしてください。"
+          );
+
+          return;
+        }
+
+        rangeStart = start;
+        rangeEnd = end;
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .getElementById(
+      "clearRangeButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        rangeStart = "";
+        rangeEnd = "";
+
+        renderCalendar();
+
+      }
+    );
+
+  document
+    .querySelectorAll(
+      ".calendar-event"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const id =
+            button.dataset.eventId;
+
+          const event =
+            calendarEvents.find(
+              item => item.id === id
+            );
+
+          showEventDetail(event);
+
+        }
+      );
+
+    });
+
+}
+
+function showEventDetail(event){
+
+  const area =
+    document.getElementById(
+      "eventDetail"
+    );
+
+  if(!area || !event){
+    return;
+  }
+
+  area.innerHTML = `
+
+    <div class="card">
+
+      <h2>
+        ${esc(event.title)}
+      </h2>
+
+      <p>
+        ${esc(event.startDate || "")}
+
+        ${
+          event.endDate &&
+          event.endDate !== event.startDate
+            ? `〜 ${esc(event.endDate)}`
+            : ""
+        }
+
+      </p>
+
+      ${
+        event.description
+          ? `<div class="notice-body">${esc(event.description)}</div>`
+          : ""
+      }
+
+    </div>
+
+  `;
+
+}
+
+async function loadScoreForms(){
+
+  const area =
+    document.getElementById(
+      "scoreFormList"
+    );
+
+  if(!area){
+    return;
+  }
+
+  try{
+
+    const list =
+      await loadTargeted(
+        "scoreForms"
+      );
+
+    const now =
+      new Date();
+
+    const visible =
+      list.filter(
+        data => {
+
+          if(
+            data.published === false
+          ){
+            return false;
+          }
+
+          const start =
+            toDate(
+              data.startDate
+            );
+
+          const end =
+            toDate(
+              data.endDate,
+              true
+            );
+
+          return (
+            (!start || now >= start) &&
+            (!end || now <= end)
+          );
+
+        }
+      );
+
+    area.innerHTML =
+      visible.length
+        ? visible.map(item => `
+
+            <div class="card">
+
+              <h3>
+                ${esc(item.title)}
+              </h3>
+
+              <p>
+                ${esc(item.testType || "")}
+              </p>
+
+              <a
+                class="primary-button"
+                href="/studentportal/scoreForms/form.html?id=${encodeURIComponent(item.id)}">
+
+                成績を提出・確認
+
+              </a>
+
+            </div>
+
+          `).join("")
+        : `<div class="card">現在提出できるテスト成績はありません。</div>`;
+
+  }catch(error){
+
+    console.error(
+      "score form error",
+      error
+    );
+
+    area.innerHTML =
+      `<div class="card error">成績フォームを読み込めませんでした。</div>`;
+
+  }
+
+}
+
+async function sendMessage(){
+
+  const input =
+    document.getElementById(
+      "messageText"
+    );
+
+  const text =
+    input?.value.trim();
+
+  if(!text){
+
+    alert(
+      "内容を入力してください。"
+    );
+
+    return;
+  }
+
+  try{
+
+    await addDoc(
+      collection(
+        db,
+        "messages"
+      ),
+      {
+        senderUid:
+          currentUser.uid,
+
+        senderName:
+          userData.name || "",
+
+        senderEmail:
+          currentUser.email || "",
+
+        body:text,
+
+        createdAt:
+          serverTimestamp()
+      }
+    );
+
+    input.value = "";
+
+    alert(
+      "送信しました。"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "送信できませんでした。"
+    );
+
+  }
+
+}
+
+const sendMessageButton =
+  document.getElementById(
+    "sendMessageButton"
+  );
+
+if(sendMessageButton){
+
+  sendMessageButton.addEventListener(
+    "click",
+    sendMessage
+  );
+
+}
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      location.href =
+        "/studentportal/index.html";
+
+      return;
+    }
+
+    currentUser = user;
+
+    userData =
+      await getUserData(user);
+
+    if(!userData){
+
+      alert(
+        "ユーザー情報がありません。"
+      );
+
+      return;
+    }
+
+    if(userData.role !== "student"){
+
+      return;
+
+    }
+
+    await Promise.all([
+      loadNotices(),
+      loadDocuments(),
+      loadCalendar(),
+      loadScoreForms()
+    ]);
+
+  }
+);
