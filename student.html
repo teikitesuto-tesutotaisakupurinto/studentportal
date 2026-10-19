@@ -1,158 +1,172 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-
-<link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0">
-
 <link rel="stylesheet" href="css/style.css">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0..200&display=swap"
+  rel="stylesheet"
+>
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 
 <body>
 
 <div class="layout">
 
+  <!-- =========================
+       サイドバー
+  ========================== -->
+
   <aside class="sidebar" id="sidebar">
 
-    <div class="sidebar-header">
-
-      <div class="sidebar-logo">
-        <span class="material-symbols-outlined">school</span>
-
-        <span class="sidebar-title">
-          定期テスト対策プリント運営事務局
-        </span>
-      </div>
+    <div class="sidebar-top">
 
       <button
-        class="menu-toggle"
         type="button"
-        onclick="toggleSidebar()"
-        title="メニューを開閉">
-
+        class="sidebar-toggle"
+        id="sidebarToggle"
+        aria-label="メニューを開閉"
+      >
         <span class="material-symbols-outlined">
           menu
         </span>
-
       </button>
 
     </div>
 
-    <nav class="sidebar-nav">
+    <div class="sidebar-brand">
 
-      <a href="student.html"
-         class="menu-item active">
+      <div class="site-title">
+        定期テスト対策プリント運営事務局|ポータルサイト
+      </div>
 
-        <span class="material-symbols-outlined">
+    </div>
+
+    <nav class="sidebar-menu">
+
+      <a
+        class="menu-item"
+        href="dashboard/student.html"
+      >
+        <span class="material-symbols-outlined menu-icon">
           home
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           ホーム
         </span>
-
       </a>
 
-      <a href="information/index.html"
-         class="menu-item">
 
-        <span class="material-symbols-outlined">
+      <a
+        class="menu-item"
+        href="information/student.html"
+      >
+        <span class="material-symbols-outlined menu-icon">
           campaign
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           お知らせ
         </span>
-
       </a>
 
-      <a href="messages/index.html"
-         class="menu-item">
 
-        <span class="material-symbols-outlined">
+      <a
+        class="menu-item"
+        href="messages/student.html"
+      >
+        <span class="material-symbols-outlined menu-icon">
           mail
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           連絡
         </span>
-
       </a>
 
-      <a href="documents/index.html"
-         class="menu-item">
 
-        <span class="material-symbols-outlined">
+      <a
+        class="menu-item"
+        href="documents/student.html"
+      >
+        <span class="material-symbols-outlined menu-icon">
           description
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           配布文書
         </span>
-
       </a>
 
-      <a href="calendar/index.html"
-         class="menu-item">
 
-        <span class="material-symbols-outlined">
+      <a
+        class="menu-item"
+        href="calendar/student.html"
+      >
+        <span class="material-symbols-outlined menu-icon">
           calendar_month
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           カレンダー
         </span>
-
       </a>
 
-      <a href="scores/index.html"
-         class="menu-item">
 
-        <span class="material-symbols-outlined">
-          analytics
+      <a
+        class="menu-item active"
+        href="student.html"
+      >
+        <span class="material-symbols-outlined menu-icon">
+          assignment
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           テスト成績
         </span>
-
       </a>
 
-      <a href="settings/index.html"
-         class="menu-item">
 
-        <span class="material-symbols-outlined">
+      <a
+        class="menu-item"
+        href="student.html?page=settings"
+      >
+        <span class="material-symbols-outlined menu-icon">
           settings
         </span>
 
-        <span class="menu-text">
-          各種設定
+        <span class="menu-label">
+          設定
         </span>
-
       </a>
 
     </nav>
+
 
     <div class="sidebar-bottom">
 
       <button
         type="button"
-        class="menu-item logout-button"
-        onclick="logout()">
+        class="menu-item logout-item"
+        id="logoutButton"
+      >
 
-        <span class="material-symbols-outlined">
+        <span class="material-symbols-outlined menu-icon">
           logout
         </span>
 
-        <span class="menu-text">
+        <span class="menu-label">
           ログアウト
         </span>
 
@@ -162,17 +176,22 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
 
   </aside>
 
+
+  <!-- =========================
+       メイン
+  ========================== -->
+
   <main class="content">
 
-    <header class="page-header">
+    <!-- =====================
+         ホーム
+    ====================== -->
 
-      <h1>
+    <section id="home">
+
+      <h1 class="page-title">
         ホーム
       </h1>
-
-    </header>
-
-    <section>
 
       <div class="card">
 
@@ -180,7 +199,261 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
           お知らせ
         </h2>
 
-        <div id="dashboardNotices"></div>
+        <div id="dashboardNotices">
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         お知らせ
+    ====================== -->
+
+    <section
+      id="notice"
+      style="display:none"
+    >
+
+      <h1 class="page-title">
+        お知らせ
+      </h1>
+
+      <div id="noticeList">
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         連絡
+    ====================== -->
+
+    <section
+      id="message"
+      style="display:none"
+    >
+
+      <h1 class="page-title">
+        連絡
+      </h1>
+
+      <div class="card">
+
+        <label for="messageText">
+          運営への連絡内容
+        </label>
+
+        <textarea
+          id="messageText"
+          placeholder="連絡内容を入力してください"
+        ></textarea>
+
+        <button
+          type="button"
+          onclick="sendMessage()"
+        >
+          送信
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         配布文書
+    ====================== -->
+
+    <section
+      id="documents"
+      style="display:none"
+    >
+
+      <h1 class="page-title">
+        配布文書
+      </h1>
+
+      <div id="documentList">
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         カレンダー
+    ====================== -->
+
+    <section
+      id="calendar"
+      style="display:none"
+    >
+
+      <h1 class="page-title">
+        カレンダー
+      </h1>
+
+      <div id="calendarArea">
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         テスト成績
+    ====================== -->
+
+    <section
+      id="scores"
+      style="display:none"
+    >
+
+      <h1 class="page-title">
+        テスト成績
+      </h1>
+
+
+      <!-- =====================
+           回答すべきフォーム
+      ====================== -->
+
+      <div class="score-page">
+
+        <div class="score-section">
+
+          <div class="score-section-header">
+
+            <div>
+
+              <div class="section-kicker">
+                回答
+              </div>
+
+              <h2>
+                管理者から配信されたテスト成績フォーム
+              </h2>
+
+            </div>
+
+          </div>
+
+
+          <div id="activeScoreForms">
+
+            <!-- Firebaseから自動表示 -->
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================
+             成績詳細
+        ====================== -->
+
+        <div
+          id="selectedScoreArea"
+          class="score-section"
+          style="display:none"
+        >
+
+          <div class="score-detail-header">
+
+            <button
+              type="button"
+              class="back-button"
+              onclick="closeScoreDetail()"
+            >
+
+              <span class="material-symbols-outlined">
+                arrow_back
+              </span>
+
+              <span>
+                一覧に戻る
+              </span>
+
+            </button>
+
+          </div>
+
+
+          <div id="selectedScoreContent">
+          </div>
+
+        </div>
+
+
+        <!-- =====================
+             過去テスト一覧
+        ====================== -->
+
+        <div
+          id="scoreHistoryArea"
+          class="score-section"
+        >
+
+          <div class="score-section-header">
+
+            <div>
+
+              <div class="section-kicker">
+                成績履歴
+              </div>
+
+              <h2>
+                テスト成績一覧
+              </h2>
+
+              <p class="section-description">
+                確認したいテストの「成績を見る」ボタンから詳細を確認できます。
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div id="scoreHistoryList">
+
+            <!-- Firebaseから自動表示 -->
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================
+         設定
+    ====================== -->
+
+    <section
+      id="settings"
+      style="display:none"
+    >
+
+      <h1 class="page-title">
+        各種設定
+      </h1>
+
+
+      <div class="card">
+
+        <div id="userInfo">
+        </div>
+
+
+        <button
+          type="button"
+          onclick="changePassword()"
+        >
+          パスワード変更
+        </button>
 
       </div>
 
@@ -190,9 +463,69 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wg
 
 </div>
 
+
 <script type="module" src="js/auth.js"></script>
-<script type="module" src="js/navigation.js"></script>
+
 <script type="module" src="js/student.js"></script>
+
+<script type="module" src="js/settings.js"></script>
+
+
+<script>
+
+const sidebar =
+  document.getElementById("sidebar");
+
+const sidebarToggle =
+  document.getElementById("sidebarToggle");
+
+
+sidebarToggle?.addEventListener(
+  "click",
+  () => {
+
+    sidebar.classList.toggle("collapsed");
+
+    localStorage.setItem(
+      "studentSidebarCollapsed",
+      sidebar.classList.contains("collapsed")
+        ? "1"
+        : "0"
+    );
+
+  }
+);
+
+
+if(
+  localStorage.getItem(
+    "studentSidebarCollapsed"
+  ) === "1"
+){
+
+  sidebar.classList.add("collapsed");
+
+}
+
+
+document
+  .getElementById("logoutButton")
+  ?.addEventListener(
+    "click",
+    () => {
+
+      if(
+        typeof window.logout === "function"
+      ){
+
+        window.logout();
+
+      }
+
+    }
+  );
+
+</script>
 
 </body>
 </html>
