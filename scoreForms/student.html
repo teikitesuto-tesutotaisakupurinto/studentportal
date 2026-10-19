@@ -1,6 +1,35 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="0;url=../scores/index.html">
-<title>テスト成績確認 | 定期テスト対策プリント運営事務局|ポータルサイト</title>
-<script>location.replace("../scores/index.html"+location.search);</script>
-</head><body><p><a href="../scores/index.html">テスト成績確認を開く</a></p></body></html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
+
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../css/style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0..200">
+</head>
+
+<body data-role="student">
+
+<aside id="sidebar" class="sidebar"></aside>
+
+<main class="content">
+<div class="content-inner">
+
+<h1 class="page-title">テスト成績</h1>
+
+<div id="scoreFormList"></div>
+
+</div>
+</main>
+
+<script type="module" src="../js/auth.js"></script>
+<script type="module" src="../js/menu.js"></script>
+<script type="module" src="../js/student.js"></script>
+
+</body>
+</html>
