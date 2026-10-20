@@ -1,45 +1,117 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
 
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>
+定期テスト対策プリント運営事務局|ポータルサイト
+</title>
+
+<link rel="icon"
+      href="../favicon.svg">
+
+<link
+ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+ rel="stylesheet">
+
 <link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0..200">
+      href="../css/style.css">
+
 </head>
 
-<body data-role="student">
+<body>
 
-<aside id="sidebar" class="sidebar"></aside>
+<script type="module">
 
-<main class="content">
+import {
+  protectPage,
+  renderPortalShell
+} from "../js/portal.js";
 
-<div class="content-inner">
+const result =
+  await protectPage("student");
 
-<h1 class="page-title">ホーム</h1>
+const content =
+  renderPortalShell();
+
+content.innerHTML = `
+
+<h1 class="page-title">
+ホーム
+</h1>
 
 <div class="card">
 
-<h2>お知らせ</h2>
+<h2>
+${result.profile?.displayName || "生徒"}さん
+</h2>
 
-<div id="noticeList">
-現在のお知らせはありません。
+<p>
+定期テスト対策プリント運営事務局|ポータルサイトへようこそ。
+</p>
+
+</div>
+
+<div class="grid">
+
+<div class="card">
+
+<h3>お知らせ</h3>
+
+<p>
+最新のお知らせを確認できます。
+</p>
+
+<a
+ href="../information/student.html"
+ class="secondary-button">
+確認する
+</a>
+
+</div>
+
+<div class="card">
+
+<h3>テスト成績</h3>
+
+<p>
+提出すべきテストや過去の成績を確認できます。
+</p>
+
+<a
+ href="../scoreForms/student.html"
+ class="secondary-button">
+確認する
+</a>
+
+</div>
+
+<div class="card">
+
+<h3>カレンダー</h3>
+
+<p>
+予定を確認できます。
+</p>
+
+<a
+ href="../calendar/student.html"
+ class="secondary-button">
+確認する
+</a>
+
 </div>
 
 </div>
 
-</div>
+`;
 
-</main>
-
-<script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/menu.js"></script>
-<script type="module" src="../js/student.js"></script>
+</script>
 
 </body>
 </html>
