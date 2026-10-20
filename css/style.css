@@ -1,12 +1,12 @@
 /* =========================================================
-   定期テスト対策プリント運営事務局 | ポータルサイト
-   共通スタイル
-========================================================= */
+   定期テスト対策プリント運営事務局|ポータルサイト
+   共通CSS
+   ========================================================= */
 
 
 /* =========================================================
-   基本
-========================================================= */
+   1. 基本設定
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -15,12 +15,14 @@
 html {
   margin: 0;
   padding: 0;
+  width: 100%;
   min-height: 100%;
 }
 
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
   min-height: 100vh;
 
   font-family:
@@ -30,21 +32,27 @@ body {
     Meiryo,
     sans-serif;
 
-  background: #f5f7fa;
-  color: #252525;
+  background: #f5f6f8;
+  color: #333;
 
   overflow-x: hidden;
 }
 
-img {
-  max-width: 100%;
-}
-
+body,
 button,
 input,
 textarea,
 select {
-  font: inherit;
+  font-family:
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    Meiryo,
+    sans-serif;
+}
+
+img {
+  max-width: 100%;
 }
 
 button {
@@ -57,8 +65,8 @@ a {
 
 
 /* =========================================================
-   Material Symbols
-========================================================= */
+   2. Material Symbols
+   ========================================================= */
 
 .material-symbols-rounded {
   font-family: "Material Symbols Rounded";
@@ -87,28 +95,22 @@ a {
 
 
 /* =========================================================
-   ページ全体
-========================================================= */
+   3. ポータル全体
+   ========================================================= */
 
-.portal-body {
+.layout {
+  display: flex;
+
+  width: 100%;
   min-height: 100vh;
 }
 
 
 /* =========================================================
-   ポータル全体
-========================================================= */
+   4. サイドバー
+   ========================================================= */
 
-.portal-shell {
-  min-height: 100vh;
-}
-
-
-/* =========================================================
-   サイドバー
-========================================================= */
-
-.portal-sidebar {
+.sidebar {
   position: fixed;
 
   z-index: 1000;
@@ -122,89 +124,108 @@ a {
   display: flex;
   flex-direction: column;
 
-  background: #ffffff;
+  padding: 0;
 
-  border-right: 1px solid #e1e5ea;
+  background: #fff;
+
+  border-right: 1px solid #ddd;
 
   overflow: hidden;
 
   transition:
-    width 0.2s ease,
-    transform 0.2s ease;
+    width .2s ease,
+    transform .2s ease;
 }
 
 
 /* =========================================================
-   サイドバー上部
-========================================================= */
+   5. サイドバー上部
+   ========================================================= */
 
-.portal-sidebar-top {
+.sidebar-header {
   position: relative;
 
-  min-height: 82px;
+  min-height: 76px;
 
-  padding: 14px 12px;
-
-  border-bottom: 1px solid #eeeeee;
-}
-
-
-/* =========================================================
-   ロゴエリア
-========================================================= */
-
-.portal-logo-area {
   display: flex;
 
   align-items: center;
 
-  gap: 10px;
+  padding: 12px 10px;
 
-  padding-right: 42px;
-
-  min-width: 0;
+  border-bottom: 1px solid #eee;
 }
 
 
 /* =========================================================
-   ロゴ
-========================================================= */
+   6. サイトロゴ
+   ========================================================= */
 
-.portal-logo {
-  width: 44px;
-  height: 44px;
+.logo-area {
+  min-width: 0;
 
-  flex: 0 0 44px;
+  width: calc(100% - 45px);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  display: block;
 
   object-fit: contain;
 }
 
 
 /* =========================================================
-   サイト名
-========================================================= */
+   7. サイト名
+   ========================================================= */
 
-.portal-site-name {
+.site-name {
   min-width: 0;
 
-  font-size: 12px;
-
-  line-height: 1.45;
+  font-size: 11px;
 
   font-weight: 700;
+
+  line-height: 1.45;
 
   word-break: break-all;
 }
 
 
-/* =========================================================
-   メニュー開閉ボタン
-========================================================= */
+/*
+  サイト名はどのページでもこれだけ。
+  大きなタイトルにはしない。
+*/
 
-.portal-menu-toggle {
+.portal-site-name {
+  margin: 0;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   8. メニュー開閉ボタン
+   ========================================================= */
+
+.menu-toggle {
   position: absolute;
 
-  right: 10px;
+  right: 9px;
   top: 10px;
 
   width: 38px;
@@ -223,30 +244,35 @@ a {
 
   background: #f1f3f5;
 
-  color: #333333;
+  color: #333;
 
   appearance: none;
 
-  text-decoration: none;
+  cursor: pointer;
 }
 
-.portal-menu-toggle:hover {
-  background: #e6e9ed;
+.menu-toggle:hover {
+  background: #e5e7eb;
 }
 
-.portal-menu-toggle:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.2);
+.menu-toggle:focus-visible {
+  outline: 3px solid rgba(37,99,235,.18);
 }
 
 
 /* =========================================================
-   メニュー
-========================================================= */
+   9. ナビゲーション
+   ========================================================= */
 
-.portal-nav {
+.sidebar nav {
   flex: 1;
 
   min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
 
   padding: 12px 9px;
 
@@ -255,21 +281,20 @@ a {
 
 
 /* =========================================================
-   メニュー項目
-   ※ここだけナビゲーション用
-========================================================= */
+   10. メニュー項目
+   ========================================================= */
 
-.portal-nav-item {
+.sidebar nav a,
+.sidebar nav button {
   width: 100%;
-  min-height: 46px;
+
+  min-height: 45px;
 
   display: flex;
 
   align-items: center;
 
   gap: 12px;
-
-  margin: 0 0 5px 0;
 
   padding: 10px 12px;
 
@@ -279,24 +304,31 @@ a {
 
   background: transparent;
 
-  color: #333333;
+  color: #333;
 
-  text-decoration: none;
+  font-size: 14px;
+
+  font-weight: 500;
+
+  line-height: 1.3;
 
   text-align: left;
 
-  white-space: nowrap;
+  text-decoration: none;
 
-  cursor: pointer;
+  white-space: nowrap;
 
   appearance: none;
 
+  cursor: pointer;
+
   transition:
-    background 0.15s ease,
-    color 0.15s ease;
+    background .15s ease,
+    color .15s ease;
 }
 
-.portal-nav-item:hover {
+.sidebar nav a:hover,
+.sidebar nav button:hover {
   background: #eef4ff;
 
   color: #2563eb;
@@ -304,11 +336,18 @@ a {
   text-decoration: none;
 }
 
-.portal-nav-item:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.2);
+.sidebar nav a:focus-visible,
+.sidebar nav button:focus-visible {
+  outline: 3px solid rgba(37,99,235,.15);
 }
 
-.portal-nav-item.active {
+
+/* =========================================================
+   11. アクティブメニュー
+   ========================================================= */
+
+.sidebar nav a.active,
+.sidebar nav button.active {
   background: #e8f0ff;
 
   color: #2563eb;
@@ -318,10 +357,10 @@ a {
 
 
 /* =========================================================
-   メニューアイコン
-========================================================= */
+   12. メニューアイコン
+   ========================================================= */
 
-.portal-nav-item .menu-icon {
+.sidebar nav .material-symbols-rounded {
   width: 24px;
   min-width: 24px;
 
@@ -333,14 +372,16 @@ a {
   justify-content: center;
 
   flex-shrink: 0;
+
+  font-size: 22px;
 }
 
 
 /* =========================================================
-   メニュー文字
-========================================================= */
+   13. メニュー文字
+   ========================================================= */
 
-.portal-nav-text {
+.menu-text {
   min-width: 0;
 
   overflow: hidden;
@@ -352,32 +393,92 @@ a {
 
 
 /* =========================================================
-   サイドバー下部
-========================================================= */
+   14. サイドバー区切り
+   ========================================================= */
 
-.portal-sidebar-bottom {
-  padding: 10px;
+.sidebar hr {
+  width: 100%;
 
-  border-top: 1px solid #eeeeee;
+  height: 1px;
+
+  flex-shrink: 0;
+
+  margin: 10px 0;
+
+  padding: 0;
+
+  border: 0;
+
+  border-top: 1px solid #e1e5ea;
 }
 
 
 /* =========================================================
-   ログアウト
-   ※リンクではなくボタン
-========================================================= */
+   15. 閉じたサイドバー
+   ========================================================= */
 
-.portal-logout-button {
+.sidebar-collapsed .sidebar {
+  width: 72px;
+}
+
+.sidebar-collapsed .sidebar-header {
+  justify-content: center;
+
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.sidebar-collapsed .logo-area {
   width: 100%;
-  min-height: 46px;
+
+  justify-content: center;
+}
+
+.sidebar-collapsed .logo {
+  width: 42px;
+  height: 42px;
+}
+
+.sidebar-collapsed .site-name,
+.sidebar-collapsed .portal-site-name,
+.sidebar-collapsed .menu-text {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar nav {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.sidebar-collapsed .sidebar nav a,
+.sidebar-collapsed .sidebar nav button {
+  justify-content: center;
+
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sidebar-collapsed .sidebar nav .material-symbols-rounded {
+  margin: 0;
+}
+
+
+/* =========================================================
+   16. ログアウト
+   ========================================================= */
+
+.logout-button {
+  width: 100%;
+
+  min-height: 45px;
 
   display: flex;
 
   align-items: center;
 
-  gap: 12px;
+  justify-content: flex-start;
 
-  margin: 0;
+  gap: 12px;
 
   padding: 10px 12px;
 
@@ -387,176 +488,76 @@ a {
 
   background: transparent;
 
-  color: #333333;
+  color: #333;
+
+  font-size: 14px;
+
+  font-weight: 500;
 
   text-align: left;
 
-  white-space: nowrap;
-
-  cursor: pointer;
-
   appearance: none;
 
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  cursor: pointer;
 }
 
-.portal-logout-button:hover {
+.logout-button:hover {
   background: #fff1f2;
 
   color: #dc2626;
 }
 
-.portal-logout-button:focus-visible {
-  outline: 3px solid rgba(220, 38, 38, 0.15);
-}
-
-.portal-logout-button .menu-icon {
-  width: 24px;
-  min-width: 24px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  flex-shrink: 0;
-}
-
-
-/* =========================================================
-   サイドバー閉じた状態
-========================================================= */
-
-.sidebar-collapsed .portal-sidebar {
-  width: 72px;
-}
-
-.sidebar-collapsed .portal-logo-area {
-  justify-content: center;
-
-  padding-right: 0;
-}
-
-.sidebar-collapsed .portal-site-name {
-  display: none;
-}
-
-.sidebar-collapsed .portal-logo {
-  width: 42px;
-  height: 42px;
-}
-
-.sidebar-collapsed .portal-nav-item {
+.sidebar-collapsed .logout-button {
   justify-content: center;
 
   padding-left: 0;
   padding-right: 0;
 }
 
-.sidebar-collapsed .portal-nav-text {
-  display: none;
-}
-
-.sidebar-collapsed .portal-logout-button {
-  justify-content: center;
-
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.sidebar-collapsed .portal-logout-button .portal-nav-text {
-  display: none;
-}
-
 
 /* =========================================================
-   メイン
-========================================================= */
+   17. メインコンテンツ
+   ========================================================= */
 
-.portal-main {
+.content {
+  width: calc(100% - 250px);
+
   min-height: 100vh;
 
   margin-left: 250px;
 
+  padding: 30px;
+
   transition:
-    margin-left 0.2s ease;
+    width .2s ease,
+    margin-left .2s ease;
 }
 
-.sidebar-collapsed .portal-main {
+.sidebar-collapsed .content {
+  width: calc(100% - 72px);
+
   margin-left: 72px;
 }
 
 
 /* =========================================================
-   ページ
-========================================================= */
+   18. セクション
+   ========================================================= */
 
-.portal-page {
+.content section {
   width: 100%;
 
-  max-width: 1300px;
+  max-width: 1200px;
 
   margin: 0 auto;
-
-  padding: 30px;
 }
 
 
 /* =========================================================
-   モバイルヘッダー
-========================================================= */
+   19. ページタイトル
+   ========================================================= */
 
-.portal-mobile-header {
-  display: none;
-}
-
-
-/* =========================================================
-   モバイルメニューボタン
-========================================================= */
-
-.portal-mobile-menu {
-  width: 40px;
-  height: 40px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: 0;
-
-  border-radius: 8px;
-
-  background: #f1f3f5;
-
-  color: #333333;
-
-  appearance: none;
-}
-
-.portal-mobile-menu:hover {
-  background: #e5e8ec;
-}
-
-
-/* =========================================================
-   モバイル用オーバーレイ
-========================================================= */
-
-.portal-overlay {
-  display: none;
-}
-
-
-/* =========================================================
-   見出し
-========================================================= */
-
+.content h1,
 .page-title {
   margin: 0 0 22px;
 
@@ -569,13 +570,36 @@ a {
 
 
 /* =========================================================
-   カード
-========================================================= */
+   20. サブタイトル
+   ========================================================= */
+
+.content h2 {
+  margin-top: 0;
+
+  font-size: 21px;
+
+  line-height: 1.4;
+}
+
+.content h3 {
+  margin-top: 0;
+
+  font-size: 17px;
+
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   21. カード
+   ========================================================= */
 
 .card {
-  background: #ffffff;
+  width: 100%;
 
-  border: 1px solid #e2e6eb;
+  background: #fff;
+
+  border: 1px solid #e1e5ea;
 
   border-radius: 12px;
 
@@ -584,31 +608,16 @@ a {
   margin-bottom: 18px;
 
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.card h2 {
-  margin: 0 0 14px;
-
-  font-size: 20px;
-}
-
-.card h3 {
-  margin: 0 0 10px;
-
-  font-size: 17px;
-}
-
-.card p {
-  line-height: 1.7;
+    0 2px 8px rgba(0,0,0,.04);
 }
 
 
 /* =========================================================
-   グリッド
-========================================================= */
+   22. グリッド
+   ========================================================= */
 
-.grid {
+.dashboard-grid,
+.analysis-grid {
   display: grid;
 
   grid-template-columns:
@@ -622,12 +631,197 @@ a {
 
 
 /* =========================================================
-   ボタン共通
-   ※「リンク風」にならないように明示
-========================================================= */
+   23. 数字カード
+   ========================================================= */
 
-.primary-button,
-.secondary-button,
+.dashboard-grid strong {
+  display: block;
+
+  margin-top: 8px;
+
+  font-size: 30px;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================================
+   24. フォーム
+   ========================================================= */
+
+label {
+  display: block;
+
+  margin: 0 0 7px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  line-height: 1.4;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+
+  padding: 11px 12px;
+
+  margin: 0 0 16px;
+
+  border: 1px solid #d5dbe2;
+
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #333;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,.1);
+}
+
+textarea {
+  min-height: 140px;
+
+  resize: vertical;
+}
+
+
+/* =========================================================
+   25. ボタン共通
+   ========================================================= */
+
+button {
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   26. 青ボタン
+   ========================================================= */
+
+.primary-button {
+  appearance: none;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 42px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #2563eb;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #fff !important;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.2;
+
+  text-decoration: none !important;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background: #1d4ed8;
+
+  border-color: #1d4ed8;
+
+  color: #fff !important;
+
+  text-decoration: none !important;
+}
+
+.primary-button:visited {
+  color: #fff !important;
+}
+
+
+/* =========================================================
+   27. グレーボタン
+   ========================================================= */
+
+.secondary-button {
+  appearance: none;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 42px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #d5dbe2;
+
+  border-radius: 8px;
+
+  background: #f3f5f7;
+
+  color: #333 !important;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.2;
+
+  text-decoration: none !important;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.secondary-button:hover {
+  background: #e7ebef;
+
+  border-color: #c8cfd8;
+
+  color: #333 !important;
+
+  text-decoration: none !important;
+}
+
+.secondary-button:visited {
+  color: #333 !important;
+}
+
+
+/* =========================================================
+   28. 赤ボタン
+   ========================================================= */
+
 .danger-button {
   appearance: none;
 
@@ -643,7 +837,13 @@ a {
 
   padding: 9px 16px;
 
+  border: 1px solid #dc2626;
+
   border-radius: 8px;
+
+  background: #dc2626;
+
+  color: #fff !important;
 
   font-size: 14px;
 
@@ -651,124 +851,29 @@ a {
 
   line-height: 1.2;
 
-  text-align: center;
-
-  text-decoration: none;
-
-  cursor: pointer;
+  text-decoration: none !important;
 
   white-space: nowrap;
-}
 
-
-/* =========================================================
-   青ボタン
-========================================================= */
-
-.primary-button {
-  border: 1px solid #2563eb;
-
-  background: #2563eb;
-
-  color: #ffffff;
-}
-
-.primary-button:hover {
-  border-color: #1d4ed8;
-
-  background: #1d4ed8;
-
-  color: #ffffff;
-
-  text-decoration: none;
-}
-
-.primary-button:visited {
-  color: #ffffff;
-
-  text-decoration: none;
-}
-
-.primary-button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.2);
-
-  outline-offset: 2px;
-}
-
-
-/* =========================================================
-   グレーボタン
-========================================================= */
-
-.secondary-button {
-  border: 1px solid #d5dbe2;
-
-  background: #f3f5f7;
-
-  color: #333333;
-}
-
-.secondary-button:hover {
-  border-color: #c8cfd8;
-
-  background: #e7ebef;
-
-  color: #333333;
-
-  text-decoration: none;
-}
-
-.secondary-button:visited {
-  color: #333333;
-
-  text-decoration: none;
-}
-
-.secondary-button:focus-visible {
-  outline: 3px solid rgba(100, 116, 139, 0.2);
-
-  outline-offset: 2px;
-}
-
-
-/* =========================================================
-   赤ボタン
-========================================================= */
-
-.danger-button {
-  border: 1px solid #dc2626;
-
-  background: #dc2626;
-
-  color: #ffffff;
+  cursor: pointer;
 }
 
 .danger-button:hover {
-  border-color: #b91c1c;
-
   background: #b91c1c;
 
-  color: #ffffff;
+  border-color: #b91c1c;
 
-  text-decoration: none;
+  color: #fff !important;
 }
 
 .danger-button:visited {
-  color: #ffffff;
-
-  text-decoration: none;
-}
-
-.danger-button:focus-visible {
-  outline: 3px solid rgba(220, 38, 38, 0.2);
-
-  outline-offset: 2px;
+  color: #fff !important;
 }
 
 
 /* =========================================================
-   アイコン付きボタン
-========================================================= */
+   29. ボタン内アイコン
+   ========================================================= */
 
 .primary-button .material-symbols-rounded,
 .secondary-button .material-symbols-rounded,
@@ -780,37 +885,22 @@ a {
 
 
 /* =========================================================
-   無効ボタン
-========================================================= */
-
-button:disabled,
-.primary-button.disabled,
-.secondary-button.disabled {
-  opacity: 0.55;
-
-  cursor: not-allowed;
-
-  pointer-events: none;
-}
-
-
-/* =========================================================
-   通常の文字リンク
-   ※タイトルなどはこちら
-========================================================= */
+   30. 通常テキストリンク
+   ========================================================= */
 
 .text-link {
   display: inline;
 
-  color: #2563eb;
-
-  background: transparent;
+  margin: 0;
+  padding: 0;
 
   border: 0;
 
-  padding: 0;
+  background: transparent;
 
-  margin: 0;
+  color: #2563eb !important;
+
+  font-size: inherit;
 
   font-weight: 600;
 
@@ -820,32 +910,27 @@ button:disabled,
 }
 
 .text-link:hover {
-  color: #1d4ed8;
+  color: #1d4ed8 !important;
 
   text-decoration: underline;
 }
 
-.text-link:visited {
-  color: #2563eb;
-}
-
 
 /* =========================================================
-   お知らせタイトル
-========================================================= */
+   31. お知らせタイトル
+   ========================================================= */
 
 .notice-title {
   display: inline;
 
-  color: #2563eb;
-
-  background: transparent;
+  padding: 0;
+  margin: 0;
 
   border: 0;
 
-  padding: 0;
+  background: transparent;
 
-  margin: 0;
+  color: #2563eb !important;
 
   font-size: 17px;
 
@@ -859,74 +944,15 @@ button:disabled,
 }
 
 .notice-title:hover {
-  color: #1d4ed8;
+  color: #1d4ed8 !important;
 
   text-decoration: underline;
 }
 
-.notice-title:visited {
-  color: #2563eb;
-}
-
 
 /* =========================================================
-   フォーム
-========================================================= */
-
-.form-group {
-  margin-bottom: 18px;
-}
-
-label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  font-weight: 700;
-
-  line-height: 1.4;
-}
-
-input,
-textarea,
-select {
-  width: 100%;
-
-  padding: 11px 12px;
-
-  border: 1px solid #d5dbe2;
-
-  border-radius: 8px;
-
-  background: #ffffff;
-
-  color: #333333;
-
-  outline: none;
-
-  appearance: auto;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #2563eb;
-
-  box-shadow:
-    0 0 0 3px
-    rgba(37, 99, 235, 0.1);
-}
-
-textarea {
-  min-height: 150px;
-
-  resize: vertical;
-}
-
-
-/* =========================================================
-   お知らせ
-========================================================= */
+   32. お知らせ
+   ========================================================= */
 
 .notice-list {
   display: grid;
@@ -934,28 +960,23 @@ textarea {
   gap: 10px;
 }
 
+.notice-card,
 .notice-item {
-  background: #ffffff;
+  width: 100%;
+
+  padding: 18px;
+
+  margin-bottom: 14px;
+
+  background: #fff;
 
   border: 1px solid #e1e5ea;
 
   border-radius: 10px;
-
-  padding: 17px;
 }
 
-.notice-item:hover {
-  border-color: #cfd6de;
-}
-
-.notice-meta {
-  margin-top: 7px;
-
-  color: #6b7280;
-
-  font-size: 13px;
-
-  line-height: 1.6;
+.notice-card h3 {
+  margin: 0 0 7px;
 }
 
 .notice-body {
@@ -966,35 +987,77 @@ textarea {
   white-space: pre-wrap;
 }
 
+.notice-meta,
+.delivery-info {
+  margin-top: 6px;
+
+  color: #666;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
 
 /* =========================================================
-   配布文書
-========================================================= */
+   33. 重要・通常
+   ========================================================= */
+
+.important,
+.normal-tag {
+  display: inline-block;
+
+  padding: 4px 9px;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+}
+
+.important {
+  background: #fee2e2;
+
+  color: #b91c1c;
+}
+
+.normal-tag {
+  background: #e5e7eb;
+
+  color: #374151;
+}
+
+
+/* =========================================================
+   34. 配布文書
+   ========================================================= */
 
 .document-list {
   display: grid;
 
-  gap: 10px;
+  gap: 12px;
 }
 
+.document-card,
 .document-item {
-  background: #ffffff;
+  width: 100%;
+
+  padding: 17px;
+
+  background: #fff;
 
   border: 1px solid #e1e5ea;
 
   border-radius: 10px;
-
-  padding: 17px;
 }
 
-.document-row {
+.document-header {
   display: flex;
 
   align-items: center;
 
   justify-content: space-between;
 
-  gap: 18px;
+  gap: 15px;
 }
 
 .document-title {
@@ -1006,6 +1069,11 @@ textarea {
 
   line-height: 1.5;
 }
+
+
+/* =========================================================
+   35. 配布文書を開く
+   ========================================================= */
 
 .document-open {
   flex-shrink: 0;
@@ -1028,29 +1096,33 @@ textarea {
 
   background: #2563eb;
 
-  color: #ffffff;
-
-  text-decoration: none;
+  color: #fff !important;
 
   font-size: 13px;
 
   font-weight: 600;
 
+  line-height: 1.2;
+
+  text-decoration: none !important;
+
   white-space: nowrap;
+
+  cursor: pointer;
 }
 
 .document-open:hover {
   background: #1d4ed8;
 
-  color: #ffffff;
+  border-color: #1d4ed8;
 
-  text-decoration: none;
+  color: #fff !important;
+
+  text-decoration: none !important;
 }
 
 .document-open:visited {
-  color: #ffffff;
-
-  text-decoration: none;
+  color: #fff !important;
 }
 
 .document-body {
@@ -1062,17 +1134,17 @@ textarea {
 }
 
 .document-period {
-  margin-top: 8px;
+  margin-top: 7px;
 
-  color: #6b7280;
+  color: #666;
 
   font-size: 13px;
 }
 
 
 /* =========================================================
-   メッセージ
-========================================================= */
+   36. 連絡
+   ========================================================= */
 
 .message-list {
   display: grid;
@@ -1081,92 +1153,48 @@ textarea {
 }
 
 .message-item {
-  background: #ffffff;
+  padding: 17px;
+
+  background: #fff;
 
   border: 1px solid #e1e5ea;
 
   border-radius: 10px;
-
-  padding: 17px;
 }
 
 .message-title {
   font-size: 16px;
 
   font-weight: 700;
-
-  line-height: 1.5;
 }
 
 .message-meta {
   margin-top: 7px;
 
-  color: #6b7280;
+  color: #666;
 
   font-size: 13px;
 }
 
 
 /* =========================================================
-   状態表示
-   「開封済み」「opened」は表示しない前提
-========================================================= */
+   37. opened / 状態表示を見せない
+   ========================================================= */
 
-.status-box {
-  padding: 14px 16px;
-
-  margin-bottom: 15px;
-
-  border-radius: 8px;
-
-  line-height: 1.6;
-}
-
-.status-box.success {
-  background: #ecfdf5;
-
-  border: 1px solid #a7f3d0;
-
-  color: #065f46;
-}
-
-.status-box.warning {
-  background: #fffbeb;
-
-  border: 1px solid #fde68a;
-
-  color: #92400e;
-}
-
-.error {
-  color: #b91c1c;
+.opened,
+.status-opened,
+.message-status,
+[data-status="opened"] {
+  display: none !important;
 }
 
 
 /* =========================================================
-   カレンダー
-========================================================= */
+   38. カレンダー
+   ========================================================= */
 
 .calendar-tools {
   margin-bottom: 18px;
-}
-
-.calendar-toolbar {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin-bottom: 15px;
-}
-
-.calendar-toolbar h2 {
-  margin: 0;
-
-  font-size: 22px;
 }
 
 .calendar-header {
@@ -1176,7 +1204,7 @@ textarea {
 
   justify-content: space-between;
 
-  gap: 12px;
+  gap: 10px;
 
   margin-bottom: 15px;
 }
@@ -1184,13 +1212,13 @@ textarea {
 .calendar-header h2 {
   margin: 0;
 
-  font-size: 22px;
+  font-size: 21px;
 }
 
 
 /* =========================================================
-   カレンダー範囲選択
-========================================================= */
+   39. カレンダー範囲
+   ========================================================= */
 
 .calendar-range-filter {
   display: flex;
@@ -1205,9 +1233,9 @@ textarea {
 
   margin-bottom: 18px;
 
-  background: #ffffff;
+  background: #fff;
 
-  border: 1px solid #dfe3e8;
+  border: 1px solid #ddd;
 
   border-radius: 10px;
 }
@@ -1215,15 +1243,15 @@ textarea {
 .calendar-range-filter input {
   width: auto;
 
-  min-width: 150px;
+  min-width: 145px;
 
   margin: 0;
 }
 
 
 /* =========================================================
-   カレンダー
-========================================================= */
+   40. カレンダー本体
+   ========================================================= */
 
 .calendar-wrap {
   width: 100%;
@@ -1240,33 +1268,35 @@ textarea {
 
   border-collapse: collapse;
 
-  background: #ffffff;
+  background: #fff;
 }
 
 .calendar th {
   height: 42px;
 
+  padding: 7px;
+
   background: #f3f4f6;
 
-  border: 1px solid #dfe3e8;
+  border: 1px solid #ddd;
 
   text-align: center;
 
-  font-weight: 700;
+  font-size: 13px;
 }
 
 .calendar td {
   height: 125px;
 
-  vertical-align: top;
-
   padding: 6px;
+
+  vertical-align: top;
 
   position: relative;
 
-  border: 1px solid #dfe3e8;
+  border: 1px solid #ddd;
 
-  background: #ffffff;
+  background: #fff;
 }
 
 .calendar td.empty {
@@ -1278,15 +1308,15 @@ textarea {
 }
 
 .day-number {
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 
   font-weight: 700;
 }
 
 
 /* =========================================================
-   カレンダー予定
-========================================================= */
+   41. カレンダー予定
+   ========================================================= */
 
 .calendar-event {
   display: block;
@@ -1328,8 +1358,8 @@ textarea {
 
 
 /* =========================================================
-   イベント詳細
-========================================================= */
+   42. カレンダー詳細
+   ========================================================= */
 
 .event-detail {
   margin-top: 20px;
@@ -1337,56 +1367,17 @@ textarea {
 
 
 /* =========================================================
-   ダッシュボード
-========================================================= */
-
-.dashboard-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(220px, 1fr)
-    );
-
-  gap: 18px;
-}
-
-.dashboard-grid strong {
-  display: block;
-
-  font-size: 30px;
-
-  line-height: 1.2;
-
-  margin-top: 10px;
-}
-
-
-/* =========================================================
-   成績分析
-========================================================= */
-
-.analysis-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(220px, 1fr)
-    );
-
-  gap: 16px;
-}
+   43. 成績分析
+   ========================================================= */
 
 .analysis-card {
-  background: #ffffff;
+  padding: 18px;
+
+  background: #fff;
 
   border: 1px solid #e1e5ea;
 
   border-radius: 10px;
-
-  padding: 18px;
 }
 
 .analysis-number {
@@ -1396,15 +1387,15 @@ textarea {
 
   font-size: 30px;
 
-  line-height: 1.2;
-
   font-weight: 800;
+
+  line-height: 1.2;
 }
 
 
 /* =========================================================
-   テスト一覧
-========================================================= */
+   44. テスト一覧
+   ========================================================= */
 
 .test-list {
   display: grid;
@@ -1425,15 +1416,11 @@ textarea {
 
   padding: 16px;
 
-  background: #ffffff;
+  background: #fff;
 
   border: 1px solid #dfe4e9;
 
   border-radius: 10px;
-}
-
-.test-list-item:hover {
-  border-color: #cbd3dc;
 }
 
 .test-list-title {
@@ -1447,18 +1434,17 @@ textarea {
 .test-list-meta {
   margin-top: 5px;
 
-  color: #6b7280;
+  color: #666;
 
   font-size: 13px;
 }
 
 
 /* =========================================================
-   テーブル
-========================================================= */
+   45. テーブル
+   ========================================================= */
 
-.table-wrap,
-.data-table-wrap {
+.table-wrap {
   width: 100%;
 
   overflow-x: auto;
@@ -1474,7 +1460,7 @@ textarea {
 .data-table td {
   padding: 9px 10px;
 
-  border: 1px solid #dfe3e8;
+  border: 1px solid #ddd;
 
   text-align: left;
 
@@ -1489,8 +1475,8 @@ textarea {
 
 
 /* =========================================================
-   分布
-========================================================= */
+   46. 成績分布
+   ========================================================= */
 
 .distribution {
   display: grid;
@@ -1504,13 +1490,13 @@ textarea {
 .distribution > div {
   padding: 10px;
 
-  border: 1px solid #dfe3e8;
+  border: 1px solid #ddd;
+
+  border-radius: 6px;
 
   background: #fafafa;
 
   text-align: center;
-
-  border-radius: 6px;
 }
 
 .distribution strong {
@@ -1523,278 +1509,25 @@ textarea {
 
 
 /* =========================================================
-   ログイン画面
-========================================================= */
+   47. 戻る・操作エリア
+   ========================================================= */
 
-.login-page {
-  width: 100%;
-
-  min-height: 100vh;
-
+.page-actions {
   display: flex;
+
+  flex-wrap: wrap;
 
   align-items: center;
 
-  justify-content: center;
+  gap: 8px;
 
-  padding: 30px;
-
-  background: #f5f7fa;
+  margin-bottom: 20px;
 }
 
 
 /* =========================================================
-   ログインフォーム
-========================================================= */
-
-.login-box {
-  width: 440px;
-
-  max-width: 100%;
-
-  padding: 38px;
-
-  background: #ffffff;
-
-  border: 1px solid #e1e5ea;
-
-  border-radius: 14px;
-
-  box-shadow:
-    0 10px 35px
-    rgba(0, 0, 0, 0.08);
-}
-
-
-/* =========================================================
-   ログインロゴ
-========================================================= */
-
-.login-logo {
-  display: block;
-
-  width: 88px;
-  height: 88px;
-
-  margin: 0 auto 18px;
-
-  object-fit: contain;
-}
-
-
-/* =========================================================
-   ログインタイトル
-========================================================= */
-
-.login-box h1 {
-  margin: 0;
-
-  text-align: center;
-
-  font-size: 25px;
-
-  line-height: 1.35;
-}
-
-.login-site-name {
-  margin: 8px 0 28px;
-
-  color: #666666;
-
-  font-size: 13px;
-
-  line-height: 1.5;
-
-  text-align: center;
-}
-
-
-/* =========================================================
-   ログインエラー
-========================================================= */
-
-.login-error {
-  display: none;
-
-  padding: 11px 13px;
-
-  margin-bottom: 16px;
-
-  background: #fff1f2;
-
-  border: 1px solid #fecdd3;
-
-  border-radius: 8px;
-
-  color: #b91c1c;
-
-  font-size: 14px;
-
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   Googleログイン
-========================================================= */
-
-.google-button {
-  width: 100%;
-
-  min-height: 46px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 9px;
-
-  padding: 10px 15px;
-
-  border: 1px solid #d5dbe2;
-
-  border-radius: 8px;
-
-  background: #ffffff;
-
-  color: #333333;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-  appearance: none;
-}
-
-.google-button:hover {
-  background: #f7f8fa;
-}
-
-.google-button:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.15);
-}
-
-
-/* =========================================================
-   ログイン区切り
-========================================================= */
-
-.login-divider {
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin: 22px 0;
-
-  color: #777777;
-
-  font-size: 13px;
-}
-
-.login-divider::before,
-.login-divider::after {
-  content: "";
-
-  height: 1px;
-
-  flex: 1;
-
-  background: #dddddd;
-}
-
-
-/* =========================================================
-   空データ
-========================================================= */
-
-.empty-state {
-  padding: 35px 20px;
-
-  background: #ffffff;
-
-  border: 1px dashed #ccd3db;
-
-  border-radius: 10px;
-
-  color: #777777;
-
-  text-align: center;
-
-  line-height: 1.7;
-}
-
-
-/* =========================================================
-   読み込み表示
-   ※「読み込み中...」を常時表示しない
-   必要な場合だけJS側から使用
-========================================================= */
-
-.loading {
-  padding: 20px;
-
-  color: #666666;
-
-  text-align: center;
-}
-
-
-/* =========================================================
-   送信完了
-========================================================= */
-
-.submit-success {
-  padding: 14px 16px;
-
-  margin-bottom: 16px;
-
-  background: #ecfdf5;
-
-  border: 1px solid #a7f3d0;
-
-  border-radius: 8px;
-
-  color: #065f46;
-
-  font-weight: 600;
-}
-
-
-/* =========================================================
-   期間・メタ情報
-========================================================= */
-
-.meta {
-  color: #6b7280;
-
-  font-size: 13px;
-
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   配信範囲
-========================================================= */
-
-.delivery-info {
-  margin-top: 6px;
-
-  color: #6b7280;
-
-  font-size: 13px;
-
-  line-height: 1.6;
-}
-
-
-/* =========================================================
-   モーダル
-========================================================= */
+   48. モーダル
+   ========================================================= */
 
 .modal-overlay {
   position: fixed;
@@ -1811,8 +1544,7 @@ textarea {
 
   padding: 20px;
 
-  background:
-    rgba(0, 0, 0, 0.4);
+  background: rgba(0,0,0,.4);
 }
 
 .modal {
@@ -1826,13 +1558,12 @@ textarea {
 
   padding: 24px;
 
-  background: #ffffff;
+  background: #fff;
 
   border-radius: 12px;
 
   box-shadow:
-    0 15px 50px
-    rgba(0, 0, 0, 0.2);
+    0 15px 50px rgba(0,0,0,.2);
 }
 
 .modal-header {
@@ -1853,11 +1584,6 @@ textarea {
   font-size: 21px;
 }
 
-
-/* =========================================================
-   モーダル閉じる
-========================================================= */
-
 .modal-close {
   width: 38px;
   height: 38px;
@@ -1875,266 +1601,632 @@ textarea {
 
   background: #f1f3f5;
 
-  color: #333333;
+  color: #333;
 
   cursor: pointer;
 }
 
 .modal-close:hover {
-  background: #e5e8ec;
+  background: #e5e7eb;
 }
 
 
 /* =========================================================
-   ページ内戻るエリア
-========================================================= */
+   49. ログイン画面
+   ========================================================= */
 
-.page-actions {
+.login-container,
+.login-page {
+  width: 100%;
+
+  min-height: 100vh;
+
   display: flex;
-
-  flex-wrap: wrap;
 
   align-items: center;
 
-  gap: 8px;
+  justify-content: center;
 
-  margin-bottom: 20px;
+  padding: 24px;
+
+  background: #f5f6f8;
 }
 
 
 /* =========================================================
-   ボタン内アイコン
-========================================================= */
+   50. ログインカード
+   ========================================================= */
 
-.page-actions .material-symbols-rounded,
-.primary-button .material-symbols-rounded,
-.secondary-button .material-symbols-rounded,
-.danger-button .material-symbols-rounded,
-.document-open .material-symbols-rounded {
-  flex-shrink: 0;
+.login-box {
+  width: 420px;
+
+  max-width: 100%;
+
+  margin: 0;
+
+  padding: 36px 38px;
+
+  background: #fff;
+
+  border: 1px solid #e1e5ea;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 8px 30px rgba(0,0,0,.08);
 }
 
 
 /* =========================================================
-   セパレーター
-========================================================= */
+   51. ログイン画面のロゴ
+   ========================================================= */
 
-hr {
+.login-logo {
+  display: block;
+
+  width: 76px;
+  height: 76px;
+
+  margin: 0 auto 18px;
+
+  object-fit: contain;
+}
+
+
+/*
+  schoolアイコンは表示しない
+*/
+
+.login-school-icon,
+.school-icon,
+.login-box .school-icon {
+  display: none !important;
+}
+
+
+/* =========================================================
+   52. ログインタイトル
+   ========================================================= */
+
+.login-box h1 {
+  margin: 0 0 8px;
+
+  color: #222;
+
+  font-size: 24px;
+
+  font-weight: 700;
+
+  line-height: 1.4;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   53. ログインサイト名
+   ========================================================= */
+
+.login-site-name {
+  margin: 0 0 27px;
+
+  color: #666;
+
+  font-size: 12px;
+
+  font-weight: 500;
+
+  line-height: 1.6;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   54. ログインフォーム
+   ========================================================= */
+
+.login-box form {
+  width: 100%;
+}
+
+.login-box form label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+.login-box form input {
+  width: 100%;
+
+  height: 46px;
+
+  margin: 0 0 16px;
+
+  padding: 0 13px;
+
+  border: 1px solid #d5dbe2;
+
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #222;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+.login-box form input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37,99,235,.1);
+}
+
+
+/* =========================================================
+   55. 通常ログインボタン
+   ========================================================= */
+
+.login-submit {
+  width: 100%;
+
+  min-height: 46px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  margin: 3px 0 12px;
+
+  padding: 10px 16px;
+
+  border: 1px solid #2563eb;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #fff;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  appearance: none;
+}
+
+.login-submit:hover {
+  background: #1d4ed8;
+
+  border-color: #1d4ed8;
+}
+
+.login-submit:disabled {
+  opacity: .6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   56. Googleログインボタン
+   ========================================================= */
+
+.google-button {
+  width: 100%;
+
+  min-height: 46px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin: 0;
+
+  padding: 10px 16px;
+
+  border: 1px solid #dadce0;
+
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #3c4043;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  appearance: none;
+
+  transition:
+    background .15s ease,
+    box-shadow .15s ease;
+}
+
+.google-button:hover {
+  background: #f8f9fa;
+
+  box-shadow:
+    0 1px 3px rgba(60,64,67,.2);
+}
+
+.google-button:active {
+  background: #f1f3f4;
+}
+
+.google-button:focus-visible {
+  outline: 3px solid rgba(66,133,244,.2);
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   57. Googleロゴ
+   ========================================================= */
+
+.google-logo {
+  width: 20px !important;
+  height: 20px !important;
+
+  min-width: 20px;
+
+  max-width: 20px;
+
+  margin: 0 !important;
+
+  padding: 0;
+
+  display: block;
+
+  object-fit: contain;
+
   border: 0;
-
-  border-top: 1px solid #e1e5ea;
-
-  margin: 18px 0;
 }
 
 
 /* =========================================================
-   PC用：リンクを勝手にボタン化しない
-========================================================= */
+   58. Googleボタン文字
+   ========================================================= */
 
-.portal-page a:not(
-  .primary-button
-):not(
-  .secondary-button
-):not(
-  .danger-button
-):not(
-  .document-open
-):not(
-  .portal-nav-item
-):not(
-  .notice-title
-):not(
-  .text-link
-) {
+.google-button span {
+  display: inline-block;
+
+  line-height: 20px;
+}
+
+
+/* =========================================================
+   59. ログイン区切り
+   ========================================================= */
+
+.login-divider {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 20px 0;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+
+  display: block;
+
+  flex: 1;
+
+  height: 1px;
+
+  background: #ddd;
+}
+
+
+/* =========================================================
+   60. ログインエラー
+   ========================================================= */
+
+.login-error {
+  display: none;
+
+  width: 100%;
+
+  margin: 0 0 16px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 8px;
+
+  background: #fef2f2;
+
+  color: #b91c1c;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   61. パスワード再設定
+   ========================================================= */
+
+.login-forgot {
+  display: block;
+
+  margin-top: 13px;
+
   color: #2563eb;
+
+  font-size: 13px;
+
+  text-align: center;
 
   text-decoration: none;
 }
 
-.portal-page a:not(
-  .primary-button
-):not(
-  .secondary-button
-):not(
-  .danger-button
-):not(
-  .document-open
-):not(
-  .portal-nav-item
-):not(
-  .notice-title
-):not(
-  .text-link
-):hover {
+.login-forgot:hover {
+  color: #1d4ed8;
+
   text-decoration: underline;
 }
 
 
 /* =========================================================
-   レスポンシブ
-========================================================= */
+   62. 成功表示
+   ========================================================= */
 
-@media (max-width: 900px) {
+.status-box {
+  padding: 14px 16px;
 
-  .portal-sidebar {
-    width: 230px;
-  }
+  margin-bottom: 15px;
 
-  .portal-main {
-    margin-left: 230px;
-  }
+  border-radius: 8px;
 
-  .sidebar-collapsed .portal-main {
-    margin-left: 72px;
-  }
+  line-height: 1.6;
+}
 
-  .portal-page {
-    padding: 24px;
-  }
+.status-box.success {
+  background: #ecfdf5;
 
-  .distribution {
-    grid-template-columns:
-      repeat(3, 1fr);
-  }
+  border: 1px solid #a7f3d0;
+
+  color: #065f46;
+}
+
+.status-box.warning {
+  background: #fffbeb;
+
+  border: 1px solid #fde68a;
+
+  color: #92400e;
+}
+
+.submit-success {
+  padding: 14px 16px;
+
+  margin-bottom: 16px;
+
+  border: 1px solid #a7f3d0;
+
+  border-radius: 8px;
+
+  background: #ecfdf5;
+
+  color: #065f46;
+
+  font-weight: 600;
+}
+
+.error {
+  color: #b91c1c;
 }
 
 
+/* =========================================================
+   63. 空データ
+   ========================================================= */
+
+.empty-state {
+  padding: 35px 20px;
+
+  border: 1px dashed #ccd3db;
+
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #777;
+
+  text-align: center;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   64. 読み込み
+   ========================================================= */
+
+.loading {
+  padding: 20px;
+
+  color: #666;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   65. 無効状態
+   ========================================================= */
+
+button:disabled,
+a.disabled,
+.primary-button.disabled,
+.secondary-button.disabled {
+  opacity: .55;
+
+  cursor: not-allowed;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   66. 「リンクをボタン化」しないためのルール
+   ========================================================= */
+
+/*
+  通常のaタグは文字リンク。
+
+  .primary-button
+  .secondary-button
+  .danger-button
+  .document-open
+
+  を付けたaタグだけボタンとして表示する。
+*/
+
+.content a:not(.primary-button):not(.secondary-button):not(.danger-button):not(.document-open):not(.notice-title):not(.text-link) {
+  color: #2563eb;
+
+  text-decoration: none;
+}
+
+.content a:not(.primary-button):not(.secondary-button):not(.danger-button):not(.document-open):not(.notice-title):not(.text-link):hover {
+  color: #1d4ed8;
+
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   67. フォーム送信ボタン
+   ========================================================= */
+
+.form-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 20px;
+}
+
+
+/* =========================================================
+   68. モバイル
+   ========================================================= */
+
 @media (max-width: 768px) {
 
-  /* ------------------------------
-     サイドバー
-  ------------------------------ */
+  .layout {
+    display: block;
+  }
 
-  .portal-sidebar {
+
+  /* サイドバー */
+
+  .sidebar {
     width: 250px;
 
     transform:
       translateX(-100%);
   }
 
-  .mobile-sidebar-open .portal-sidebar {
+  .sidebar.mobile-open {
     transform:
       translateX(0);
   }
 
 
-  /* ------------------------------
-     閉じる状態をスマホでは無効化
-     → 左から開閉する方式
-  ------------------------------ */
+  /*
+    スマホでは閉じた状態でも
+    アイコンだけの固定サイドバーにはしない
+  */
 
-  .sidebar-collapsed .portal-sidebar {
+  .sidebar-collapsed .sidebar {
     width: 250px;
   }
 
 
-  /* ------------------------------
-     メイン
-  ------------------------------ */
+  /* コンテンツ */
 
-  .portal-main,
-  .sidebar-collapsed .portal-main {
+  .content,
+  .sidebar-collapsed .content {
+    width: 100%;
+
     margin-left: 0;
+
+    padding: 18px;
   }
 
 
-  /* ------------------------------
-     モバイルヘッダー
-  ------------------------------ */
+  /* オーバーレイ */
 
-  .portal-mobile-header {
-    position: sticky;
-
-    z-index: 900;
-
-    top: 0;
-
-    height: 58px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 0 15px;
-
-    background: #ffffff;
-
-    border-bottom:
-      1px solid #e1e5ea;
-
-    color: #222222;
-
-    font-size: 14px;
-
-    font-weight: 700;
-  }
-
-
-  /* ------------------------------
-     オーバーレイ
-  ------------------------------ */
-
-  .portal-overlay {
+  .sidebar-overlay {
     display: none;
 
     position: fixed;
 
-    z-index: 950;
+    z-index: 900;
 
     inset: 0;
 
-    background:
-      rgba(0, 0, 0, 0.35);
+    background: rgba(0,0,0,.35);
   }
 
-  .mobile-sidebar-open .portal-overlay {
+  .sidebar.mobile-open + .sidebar-overlay {
     display: block;
   }
 
 
-  /* ------------------------------
-     ページ
-  ------------------------------ */
+  /* ロゴ */
 
-  .portal-page {
-    padding: 18px;
+  .sidebar-header {
+    min-height: 70px;
   }
 
 
-  /* ------------------------------
-     タイトル
-  ------------------------------ */
+  /* 文書 */
 
-  .page-title {
-    font-size: 23px;
-
-    margin-bottom: 18px;
-  }
-
-
-  /* ------------------------------
-     ログイン
-  ------------------------------ */
-
-  .login-page {
-    padding: 18px;
-  }
-
-  .login-box {
-    width: 100%;
-
-    padding: 28px 22px;
-  }
-
-
-  /* ------------------------------
-     文書
-  ------------------------------ */
-
-  .document-row {
+  .document-header {
     align-items: flex-start;
 
     flex-direction: column;
@@ -2145,9 +2237,18 @@ hr {
   }
 
 
-  /* ------------------------------
-     テスト
-  ------------------------------ */
+  /* カレンダー */
+
+  .calendar-wrap {
+    overflow-x: auto;
+  }
+
+  .calendar {
+    min-width: 800px;
+  }
+
+
+  /* テスト */
 
   .test-list-item {
     align-items: flex-start;
@@ -2161,26 +2262,23 @@ hr {
   }
 
 
-  /* ------------------------------
-     カレンダー
-  ------------------------------ */
+  /* ログイン */
 
-  .calendar-wrap {
-    overflow-x: auto;
+  .login-container,
+  .login-page {
+    padding: 16px;
   }
 
-  .calendar {
-    min-width: 800px;
+  .login-box {
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: 30px 22px;
   }
 
-  .calendar-grid {
-    min-width: 700px;
-  }
 
-
-  /* ------------------------------
-     配分
-  ------------------------------ */
+  /* 分布 */
 
   .distribution {
     grid-template-columns:
@@ -2189,9 +2287,14 @@ hr {
 }
 
 
+/* =========================================================
+   69. 小さいスマホ
+   ========================================================= */
+
 @media (max-width: 480px) {
 
-  .portal-page {
+  .content,
+  .sidebar-collapsed .content {
     padding: 14px;
   }
 
@@ -2199,17 +2302,23 @@ hr {
     padding: 16px;
   }
 
-  .login-box {
-    padding: 24px 18px;
+  .content h1,
+  .page-title {
+    font-size: 23px;
   }
 
-  .login-logo {
-    width: 76px;
-    height: 76px;
+  .login-box {
+    padding: 26px 18px;
   }
 
   .login-box h1 {
     font-size: 22px;
+  }
+
+  .login-logo {
+    width: 68px;
+
+    height: 68px;
   }
 
   .distribution {
@@ -2218,12 +2327,48 @@ hr {
   }
 
   .calendar-range-filter {
-    align-items: stretch;
-
     flex-direction: column;
+
+    align-items: stretch;
   }
 
   .calendar-range-filter input {
     width: 100%;
+  }
+}
+
+
+/* =========================================================
+   70. 印刷
+   ========================================================= */
+
+@media print {
+
+  .sidebar,
+  .menu-toggle,
+  .page-actions,
+  .primary-button,
+  .secondary-button,
+  .danger-button {
+    display: none !important;
+  }
+
+  .content,
+  .sidebar-collapsed .content {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .card {
+    box-shadow: none;
+
+    border: 1px solid #ccc;
   }
 }
