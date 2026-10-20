@@ -1,95 +1,91 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0">
 
-<title>ログイン | 定期テスト対策プリント運営事務局|ポータルサイト</title>
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1.0"
+>
 
-<link rel="icon" href="./favicon.svg">
-
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
-
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
+<title>
+定期テスト対策プリント運営事務局|ポータルサイト
+</title>
 
 <link
- href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
- rel="stylesheet">
+  rel="stylesheet"
+  href="./css/style.css"
+>
 
-<link rel="stylesheet"
-      href="./css/style.css">
+<link
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  rel="stylesheet"
+>
+
 </head>
 
 <body>
 
-<div class="login-page">
+<div class="login-container">
 
-  <div class="login-box">
+  <main class="login-box">
 
     <img
-      src="./assets/logo.svg"
       class="login-logo"
-      alt="テスト対策プリント"
+      src="./assets/logo.svg"
+      alt="定期テスト対策プリント運営事務局"
     >
 
     <h1>
       ログイン
     </h1>
 
-    <div class="login-site-name">
+    <p class="login-site-name">
       定期テスト対策プリント運営事務局|ポータルサイト
-    </div>
+    </p>
 
     <div
       id="loginError"
-      class="login-error">
-    </div>
+      class="login-error"
+    ></div>
 
-    <form id="emailLoginForm">
+    <form id="loginForm">
 
-      <div class="form-group">
+      <label for="email">
+        メールアドレス
+      </label>
 
-        <label for="email">
-          メールアドレス
-        </label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        required
+      >
 
-        <input
-          id="email"
-          type="email"
-          autocomplete="email"
-          placeholder="メールアドレス"
-          required
-        >
+      <label for="password">
+        パスワード
+      </label>
 
-      </div>
-
-      <div class="form-group">
-
-        <label for="password">
-          パスワード
-        </label>
-
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          placeholder="パスワード"
-          required
-        >
-
-      </div>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
 
       <button
         type="submit"
-        class="primary-button"
-        style="width:100%;"
+        id="loginButton"
+        class="login-submit"
       >
-        ログイン
+        <span class="material-symbols-rounded">
+          login
+        </span>
+
+        <span>
+          ログイン
+        </span>
       </button>
 
     </form>
@@ -100,175 +96,35 @@
 
     <button
       type="button"
-      id="googleLogin"
+      id="googleLoginButton"
       class="google-button"
     >
 
-      <span
-        class="material-symbols-rounded">
-        account_circle
-      </span>
+      <img
+        class="google-logo"
+        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+        alt="Google"
+      >
 
-      Googleでログイン
+      <span>
+        Googleでログイン
+      </span>
 
     </button>
 
-  </div>
+    <a
+      href="#"
+      id="forgotPassword"
+      class="login-forgot"
+    >
+      パスワードを忘れた場合
+    </a>
+
+  </main>
 
 </div>
 
-<script type="module">
-
-import {
-  auth,
-  googleProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  onAuthStateChanged
-} from "./js/firebase.js";
-
-const form =
-  document.getElementById(
-    "emailLoginForm"
-  );
-
-const googleButton =
-  document.getElementById(
-    "googleLogin"
-  );
-
-const errorBox =
-  document.getElementById(
-    "loginError"
-  );
-
-function showError(message) {
-
-  errorBox.textContent =
-    message;
-
-  errorBox.style.display =
-    "block";
-}
-
-function clearError() {
-
-  errorBox.textContent = "";
-
-  errorBox.style.display =
-    "none";
-}
-
-function moveAfterLogin() {
-
-  location.href =
-    "./dashboard/student.html";
-}
-
-form.addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-    clearError();
-
-    const email =
-      document.getElementById(
-        "email"
-      ).value.trim();
-
-    const password =
-      document.getElementById(
-        "password"
-      ).value;
-
-    try {
-
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      moveAfterLogin();
-
-    } catch (error) {
-
-      console.error(error);
-
-      showError(
-        "メールアドレスまたはパスワードを確認してください。"
-      );
-    }
-  }
-);
-
-googleButton.addEventListener(
-  "click",
-  async () => {
-
-    clearError();
-
-    googleButton.disabled =
-      true;
-
-    try {
-
-      await signInWithPopup(
-        auth,
-        googleProvider
-      );
-
-      moveAfterLogin();
-
-    } catch (error) {
-
-      console.error(error);
-
-      if (
-        error.code ===
-        "auth/popup-blocked"
-      ) {
-
-        showError(
-          "Googleログインのポップアップがブロックされました。ブラウザのポップアップを許可してください。"
-        );
-
-      } else if (
-        error.code ===
-        "auth/unauthorized-domain"
-      ) {
-
-        showError(
-          "Firebase Authenticationの承認済みドメインに、このサイトのドメインを追加してください。"
-        );
-
-      } else {
-
-        showError(
-          "Googleログインに失敗しました。"
-        );
-      }
-
-      googleButton.disabled =
-        false;
-    }
-  }
-);
-
-onAuthStateChanged(
-  auth,
-  user => {
-
-    if (user) {
-      moveAfterLogin();
-    }
-
-  }
-);
-
-</script>
+<script type="module" src="./js/auth.js"></script>
 
 </body>
 </html>
