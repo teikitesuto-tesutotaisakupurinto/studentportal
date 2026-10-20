@@ -1,22 +1,43 @@
+/* =========================================================
+   定期テスト対策プリント運営事務局 | ポータルサイト
+   共通スタイル
+========================================================= */
+
+
+/* =========================================================
+   基本
+========================================================= */
+
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
+html {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  font-family:
-    "Noto Sans JP",
-    "Yu Gothic",
-    sans-serif;
-  background: #f5f7fa;
-  color: #252525;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+
+  font-family:
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    Meiryo,
+    sans-serif;
+
+  background: #f5f7fa;
+  color: #252525;
+
   overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
 }
 
 button,
@@ -34,42 +55,64 @@ a {
   color: inherit;
 }
 
-/* ======================================
+
+/* =========================================================
    Material Symbols
-====================================== */
+========================================================= */
 
 .material-symbols-rounded {
-  font-family:
-    "Material Symbols Rounded";
+  font-family: "Material Symbols Rounded";
+
   font-weight: normal;
   font-style: normal;
+
   font-size: 22px;
   line-height: 1;
+
   letter-spacing: normal;
   text-transform: none;
+
   display: inline-block;
+
   white-space: nowrap;
   word-wrap: normal;
+
   direction: ltr;
-  -webkit-font-feature-settings:
-    "liga";
-  -webkit-font-smoothing:
-    antialiased;
-  font-feature-settings:
-    "liga";
+
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+
+  font-feature-settings: "liga";
 }
 
-/* ======================================
-   Portal
-====================================== */
+
+/* =========================================================
+   ページ全体
+========================================================= */
+
+.portal-body {
+  min-height: 100vh;
+}
+
+
+/* =========================================================
+   ポータル全体
+========================================================= */
 
 .portal-shell {
   min-height: 100vh;
 }
 
+
+/* =========================================================
+   サイドバー
+========================================================= */
+
 .portal-sidebar {
   position: fixed;
+
   z-index: 1000;
+
   left: 0;
   top: 0;
 
@@ -80,104 +123,163 @@ a {
   flex-direction: column;
 
   background: #ffffff;
-  border-right: 1px solid #e2e5e9;
 
-  transition:
-    width .2s ease,
-    transform .2s ease;
+  border-right: 1px solid #e1e5ea;
 
   overflow: hidden;
+
+  transition:
+    width 0.2s ease,
+    transform 0.2s ease;
 }
+
+
+/* =========================================================
+   サイドバー上部
+========================================================= */
 
 .portal-sidebar-top {
   position: relative;
 
-  min-height: 92px;
+  min-height: 82px;
 
-  padding: 15px 14px;
+  padding: 14px 12px;
 
   border-bottom: 1px solid #eeeeee;
 }
 
+
+/* =========================================================
+   ロゴエリア
+========================================================= */
+
 .portal-logo-area {
   display: flex;
+
   align-items: center;
+
   gap: 10px;
 
   padding-right: 42px;
+
+  min-width: 0;
 }
+
+
+/* =========================================================
+   ロゴ
+========================================================= */
 
 .portal-logo {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
+
+  flex: 0 0 44px;
 
   object-fit: contain;
-
-  flex: 0 0 46px;
 }
 
+
+/* =========================================================
+   サイト名
+========================================================= */
+
 .portal-site-name {
-  font-size: 13px;
+  min-width: 0;
+
+  font-size: 12px;
+
   line-height: 1.45;
+
   font-weight: 700;
 
   word-break: break-all;
 }
 
+
+/* =========================================================
+   メニュー開閉ボタン
+========================================================= */
+
 .portal-menu-toggle {
   position: absolute;
 
-  right: 12px;
-  top: 13px;
+  right: 10px;
+  top: 10px;
 
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
   border: 0;
+
   border-radius: 8px;
 
-  background: #f3f5f7;
-  color: #333;
+  background: #f1f3f5;
+
+  color: #333333;
+
+  appearance: none;
+
+  text-decoration: none;
 }
 
 .portal-menu-toggle:hover {
-  background: #e8edf2;
+  background: #e6e9ed;
 }
+
+.portal-menu-toggle:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.2);
+}
+
+
+/* =========================================================
+   メニュー
+========================================================= */
 
 .portal-nav {
   flex: 1;
 
-  padding: 14px 10px;
+  min-height: 0;
+
+  padding: 12px 9px;
 
   overflow-y: auto;
 }
 
-.portal-nav-item,
-.portal-logout-button {
+
+/* =========================================================
+   メニュー項目
+   ※ここだけナビゲーション用
+========================================================= */
+
+.portal-nav-item {
   width: 100%;
   min-height: 46px;
 
   display: flex;
+
   align-items: center;
 
-  gap: 13px;
+  gap: 12px;
+
+  margin: 0 0 5px 0;
 
   padding: 10px 12px;
 
-  margin-bottom: 5px;
-
   border: 0;
+
   border-radius: 9px;
 
   background: transparent;
 
-  color: #333;
+  color: #333333;
 
   text-decoration: none;
 
@@ -185,44 +287,147 @@ a {
 
   white-space: nowrap;
 
+  cursor: pointer;
+
+  appearance: none;
+
   transition:
-    background .15s ease,
-    color .15s ease;
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-.portal-nav-item:hover,
-.portal-logout-button:hover {
+.portal-nav-item:hover {
   background: #eef4ff;
+
   color: #2563eb;
+
+  text-decoration: none;
+}
+
+.portal-nav-item:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.2);
 }
 
 .portal-nav-item.active {
   background: #e8f0ff;
+
   color: #2563eb;
+
   font-weight: 700;
 }
 
-.menu-icon {
-  flex: 0 0 23px;
+
+/* =========================================================
+   メニューアイコン
+========================================================= */
+
+.portal-nav-item .menu-icon {
+  width: 24px;
+  min-width: 24px;
+
+  height: 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
 }
 
+
+/* =========================================================
+   メニュー文字
+========================================================= */
+
 .portal-nav-text {
+  min-width: 0;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
+
+
+/* =========================================================
+   サイドバー下部
+========================================================= */
 
 .portal-sidebar-bottom {
   padding: 10px;
+
   border-top: 1px solid #eeeeee;
 }
 
+
+/* =========================================================
+   ログアウト
+   ※リンクではなくボタン
+========================================================= */
+
 .portal-logout-button {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
   margin: 0;
+
+  padding: 10px 12px;
+
+  border: 0;
+
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #333333;
+
+  text-align: left;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  appearance: none;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
-/* ======================================
-   Collapsed
-====================================== */
+.portal-logout-button:hover {
+  background: #fff1f2;
+
+  color: #dc2626;
+}
+
+.portal-logout-button:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, 0.15);
+}
+
+.portal-logout-button .menu-icon {
+  width: 24px;
+  min-width: 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   サイドバー閉じた状態
+========================================================= */
 
 .sidebar-collapsed .portal-sidebar {
   width: 72px;
@@ -230,7 +435,8 @@ a {
 
 .sidebar-collapsed .portal-logo-area {
   justify-content: center;
-  padding: 0;
+
+  padding-right: 0;
 }
 
 .sidebar-collapsed .portal-site-name {
@@ -242,9 +448,9 @@ a {
   height: 42px;
 }
 
-.sidebar-collapsed .portal-nav-item,
-.sidebar-collapsed .portal-logout-button {
+.sidebar-collapsed .portal-nav-item {
   justify-content: center;
+
   padding-left: 0;
   padding-right: 0;
 }
@@ -253,64 +459,154 @@ a {
   display: none;
 }
 
+.sidebar-collapsed .portal-logout-button {
+  justify-content: center;
+
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sidebar-collapsed .portal-logout-button .portal-nav-text {
+  display: none;
+}
+
+
+/* =========================================================
+   メイン
+========================================================= */
+
+.portal-main {
+  min-height: 100vh;
+
+  margin-left: 250px;
+
+  transition:
+    margin-left 0.2s ease;
+}
+
 .sidebar-collapsed .portal-main {
   margin-left: 72px;
 }
 
-/* ======================================
-   Main
-====================================== */
 
-.portal-main {
-  min-height: 100vh;
-  margin-left: 250px;
-
-  transition:
-    margin-left .2s ease;
-}
+/* =========================================================
+   ページ
+========================================================= */
 
 .portal-page {
   width: 100%;
+
   max-width: 1300px;
 
   margin: 0 auto;
 
-  padding: 32px;
+  padding: 30px;
 }
+
+
+/* =========================================================
+   モバイルヘッダー
+========================================================= */
 
 .portal-mobile-header {
   display: none;
 }
 
-/* ======================================
-   Common
-====================================== */
 
-.page-title {
-  margin: 0 0 24px;
+/* =========================================================
+   モバイルメニューボタン
+========================================================= */
 
-  font-size: 28px;
-  line-height: 1.3;
+.portal-mobile-menu {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background: #f1f3f5;
+
+  color: #333333;
+
+  appearance: none;
 }
 
-.card {
-  background: #fff;
+.portal-mobile-menu:hover {
+  background: #e5e8ec;
+}
 
-  border: 1px solid #e4e7eb;
+
+/* =========================================================
+   モバイル用オーバーレイ
+========================================================= */
+
+.portal-overlay {
+  display: none;
+}
+
+
+/* =========================================================
+   見出し
+========================================================= */
+
+.page-title {
+  margin: 0 0 22px;
+
+  font-size: 26px;
+
+  line-height: 1.35;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   カード
+========================================================= */
+
+.card {
+  background: #ffffff;
+
+  border: 1px solid #e2e6eb;
+
   border-radius: 12px;
 
-  padding: 22px;
+  padding: 20px;
 
   margin-bottom: 18px;
 
   box-shadow:
-    0 2px 10px rgba(0,0,0,.04);
+    0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.card h2,
-.card h3 {
-  margin-top: 0;
+.card h2 {
+  margin: 0 0 14px;
+
+  font-size: 20px;
 }
+
+.card h3 {
+  margin: 0 0 10px;
+
+  font-size: 17px;
+}
+
+.card p {
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   グリッド
+========================================================= */
 
 .grid {
   display: grid;
@@ -324,48 +620,271 @@ a {
   gap: 18px;
 }
 
+
+/* =========================================================
+   ボタン共通
+   ※「リンク風」にならないように明示
+========================================================= */
+
 .primary-button,
 .secondary-button,
 .danger-button {
-  min-height: 42px;
+  appearance: none;
 
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 7px;
 
+  min-height: 42px;
+
   padding: 9px 16px;
 
-  border: 0;
   border-radius: 8px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  line-height: 1.2;
+
+  text-align: center;
 
   text-decoration: none;
 
-  font-weight: 600;
+  cursor: pointer;
+
+  white-space: nowrap;
 }
 
+
+/* =========================================================
+   青ボタン
+========================================================= */
+
 .primary-button {
+  border: 1px solid #2563eb;
+
   background: #2563eb;
-  color: #fff;
+
+  color: #ffffff;
 }
 
 .primary-button:hover {
+  border-color: #1d4ed8;
+
   background: #1d4ed8;
+
+  color: #ffffff;
+
+  text-decoration: none;
 }
 
+.primary-button:visited {
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+.primary-button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.2);
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   グレーボタン
+========================================================= */
+
 .secondary-button {
-  background: #eef2f7;
-  color: #333;
+  border: 1px solid #d5dbe2;
+
+  background: #f3f5f7;
+
+  color: #333333;
 }
 
 .secondary-button:hover {
-  background: #e1e7ef;
+  border-color: #c8cfd8;
+
+  background: #e7ebef;
+
+  color: #333333;
+
+  text-decoration: none;
 }
 
+.secondary-button:visited {
+  color: #333333;
+
+  text-decoration: none;
+}
+
+.secondary-button:focus-visible {
+  outline: 3px solid rgba(100, 116, 139, 0.2);
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   赤ボタン
+========================================================= */
+
 .danger-button {
+  border: 1px solid #dc2626;
+
   background: #dc2626;
-  color: #fff;
+
+  color: #ffffff;
+}
+
+.danger-button:hover {
+  border-color: #b91c1c;
+
+  background: #b91c1c;
+
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+.danger-button:visited {
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+.danger-button:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, 0.2);
+
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   アイコン付きボタン
+========================================================= */
+
+.primary-button .material-symbols-rounded,
+.secondary-button .material-symbols-rounded,
+.danger-button .material-symbols-rounded {
+  font-size: 20px;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   無効ボタン
+========================================================= */
+
+button:disabled,
+.primary-button.disabled,
+.secondary-button.disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   通常の文字リンク
+   ※タイトルなどはこちら
+========================================================= */
+
+.text-link {
+  display: inline;
+
+  color: #2563eb;
+
+  background: transparent;
+
+  border: 0;
+
+  padding: 0;
+
+  margin: 0;
+
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.text-link:hover {
+  color: #1d4ed8;
+
+  text-decoration: underline;
+}
+
+.text-link:visited {
+  color: #2563eb;
+}
+
+
+/* =========================================================
+   お知らせタイトル
+========================================================= */
+
+.notice-title {
+  display: inline;
+
+  color: #2563eb;
+
+  background: transparent;
+
+  border: 0;
+
+  padding: 0;
+
+  margin: 0;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  line-height: 1.5;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.notice-title:hover {
+  color: #1d4ed8;
+
+  text-decoration: underline;
+}
+
+.notice-title:visited {
+  color: #2563eb;
+}
+
+
+/* =========================================================
+   フォーム
+========================================================= */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-weight: 700;
+
+  line-height: 1.4;
 }
 
 input,
@@ -375,14 +894,17 @@ select {
 
   padding: 11px 12px;
 
-  border:
-    1px solid #d6dbe1;
+  border: 1px solid #d5dbe2;
 
   border-radius: 8px;
 
-  background: #fff;
+  background: #ffffff;
+
+  color: #333333;
 
   outline: none;
+
+  appearance: auto;
 }
 
 input:focus,
@@ -392,65 +914,38 @@ select:focus {
 
   box-shadow:
     0 0 0 3px
-    rgba(37,99,235,.10);
+    rgba(37, 99, 235, 0.1);
 }
 
 textarea {
   min-height: 150px;
+
   resize: vertical;
 }
 
-label {
-  display: block;
 
-  margin: 0 0 7px;
+/* =========================================================
+   お知らせ
+========================================================= */
 
-  font-weight: 700;
-}
-
-.form-group {
-  margin-bottom: 18px;
-}
-
-/* ======================================
-   Notices / Documents
-====================================== */
-
-.notice-list,
-.document-list,
-.message-list {
+.notice-list {
   display: grid;
+
   gap: 10px;
 }
 
-.notice-item,
-.document-item,
-.message-item {
-  background: #fff;
+.notice-item {
+  background: #ffffff;
 
-  border:
-    1px solid #e1e5ea;
+  border: 1px solid #e1e5ea;
 
   border-radius: 10px;
 
   padding: 17px;
 }
 
-.notice-title {
-  display: inline-block;
-
-  color: #2563eb;
-
-  font-size: 17px;
-  font-weight: 700;
-
-  text-decoration: none;
-
-  cursor: pointer;
-}
-
-.notice-title:hover {
-  text-decoration: underline;
+.notice-item:hover {
+  border-color: #cfd6de;
 }
 
 .notice-meta {
@@ -459,111 +954,354 @@ label {
   color: #6b7280;
 
   font-size: 13px;
+
+  line-height: 1.6;
+}
+
+.notice-body {
+  margin-top: 18px;
+
+  line-height: 1.8;
+
+  white-space: pre-wrap;
+}
+
+
+/* =========================================================
+   配布文書
+========================================================= */
+
+.document-list {
+  display: grid;
+
+  gap: 10px;
+}
+
+.document-item {
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+
+  border-radius: 10px;
+
+  padding: 17px;
 }
 
 .document-row {
   display: flex;
 
   align-items: center;
+
   justify-content: space-between;
 
-  gap: 15px;
+  gap: 18px;
 }
 
 .document-title {
+  min-width: 0;
+
   font-size: 16px;
+
   font-weight: 700;
+
+  line-height: 1.5;
 }
 
-/* ======================================
-   Calendar
-====================================== */
+.document-open {
+  flex-shrink: 0;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  min-height: 40px;
+
+  padding: 8px 14px;
+
+  border: 1px solid #2563eb;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+.document-open:hover {
+  background: #1d4ed8;
+
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+.document-open:visited {
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+.document-body {
+  margin-top: 15px;
+
+  line-height: 1.8;
+
+  white-space: pre-wrap;
+}
+
+.document-period {
+  margin-top: 8px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   メッセージ
+========================================================= */
+
+.message-list {
+  display: grid;
+
+  gap: 10px;
+}
+
+.message-item {
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+
+  border-radius: 10px;
+
+  padding: 17px;
+}
+
+.message-title {
+  font-size: 16px;
+
+  font-weight: 700;
+
+  line-height: 1.5;
+}
+
+.message-meta {
+  margin-top: 7px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   状態表示
+   「開封済み」「opened」は表示しない前提
+========================================================= */
+
+.status-box {
+  padding: 14px 16px;
+
+  margin-bottom: 15px;
+
+  border-radius: 8px;
+
+  line-height: 1.6;
+}
+
+.status-box.success {
+  background: #ecfdf5;
+
+  border: 1px solid #a7f3d0;
+
+  color: #065f46;
+}
+
+.status-box.warning {
+  background: #fffbeb;
+
+  border: 1px solid #fde68a;
+
+  color: #92400e;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+
+/* =========================================================
+   カレンダー
+========================================================= */
+
+.calendar-tools {
+  margin-bottom: 18px;
+}
 
 .calendar-toolbar {
   display: flex;
 
-  justify-content: space-between;
   align-items: center;
 
-  gap: 10px;
+  justify-content: space-between;
+
+  gap: 12px;
 
   margin-bottom: 15px;
 }
 
 .calendar-toolbar h2 {
   margin: 0;
+
   font-size: 22px;
 }
 
-.calendar-grid {
-  display: grid;
+.calendar-header {
+  display: flex;
 
-  grid-template-columns:
-    repeat(7, minmax(100px, 1fr));
+  align-items: center;
 
-  overflow: hidden;
+  justify-content: space-between;
 
-  background: #fff;
+  gap: 12px;
 
-  border:
-    1px solid #dfe3e8;
+  margin-bottom: 15px;
+}
+
+.calendar-header h2 {
+  margin: 0;
+
+  font-size: 22px;
+}
+
+
+/* =========================================================
+   カレンダー範囲選択
+========================================================= */
+
+.calendar-range-filter {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 14px;
+
+  margin-bottom: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe3e8;
 
   border-radius: 10px;
 }
 
-.calendar-weekday {
-  padding: 10px;
+.calendar-range-filter input {
+  width: auto;
 
-  background: #f3f5f8;
+  min-width: 150px;
 
-  border-right:
-    1px solid #dfe3e8;
+  margin: 0;
+}
 
-  border-bottom:
-    1px solid #dfe3e8;
+
+/* =========================================================
+   カレンダー
+========================================================= */
+
+.calendar-wrap {
+  width: 100%;
+
+  overflow-x: auto;
+}
+
+.calendar {
+  width: 100%;
+
+  min-width: 800px;
+
+  table-layout: fixed;
+
+  border-collapse: collapse;
+
+  background: #ffffff;
+}
+
+.calendar th {
+  height: 42px;
+
+  background: #f3f4f6;
+
+  border: 1px solid #dfe3e8;
 
   text-align: center;
 
   font-weight: 700;
 }
 
-.calendar-cell {
-  min-height: 125px;
+.calendar td {
+  height: 125px;
 
-  padding: 7px;
+  vertical-align: top;
 
-  border-right:
-    1px solid #e1e5e9;
+  padding: 6px;
 
-  border-bottom:
-    1px solid #e1e5e9;
+  position: relative;
 
-  background: #fff;
+  border: 1px solid #dfe3e8;
+
+  background: #ffffff;
 }
 
-.calendar-cell.today {
-  background: #f0f6ff;
+.calendar td.empty {
+  background: #fafafa;
 }
 
-.calendar-date {
-  font-size: 13px;
-  font-weight: 700;
+.calendar-day.today {
+  background: #eff6ff;
+}
 
+.day-number {
   margin-bottom: 6px;
+
+  font-weight: 700;
 }
+
+
+/* =========================================================
+   カレンダー予定
+========================================================= */
 
 .calendar-event {
   display: block;
 
   width: 100%;
 
-  padding: 5px 7px;
+  margin: 4px 0;
 
-  margin-bottom: 4px;
+  padding: 5px 7px;
 
   border: 0;
 
-  border-radius: 5px;
+  border-left: 3px solid #2563eb;
+
+  border-radius: 4px;
 
   background: #e8f0fe;
 
@@ -571,19 +1309,106 @@ label {
 
   font-size: 12px;
 
+  line-height: 1.4;
+
   text-align: left;
 
   overflow: hidden;
+
   white-space: nowrap;
+
   text-overflow: ellipsis;
+
+  cursor: pointer;
 }
 
-/* ======================================
-   Score
-====================================== */
+.calendar-event:hover {
+  background: #dbeafe;
+}
+
+
+/* =========================================================
+   イベント詳細
+========================================================= */
+
+.event-detail {
+  margin-top: 20px;
+}
+
+
+/* =========================================================
+   ダッシュボード
+========================================================= */
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(220px, 1fr)
+    );
+
+  gap: 18px;
+}
+
+.dashboard-grid strong {
+  display: block;
+
+  font-size: 30px;
+
+  line-height: 1.2;
+
+  margin-top: 10px;
+}
+
+
+/* =========================================================
+   成績分析
+========================================================= */
+
+.analysis-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(220px, 1fr)
+    );
+
+  gap: 16px;
+}
+
+.analysis-card {
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+
+  border-radius: 10px;
+
+  padding: 18px;
+}
+
+.analysis-number {
+  display: block;
+
+  margin-top: 7px;
+
+  font-size: 30px;
+
+  line-height: 1.2;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   テスト一覧
+========================================================= */
 
 .test-list {
   display: grid;
+
   gap: 10px;
 }
 
@@ -593,57 +1418,63 @@ label {
   display: flex;
 
   align-items: center;
+
   justify-content: space-between;
 
   gap: 15px;
 
   padding: 16px;
 
-  background: #fff;
+  background: #ffffff;
 
-  border:
-    1px solid #dfe4e9;
+  border: 1px solid #dfe4e9;
 
   border-radius: 10px;
 }
 
-.test-list-item button {
-  flex-shrink: 0;
+.test-list-item:hover {
+  border-color: #cbd3dc;
 }
 
-.analysis-grid {
-  display: grid;
+.test-list-title {
+  min-width: 0;
 
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(200px, 1fr)
-    );
+  font-weight: 700;
 
-  gap: 14px;
+  line-height: 1.5;
 }
 
-.analysis-number {
-  font-size: 30px;
-  font-weight: 800;
+.test-list-meta {
+  margin-top: 5px;
+
+  color: #6b7280;
+
+  font-size: 13px;
 }
 
+
+/* =========================================================
+   テーブル
+========================================================= */
+
+.table-wrap,
 .data-table-wrap {
   width: 100%;
+
   overflow-x: auto;
 }
 
 .data-table {
   width: 100%;
+
   border-collapse: collapse;
 }
 
 .data-table th,
 .data-table td {
-  padding: 10px;
+  padding: 9px 10px;
 
-  border:
-    1px solid #dfe3e8;
+  border: 1px solid #dfe3e8;
 
   text-align: left;
 
@@ -651,18 +1482,59 @@ label {
 }
 
 .data-table th {
-  background: #f3f5f8;
+  background: #f3f4f6;
+
+  font-weight: 700;
 }
 
-/* ======================================
-   Login
-====================================== */
+
+/* =========================================================
+   分布
+========================================================= */
+
+.distribution {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, 1fr);
+
+  gap: 8px;
+}
+
+.distribution > div {
+  padding: 10px;
+
+  border: 1px solid #dfe3e8;
+
+  background: #fafafa;
+
+  text-align: center;
+
+  border-radius: 6px;
+}
+
+.distribution strong {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 20px;
+}
+
+
+/* =========================================================
+   ログイン画面
+========================================================= */
 
 .login-page {
+  width: 100%;
+
   min-height: 100vh;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   padding: 30px;
@@ -670,52 +1542,101 @@ label {
   background: #f5f7fa;
 }
 
+
+/* =========================================================
+   ログインフォーム
+========================================================= */
+
 .login-box {
   width: 440px;
+
   max-width: 100%;
 
   padding: 38px;
 
-  background: #fff;
+  background: #ffffff;
 
-  border:
-    1px solid #e1e5ea;
+  border: 1px solid #e1e5ea;
 
   border-radius: 14px;
 
   box-shadow:
-    0 12px 40px
-    rgba(0,0,0,.08);
+    0 10px 35px
+    rgba(0, 0, 0, 0.08);
 }
+
+
+/* =========================================================
+   ログインロゴ
+========================================================= */
 
 .login-logo {
   display: block;
 
-  width: 92px;
-  height: 92px;
-
-  object-fit: contain;
+  width: 88px;
+  height: 88px;
 
   margin: 0 auto 18px;
+
+  object-fit: contain;
 }
+
+
+/* =========================================================
+   ログインタイトル
+========================================================= */
 
 .login-box h1 {
   margin: 0;
 
   text-align: center;
 
-  font-size: 24px;
+  font-size: 25px;
+
+  line-height: 1.35;
 }
 
-.login-box .login-site-name {
+.login-site-name {
   margin: 8px 0 28px;
 
-  text-align: center;
+  color: #666666;
 
-  color: #666;
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   ログインエラー
+========================================================= */
+
+.login-error {
+  display: none;
+
+  padding: 11px 13px;
+
+  margin-bottom: 16px;
+
+  background: #fff1f2;
+
+  border: 1px solid #fecdd3;
+
+  border-radius: 8px;
+
+  color: #b91c1c;
 
   font-size: 14px;
+
+  line-height: 1.6;
 }
+
+
+/* =========================================================
+   Googleログイン
+========================================================= */
 
 .google-button {
   width: 100%;
@@ -725,23 +1646,40 @@ label {
   display: flex;
 
   align-items: center;
+
   justify-content: center;
 
-  gap: 10px;
+  gap: 9px;
 
-  background: #fff;
+  padding: 10px 15px;
 
-  color: #333;
-
-  border:
-    1px solid #d7dce2;
+  border: 1px solid #d5dbe2;
 
   border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #333333;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  appearance: none;
 }
 
 .google-button:hover {
   background: #f7f8fa;
 }
+
+.google-button:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.15);
+}
+
+
+/* =========================================================
+   ログイン区切り
+========================================================= */
 
 .login-divider {
   display: flex;
@@ -752,7 +1690,9 @@ label {
 
   margin: 22px 0;
 
-  color: #777;
+  color: #777777;
+
+  font-size: 13px;
 }
 
 .login-divider::before,
@@ -763,33 +1703,308 @@ label {
 
   flex: 1;
 
-  background: #ddd;
+  background: #dddddd;
 }
 
-.login-error {
-  display: none;
 
-  padding: 10px 12px;
+/* =========================================================
+   空データ
+========================================================= */
 
-  margin-bottom: 15px;
+.empty-state {
+  padding: 35px 20px;
 
-  background: #fff1f2;
+  background: #ffffff;
 
-  border:
-    1px solid #fecdd3;
+  border: 1px dashed #ccd3db;
+
+  border-radius: 10px;
+
+  color: #777777;
+
+  text-align: center;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   読み込み表示
+   ※「読み込み中...」を常時表示しない
+   必要な場合だけJS側から使用
+========================================================= */
+
+.loading {
+  padding: 20px;
+
+  color: #666666;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   送信完了
+========================================================= */
+
+.submit-success {
+  padding: 14px 16px;
+
+  margin-bottom: 16px;
+
+  background: #ecfdf5;
+
+  border: 1px solid #a7f3d0;
 
   border-radius: 8px;
 
-  color: #b91c1c;
+  color: #065f46;
 
-  font-size: 14px;
+  font-weight: 600;
 }
 
-/* ======================================
-   Responsive
-====================================== */
+
+/* =========================================================
+   期間・メタ情報
+========================================================= */
+
+.meta {
+  color: #6b7280;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   配信範囲
+========================================================= */
+
+.delivery-info {
+  margin-top: 6px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   モーダル
+========================================================= */
+
+.modal-overlay {
+  position: fixed;
+
+  z-index: 2000;
+
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(0, 0, 0, 0.4);
+}
+
+.modal {
+  width: 600px;
+
+  max-width: 100%;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 24px;
+
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 15px 50px
+    rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  font-size: 21px;
+}
+
+
+/* =========================================================
+   モーダル閉じる
+========================================================= */
+
+.modal-close {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background: #f1f3f5;
+
+  color: #333333;
+
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: #e5e8ec;
+}
+
+
+/* =========================================================
+   ページ内戻るエリア
+========================================================= */
+
+.page-actions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   ボタン内アイコン
+========================================================= */
+
+.page-actions .material-symbols-rounded,
+.primary-button .material-symbols-rounded,
+.secondary-button .material-symbols-rounded,
+.danger-button .material-symbols-rounded,
+.document-open .material-symbols-rounded {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   セパレーター
+========================================================= */
+
+hr {
+  border: 0;
+
+  border-top: 1px solid #e1e5ea;
+
+  margin: 18px 0;
+}
+
+
+/* =========================================================
+   PC用：リンクを勝手にボタン化しない
+========================================================= */
+
+.portal-page a:not(
+  .primary-button
+):not(
+  .secondary-button
+):not(
+  .danger-button
+):not(
+  .document-open
+):not(
+  .portal-nav-item
+):not(
+  .notice-title
+):not(
+  .text-link
+) {
+  color: #2563eb;
+
+  text-decoration: none;
+}
+
+.portal-page a:not(
+  .primary-button
+):not(
+  .secondary-button
+):not(
+  .danger-button
+):not(
+  .document-open
+):not(
+  .portal-nav-item
+):not(
+  .notice-title
+):not(
+  .text-link
+):hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   レスポンシブ
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .portal-sidebar {
+    width: 230px;
+  }
+
+  .portal-main {
+    margin-left: 230px;
+  }
+
+  .sidebar-collapsed .portal-main {
+    margin-left: 72px;
+  }
+
+  .portal-page {
+    padding: 24px;
+  }
+
+  .distribution {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+}
+
 
 @media (max-width: 768px) {
+
+  /* ------------------------------
+     サイドバー
+  ------------------------------ */
 
   .portal-sidebar {
     width: 250px;
@@ -803,10 +2018,30 @@ label {
       translateX(0);
   }
 
+
+  /* ------------------------------
+     閉じる状態をスマホでは無効化
+     → 左から開閉する方式
+  ------------------------------ */
+
+  .sidebar-collapsed .portal-sidebar {
+    width: 250px;
+  }
+
+
+  /* ------------------------------
+     メイン
+  ------------------------------ */
+
   .portal-main,
   .sidebar-collapsed .portal-main {
     margin-left: 0;
   }
+
+
+  /* ------------------------------
+     モバイルヘッダー
+  ------------------------------ */
 
   .portal-mobile-header {
     position: sticky;
@@ -825,29 +2060,22 @@ label {
 
     padding: 0 15px;
 
-    background: #fff;
+    background: #ffffff;
 
     border-bottom:
-      1px solid #e2e5e9;
+      1px solid #e1e5ea;
 
-    font-weight: 700;
+    color: #222222;
 
     font-size: 14px;
+
+    font-weight: 700;
   }
 
-  .portal-mobile-menu {
-    width: 40px;
-    height: 40px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 0;
-    border-radius: 8px;
-
-    background: #f1f3f5;
-  }
+  /* ------------------------------
+     オーバーレイ
+  ------------------------------ */
 
   .portal-overlay {
     display: none;
@@ -859,28 +2087,143 @@ label {
     inset: 0;
 
     background:
-      rgba(0,0,0,.35);
+      rgba(0, 0, 0, 0.35);
   }
 
   .mobile-sidebar-open .portal-overlay {
     display: block;
   }
 
+
+  /* ------------------------------
+     ページ
+  ------------------------------ */
+
   .portal-page {
     padding: 18px;
+  }
+
+
+  /* ------------------------------
+     タイトル
+  ------------------------------ */
+
+  .page-title {
+    font-size: 23px;
+
+    margin-bottom: 18px;
+  }
+
+
+  /* ------------------------------
+     ログイン
+  ------------------------------ */
+
+  .login-page {
+    padding: 18px;
+  }
+
+  .login-box {
+    width: 100%;
+
+    padding: 28px 22px;
+  }
+
+
+  /* ------------------------------
+     文書
+  ------------------------------ */
+
+  .document-row {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .document-open {
+    width: 100%;
+  }
+
+
+  /* ------------------------------
+     テスト
+  ------------------------------ */
+
+  .test-list-item {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .test-list-item .primary-button,
+  .test-list-item .secondary-button {
+    width: 100%;
+  }
+
+
+  /* ------------------------------
+     カレンダー
+  ------------------------------ */
+
+  .calendar-wrap {
+    overflow-x: auto;
+  }
+
+  .calendar {
+    min-width: 800px;
   }
 
   .calendar-grid {
     min-width: 700px;
   }
 
-  .calendar-wrap {
-    overflow-x: auto;
+
+  /* ------------------------------
+     配分
+  ------------------------------ */
+
+  .distribution {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .portal-page {
+    padding: 14px;
   }
 
-  .document-row,
-  .test-list-item {
-    align-items: flex-start;
+  .card {
+    padding: 16px;
+  }
+
+  .login-box {
+    padding: 24px 18px;
+  }
+
+  .login-logo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .login-box h1 {
+    font-size: 22px;
+  }
+
+  .distribution {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .calendar-range-filter {
+    align-items: stretch;
+
     flex-direction: column;
+  }
+
+  .calendar-range-filter input {
+    width: 100%;
   }
 }
