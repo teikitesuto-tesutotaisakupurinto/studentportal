@@ -5,308 +5,449 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="theme-color" content="#173b70">
-  <meta
-    name="description"
-    content="定期テスト対策プリント運営事務局のログインページ"
-  >
-
   <title>ログイン | 定期テスト対策プリント運営事務局</title>
 
-  <link rel="stylesheet" href="./css/style.css">
-
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  <meta
+    name="description"
+    content="Student Portalのログインページ"
   >
 
   <style>
+    :root {
+      color-scheme: light;
+      font-family:
+        Inter,
+        "Noto Sans JP",
+        "Yu Gothic UI",
+        sans-serif;
+      background: #f3f6fc;
+      color: #172033;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px 16px;
+      background:
+        radial-gradient(
+          circle at top left,
+          #dce9ff 0,
+          transparent 38%
+        ),
+        #f3f6fc;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      padding: 36px;
+      background: #fff;
+      border: 1px solid #e5eaf3;
+      border-radius: 22px;
+      box-shadow: 0 18px 55px rgba(35, 57, 100, .10);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 15px;
+      color: white;
+      background: #315efb;
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .brand-name {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .brand-subtitle {
+      margin: 4px 0 0;
+      color: #748097;
+      font-size: 12px;
+    }
+
+    h1 {
+      margin: 0 0 9px;
+      font-size: 27px;
+      letter-spacing: -.8px;
+    }
+
+    .description {
+      margin: 0 0 27px;
+      color: #69758b;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border: 1px solid #dce2ed;
+      border-radius: 11px;
+      outline: none;
+      background: #fff;
+      color: #172033;
+      font: inherit;
+      font-size: 14px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    input:focus {
+      border-color: #315efb;
+      box-shadow: 0 0 0 3px rgba(49, 94, 251, .12);
+    }
+
+    button {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 11px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background .15s, transform .15s;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid #93b4ff;
+      outline-offset: 3px;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: .65;
+    }
+
+    .primary-button {
+      margin-top: 5px;
+      color: white;
+      background: #315efb;
+    }
+
+    .primary-button:hover:not(:disabled) {
+      background: #244bd6;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 22px 0;
+      color: #929bad;
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: #e8ebf2;
+    }
+
+    .google-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #dce2ed;
+      color: #263249;
+      background: #fff;
+    }
+
+    .google-button:hover:not(:disabled) {
+      background: #f7f9fc;
+    }
+
+    .google-g {
+      font-size: 19px;
+      font-weight: 800;
+      color: #4285f4;
+    }
+
+    .links {
+      display: flex;
+      justify-content: center;
+      margin-top: 23px;
+      font-size: 13px;
+    }
+
+    a {
+      color: #315efb;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .message {
+      padding: 12px 14px;
+      margin-bottom: 17px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .error-message {
+      border: 1px solid #fecaca;
+      color: #b42318;
+      background: #fff1f0;
+    }
+
+    .success-message {
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      background: #f0fdf4;
+    }
+
+    .status-message {
+      min-height: 20px;
+      margin: 12px 0 0;
+      color: #667085;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .footer {
+      margin-top: 26px;
+      color: #8993a5;
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
     [hidden] {
       display: none !important;
     }
 
-    .login-error {
-      display: block;
-      margin-bottom: 16px;
-      padding: 12px;
-      border: 1px solid #fecaca;
-      border-radius: 8px;
-      background: #fef2f2;
-      color: #b91c1c;
-      font-size: 13px;
-      line-height: 1.7;
-    }
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 27px 22px;
+        border-radius: 18px;
+      }
 
-    .login-error:empty {
-      display: none;
-    }
-
-    .login-submit:disabled,
-    .google-button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
-
-    .login-forgot {
-      display: block;
-      margin-top: 18px;
-      color: #2563eb;
-      font-size: 13px;
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .login-forgot:hover {
-      text-decoration: underline;
-    }
-
-    .login-footer {
-      margin-top: 24px;
-      color: #64748b;
-      font-size: 11px;
-      line-height: 1.8;
-      text-align: center;
-    }
-
-    .login-status {
-      min-height: 20px;
-      margin-top: 12px;
-      color: #475569;
-      font-size: 13px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    .login-box {
-      width: 440px;
-      max-width: 100%;
+      h1 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="login-container">
-    <main class="login-box">
+  <main class="login-card">
+    <header class="brand">
+      <div class="brand-icon" aria-hidden="true">S</div>
 
-      <img
-        class="login-logo"
-        src="./assets/logo.svg"
-        alt=""
-        onerror="this.style.display='none'"
-      >
+      <div>
+        <p class="brand-name">Student Portal</p>
+        <p class="brand-subtitle">学習・学校情報ポータル</p>
+      </div>
+    </header>
 
-      <h1>ログイン</h1>
+    <h1>ログイン</h1>
 
-      <p class="login-site-name">
-        定期テスト対策プリント運営事務局
-      </p>
+    <p class="description">
+      登録したアカウントでログインしてください。
+    </p>
 
-      <div
-        id="loginError"
-        class="login-error"
-        role="alert"
-        aria-live="assertive"
-        hidden
-      ></div>
+    <div
+      id="loginError"
+      class="message error-message"
+      role="alert"
+      aria-live="assertive"
+      hidden
+    ></div>
 
-      <div
-        id="loginSuccess"
-        class="status-box success"
-        role="status"
-        aria-live="polite"
-        hidden
-      ></div>
+    <div
+      id="loginSuccess"
+      class="message success-message"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
 
-      <form id="loginForm">
+    <form id="loginForm">
+      <div class="field">
         <label for="email">メールアドレス</label>
 
         <input
           id="email"
           name="email"
           type="email"
-          autocomplete="username"
           placeholder="example@example.com"
+          autocomplete="username"
           required
         >
+      </div>
 
+      <div class="field">
         <label for="password">パスワード</label>
 
         <input
           id="password"
           name="password"
           type="password"
-          autocomplete="current-password"
           placeholder="パスワードを入力"
+          autocomplete="current-password"
           required
         >
-
-        <button
-          type="submit"
-          id="loginButton"
-          class="login-submit"
-        >
-          <span
-            class="material-symbols-rounded"
-            aria-hidden="true"
-          >login</span>
-
-          <span id="loginButtonText">ログイン</span>
-        </button>
-      </form>
-
-      <a
-        href="#"
-        id="forgotPassword"
-        class="login-forgot"
-      >
-        パスワードを忘れた場合
-      </a>
-
-      <div class="login-divider">または</div>
+      </div>
 
       <button
-        type="button"
-        id="googleLoginButton"
-        class="google-button"
+        id="loginButton"
+        class="primary-button"
+        type="submit"
       >
-        <img
-          class="google-logo"
-          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-          alt=""
-        >
-
-        <span>Googleでログイン</span>
+        <span id="loginButtonText">ログイン</span>
       </button>
+    </form>
 
-      <p
-        id="loginStatus"
-        class="login-status"
-        role="status"
-        aria-live="polite"
-      ></p>
+    <p id="loginStatus" class="status-message" aria-live="polite"></p>
 
-      <footer class="login-footer">
-        このページは定期テスト対策プリント運営事務局の
-        利用者向けポータルサイトです。
-      </footer>
+    <div class="divider">または</div>
 
-    </main>
-  </div>
+    <button
+      id="googleLoginButton"
+      class="google-button"
+      type="button"
+    >
+      <span class="google-g" aria-hidden="true">G</span>
+      Googleアカウントでログイン
+    </button>
 
-  <!-- 既存の認証処理 -->
-  <script type="module" src="./js/auth.js"></script>
+    <div class="links">
+      <a href="#" id="forgotPasswordLink">
+        パスワードを忘れた場合
+      </a>
+    </div>
 
-  <!-- パスワード再設定と画面メッセージ -->
+    <footer class="footer">
+      Student Portal<br>
+      安全なアカウント管理のため、パスワードを他人と共有しないでください。
+    </footer>
+  </main>
+
   <script type="module">
     import {
       auth,
       sendPasswordResetEmail
     } from "./js/firebase.js";
 
-    const form = document.getElementById("loginForm");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const loginButton = document.getElementById("loginButton");
-    const loginButtonText = document.getElementById("loginButtonText");
-    const googleButton = document.getElementById("googleLoginButton");
-    const forgotPassword = document.getElementById("forgotPassword");
-    const errorBox = document.getElementById("loginError");
-    const successBox = document.getElementById("loginSuccess");
-    const statusBox = document.getElementById("loginStatus");
+    import "./js/auth.js";
+
+    const forgotPasswordLink =
+      document.getElementById("forgotPasswordLink");
+
+    const emailInput =
+      document.getElementById("email");
+
+    const errorElement =
+      document.getElementById("loginError");
+
+    const successElement =
+      document.getElementById("loginSuccess");
+
+    const statusElement =
+      document.getElementById("loginStatus");
 
     function showError(message) {
-      errorBox.textContent = message;
-      errorBox.hidden = false;
-      successBox.hidden = true;
-      statusBox.textContent = "";
+      errorElement.textContent = message;
+      errorElement.hidden = false;
+      successElement.hidden = true;
+      statusElement.textContent = "";
     }
 
     function showSuccess(message) {
-      successBox.textContent = message;
-      successBox.hidden = false;
-      errorBox.hidden = true;
-      statusBox.textContent = "";
+      successElement.textContent = message;
+      successElement.hidden = false;
+      errorElement.hidden = true;
+      statusElement.textContent = "";
     }
 
-    function clearMessages() {
-      errorBox.textContent = "";
-      errorBox.hidden = true;
-      successBox.textContent = "";
-      successBox.hidden = true;
-      statusBox.textContent = "";
-    }
-
-    form.addEventListener("submit", () => {
-      clearMessages();
-
-      loginButton.disabled = true;
-      googleButton.disabled = true;
-      loginButtonText.textContent = "ログイン中...";
-      statusBox.textContent = "認証しています...";
-    });
-
-    googleButton.addEventListener("click", () => {
-      clearMessages();
-      loginButton.disabled = true;
-      googleButton.disabled = true;
-      statusBox.textContent = "Googleアカウントを確認しています...";
-    });
-
-    forgotPassword.addEventListener("click", async event => {
+    forgotPasswordLink.addEventListener("click", async event => {
       event.preventDefault();
-      clearMessages();
 
       const email = emailInput.value.trim();
 
       if (!email) {
-        showError(
-          "パスワードを再設定するため、先にメールアドレスを入力してください。"
-        );
         emailInput.focus();
+        showError(
+          "先にメールアドレスを入力してください。"
+        );
         return;
       }
 
-      forgotPassword.style.pointerEvents = "none";
-      forgotPassword.style.opacity = "0.6";
-      statusBox.textContent = "再設定メールを送信しています...";
+      forgotPasswordLink.style.pointerEvents = "none";
+      forgotPasswordLink.setAttribute("aria-disabled", "true");
+      statusElement.textContent = "再設定メールを送信しています...";
+      errorElement.hidden = true;
+      successElement.hidden = true;
 
       try {
         await sendPasswordResetEmail(auth, email);
 
         showSuccess(
-          "再設定用のメールを送信しました。メールボックスをご確認ください。"
+          "パスワード再設定メールを送信しました。メールを確認してください。"
         );
       } catch (error) {
         console.error("パスワード再設定エラー:", error);
 
+        let message =
+          "メールを送信できませんでした。入力内容とFirebaseの設定を確認してください。";
+
         if (error.code === "auth/invalid-email") {
-          showError("メールアドレスの形式を確認してください。");
-        } else if (error.code === "auth/too-many-requests") {
-          showError(
-            "リクエストが多すぎます。時間をおいてから再度お試しください。"
-          );
-        } else {
-          showError(
-            "再設定メールを送信できませんでした。Firebase Authenticationの設定と通信状態を確認してください。"
-          );
+          message = "メールアドレスの形式を確認してください。";
+        } else if (
+          error.code === "auth/network-request-failed"
+        ) {
+          message = "通信に失敗しました。ネットワークを確認してください。";
+        } else if (
+          error.code === "auth/too-many-requests"
+        ) {
+          message = "試行回数が多すぎます。しばらく待ってください。";
         }
+
+        showError(message);
       } finally {
-        forgotPassword.style.pointerEvents = "";
-        forgotPassword.style.opacity = "";
-        statusBox.textContent = "";
+        forgotPasswordLink.style.pointerEvents = "";
+        forgotPasswordLink.removeAttribute("aria-disabled");
       }
-    });
-
-    // 認証処理側でログインボタンを無効化した場合に備え、
-    // ページを離れずエラーになった場合は操作を再開できるようにする。
-    window.addEventListener("pageshow", () => {
-      loginButton.disabled = false;
-      googleButton.disabled = false;
-      loginButtonText.textContent = "ログイン";
-    });
-
-    window.addEventListener("error", event => {
-      console.error("ログインページエラー:", event.error);
     });
   </script>
 </body>
