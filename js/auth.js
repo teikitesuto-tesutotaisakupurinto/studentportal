@@ -1,330 +1,528 @@
 
-/**
- * 認証・ユーザー権限管理
- * Firebase 共通設定: ./firebase.js
- */
-
 import {
   auth,
   db,
-  googleProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
   doc,
-  getDoc
+  getDoc,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  GoogleAuthProvider,
+  signOut
 } from "./firebase.js";
 
-// アプリのルート URL
-// js/auth.js から1階層上をアプリのルートとする
-const APP_BASE_URL = new URL("../", import.meta.url);
+const ROOT_URL = new URL("../", import.meta.url);
 
-function appUrl(path) {
-  return new URL(path.replace(/^\/+/, ""), APP_BASE_URL).href;
+function pageUrl(path) {
+  return new URL(path, ROOT_URL).href;
 }
 
-// エラーメッセージの表示
-function showError(message) {
-  const area = document.getElementById("loginError");
+function getDashboardUrl(role) {
+  return pageUrl(
+    role === "admin"
+      ? "dashboard/admin.html"
+      : "dashboard/student.html"
+  );
+}
 
-  if (area) {
-    area.textContent = message;
-    area.style.display = "block";
-    return;
+function getLoginUrl() {
+  return pageUrl("login.html");
+}
+
+function getFirebaseErrorMessage(error) {
+  switch (error?.code) {
+    case "auth/invalid-email":
+      return "メールアドレスの形式を確認してください。";
+
+    case "auth/user-disabled":
+      return "このアカウントは無効になっています。管理者にお問い合わせください。";
+
+    case "auth/user-not-found":
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "メールアドレスまたはパスワードが正しくありません。";
+
+    case "auth/email-already-in-use":
+      return "このメールアドレスはすでに登録されています。";
+
+    case "auth/weak-password":
+      return "パスワードの強度が不足しています。";
+
+    case "auth/popup-closed-by-user":
+      return "ログイン画面が閉じられました。もう一度お試しください。";
+
+    case "auth/popup-blocked":
+      return "ポップアップがブロックされました。ブラウザの設定を確認してください。";
+
+    case "auth/network-request-failed":
+      return "通信に失敗しました。インターネット接続を確認してください。";
+
+    case "auth/too-many-requests":
+      return "試行回数が多すぎます。しばらく待ってから再度お試しください。";
+
+    default:
+      return "ログインに失敗しました。Firebaseの設定と通信状態を確認してください。";
   }
-
-  alert(message);
 }
 
-// エラー表示を消す
-function clearError() {
-  const area = document.getElementById("loginError");
-
-  if (area) {
-    area.textContent = "";
-    area.style.display = "none";
-  }
-}
-
-// Firebase Authentication のエラーを日本語化
-function getAuthErrorMessage(error) {
-  const messages = {
-    "auth/invalid-email":
-      "メールアドレスの形式が正しくありません。",
-    "auth/user-disabled":
-      "このアカウントは無効化されています。",
-    "auth/user-not-found":
-      "アカウントが見つかりません。",
-    "auth/wrong-password":
-      "メールアドレスまたはパスワードが正しくありません。",
-    "auth/invalid-credential":
-      "メールアドレスまたはパスワードが正しくありません。",
-    "auth/too-many-requests":
-      "ログインの試行回数が多すぎます。時間をおいて再試行してください。",
-    "auth/network-request-failed":
-      "ネットワークエラーです。接続を確認してください。",
-    "auth/popup-closed-by-user":
-      "Google ログインがキャンセルされました。",
-    "auth/popup-blocked":
-      "ポップアップがブロックされました。ブラウザの設定を確認してください。",
-    "auth/unauthorized-domain":
-      "このサイトのドメインが Firebase Authentication で承認されていません。",
-    "auth/operation-not-allowed":
-      "このログイン方法は Firebase で有効になっていません。"
-  };
-
-  return messages[error?.code] ||
-    "処理に失敗しました。設定やネットワークを確認してください。";
-}
-
-// Firestore からユーザー情報を取得
-export async function getUserData(user) {
-  if (!user?.uid) {
+/**
+ * Firestoreからログインユーザーのプロフィールを取得する。
+ *
+ * users/{uid} が存在しない場合は生徒として扱う。
+ * 管理者権限はFirestore上のroleフィールドで判定する。
+ */
+async function getUserData(user) {
+  if (!user) {
     return null;
   }
 
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const snapshot = await getDoc(userRef);
+  const userRef = doc(db, "users", user.uid);
+  const snapshot = await getDoc(userRef);
 
-    if (!snapshot.exists()) {
-      return null;
-    }
-
+  if (!snapshot.exists()) {
     return {
-      id: user.uid,
       uid: user.uid,
-      ...snapshot.data()
+      email: user.email || "",
+      displayName: user.displayName || "",
+      role: "student"
     };
-  } catch (error) {
-    console.error("ユーザー情報の取得に失敗:", error);
-    throw error;
   }
+
+  const data = snapshot.data();
+
+  return {
+    ...data,
+    uid: user.uid,
+    email: data.email || user.email || "",
+    displayName:
+      data.displayName ||
+      data.name ||
+      user.displayName ||
+      "",
+    role: data.role === "admin" ? "admin" : "student"
+  };
 }
 
-// ユーザーの役割を取得
-export async function getUserRole(user) {
-  const data = await getUserData(user);
-  return data?.role || null;
-}
-
-// 権限を確認して適切な画面へ移動
-async function redirectUser(user) {
-  clearError();
-
-  try {
-    const data = await getUserData(user);
-
-    if (!data) {
-      await signOut(auth);
-      showError(
-        "ユーザー情報が登録されていません。管理者に登録を依頼してください。"
-      );
-      return;
-    }
-
-    if (data.role === "admin") {
-      location.replace(appUrl("dashboard/admin.html"));
-      return;
-    }
-
-    if (data.role === "student") {
-      location.replace(appUrl("dashboard/student.html"));
-      return;
-    }
-
-    await signOut(auth);
-
-    showError(
-      "アカウントの権限が正しく設定されていません。管理者に確認してください。"
-    );
-  } catch (error) {
-    console.error("ログイン後の処理に失敗:", error);
-
-    try {
-      await signOut(auth);
-    } catch (signOutError) {
-      console.error("サインアウトに失敗:", signOutError);
-    }
-
-    showError(
-      "ユーザー情報を確認できませんでした。Firestore の設定と通信状態を確認してください。"
-    );
+/**
+ * ユーザーのロールを取得する。
+ */
+async function getUserRole(user = auth.currentUser) {
+  if (!user) {
+    return null;
   }
+
+  const profile = await getUserData(user);
+  return profile?.role || "student";
 }
 
-// メールアドレス・パスワードでログイン
-window.login = async function () {
-  clearError();
-
-  const emailElement = document.getElementById("email");
-  const passwordElement = document.getElementById("password");
-  const button = document.getElementById("loginButton");
-
-  const email = emailElement?.value.trim();
-  const password = passwordElement?.value;
-
-  if (!email || !password) {
-    showError("メールアドレスとパスワードを入力してください。");
+/**
+ * ログイン済みユーザーを適切なダッシュボードへ移動させる。
+ */
+async function redirectUser(user = auth.currentUser) {
+  if (!user) {
+    location.replace(getLoginUrl());
     return;
   }
 
   try {
-    if (button) {
-      button.disabled = true;
-      button.textContent = "ログイン中...";
-    }
+    const role = await getUserRole(user);
 
-    const result = await signInWithEmailAndPassword(
+    location.replace(getDashboardUrl(role));
+  } catch (error) {
+    console.error("ユーザー情報の取得に失敗:", error);
+
+    showLoginError(
+      "ユーザー情報を取得できませんでした。通信状態とFirestoreの設定を確認してください。"
+    );
+  }
+}
+
+/**
+ * ログイン画面にエラーを表示する。
+ */
+function showLoginError(message) {
+  const errorElement = document.getElementById("loginError");
+
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.hidden = false;
+  } else {
+    window.alert(message);
+  }
+
+  const successElement = document.getElementById("loginSuccess");
+
+  if (successElement) {
+    successElement.textContent = "";
+    successElement.hidden = true;
+  }
+
+  const statusElement = document.getElementById("loginStatus");
+
+  if (statusElement) {
+    statusElement.textContent = "";
+  }
+}
+
+/**
+ * ログイン画面のメッセージを消す。
+ */
+function clearLoginMessages() {
+  const errorElement = document.getElementById("loginError");
+  const successElement = document.getElementById("loginSuccess");
+  const statusElement = document.getElementById("loginStatus");
+
+  if (errorElement) {
+    errorElement.textContent = "";
+    errorElement.hidden = true;
+  }
+
+  if (successElement) {
+    successElement.textContent = "";
+    successElement.hidden = true;
+  }
+
+  if (statusElement) {
+    statusElement.textContent = "";
+  }
+}
+
+/**
+ * ログインボタンの状態を変更する。
+ */
+function setLoginLoading(loading, message = "") {
+  const loginButton = document.getElementById("loginButton");
+  const googleButton = document.getElementById("googleLoginButton");
+  const loginButtonText = document.getElementById("loginButtonText");
+  const statusElement = document.getElementById("loginStatus");
+
+  if (loginButton) {
+    loginButton.disabled = loading;
+  }
+
+  if (googleButton) {
+    googleButton.disabled = loading;
+  }
+
+  if (loginButtonText) {
+    loginButtonText.textContent = loading
+      ? "ログイン中..."
+      : "ログイン";
+  }
+
+  if (statusElement) {
+    statusElement.textContent = message;
+  }
+}
+
+/**
+ * メールアドレスとパスワードによるログイン。
+ */
+async function loginWithEmail(email, password) {
+  clearLoginMessages();
+  setLoginLoading(true, "ログインしています...");
+
+  try {
+    const credential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
 
-    await redirectUser(result.user);
+    await redirectUser(credential.user);
   } catch (error) {
     console.error("メールログインエラー:", error);
-    showError(getAuthErrorMessage(error));
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = "ログイン";
-    }
+
+    setLoginLoading(false);
+    showLoginError(getFirebaseErrorMessage(error));
   }
-};
+}
 
-// Google アカウントでログイン
-window.googleLogin = async function () {
-  clearError();
+/**
+ * Googleアカウントによるログイン。
+ */
+async function loginWithGoogle() {
+  clearLoginMessages();
+  setLoginLoading(true, "Googleアカウントを確認しています...");
 
-  const button = document.getElementById("googleLoginButton");
+  const provider = new GoogleAuthProvider();
+
+  provider.setCustomParameters({
+    prompt: "select_account"
+  });
 
   try {
-    if (button) {
-      button.disabled = true;
-    }
+    const credential = await signInWithPopup(auth, provider);
 
-    const result = await signInWithPopup(auth, googleProvider);
-    await redirectUser(result.user);
+    await redirectUser(credential.user);
   } catch (error) {
-    console.error("Google ログインエラー:", error);
-    showError(getAuthErrorMessage(error));
-  } finally {
-    if (button) {
-      button.disabled = false;
-    }
-  }
-};
+    console.error("Googleログインエラー:", error);
 
-// ログアウト
-window.logout = async function () {
+    if (
+      error?.code === "auth/popup-blocked" ||
+      error?.code === "auth/operation-not-supported-in-this-environment"
+    ) {
+      try {
+        await signInWithRedirect(auth, provider);
+        return;
+      } catch (redirectError) {
+        console.error(
+          "Googleリダイレクトログインエラー:",
+          redirectError
+        );
+
+        setLoginLoading(false);
+        showLoginError(
+          getFirebaseErrorMessage(redirectError)
+        );
+        return;
+      }
+    }
+
+    setLoginLoading(false);
+    showLoginError(getFirebaseErrorMessage(error));
+  }
+}
+
+/**
+ * ログアウト。
+ */
+async function logout() {
   try {
     await signOut(auth);
-    location.replace(appUrl("index.html"));
+    location.replace(getLoginUrl());
   } catch (error) {
     console.error("ログアウトエラー:", error);
-    alert("ログアウトできませんでした。再度お試しください。");
+
+    window.alert(
+      "ログアウトに失敗しました。通信状態を確認してください。"
+    );
   }
+}
+
+/**
+ * HTML側から呼び出せるように公開する。
+ */
+window.login = async function () {
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  if (!emailInput || !passwordInput) {
+    showLoginError("ログインフォームが見つかりません。");
+    return;
+  }
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    showLoginError("メールアドレスとパスワードを入力してください。");
+    return;
+  }
+
+  await loginWithEmail(email, password);
 };
 
-// ログイン画面のフォーム送信
-const loginForm = document.getElementById("loginForm");
+window.googleLogin = loginWithGoogle;
+window.logout = logout;
 
-if (loginForm) {
-  loginForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-    window.login();
-  });
-}
+/**
+ * ログインフォームのイベントを登録する。
+ */
+function setupLoginForm() {
+  const form = document.getElementById("loginForm");
+  const googleButton = document.getElementById("googleLoginButton");
 
-// Google ログインボタン
-const googleButton = document.getElementById("googleLoginButton");
+  if (form && !form.dataset.authInitialized) {
+    form.dataset.authInitialized = "true";
 
-if (googleButton) {
-  googleButton.addEventListener("click", function (event) {
-    event.preventDefault();
-    window.googleLogin();
-  });
-}
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
 
-// ログイン状態の監視
-onAuthStateChanged(auth, function (user) {
-  if (user) {
-    console.log("ログイン中:", user.email);
-  }
-});
+      const email = document.getElementById("email")?.value.trim();
+      const password = document.getElementById("password")?.value;
 
-// ログイン必須ページ用
-export function requireLogin(callback) {
-  let finished = false;
-
-  const unsubscribe = onAuthStateChanged(auth, async function (user) {
-    if (finished) return;
-
-    if (!user) {
-      finished = true;
-      unsubscribe();
-      location.replace(appUrl("index.html"));
-      return;
-    }
-
-    try {
-      const data = await getUserData(user);
-
-      if (!data || !["admin", "student"].includes(data.role)) {
-        finished = true;
-        unsubscribe();
-        await signOut(auth);
-        location.replace(appUrl("index.html"));
+      if (!email || !password) {
+        showLoginError(
+          "メールアドレスとパスワードを入力してください。"
+        );
         return;
       }
 
-      if (!finished) {
-        finished = true;
-        unsubscribe();
+      await loginWithEmail(email, password);
+    });
+  }
+
+  if (googleButton && !googleButton.dataset.authInitialized) {
+    googleButton.dataset.authInitialized = "true";
+
+    googleButton.addEventListener("click", async () => {
+      await loginWithGoogle();
+    });
+  }
+}
+
+/**
+ * ページごとの認証保護。
+ */
+function requireRole(requiredRole, callback) {
+  let unsubscribe = () => {};
+  let completed = false;
+
+  const finish = () => {
+    if (completed) return;
+
+    completed = true;
+    unsubscribe();
+  };
+
+  unsubscribe = onAuthStateChanged(
+    auth,
+    async user => {
+      if (completed) return;
+
+      if (!user) {
+        finish();
+        location.replace(getLoginUrl());
+        return;
+      }
+
+      try {
+        const profile = await getUserData(user);
+
+        if (completed) return;
+
+        if (
+          requiredRole &&
+          profile.role !== requiredRole
+        ) {
+          finish();
+
+          location.replace(
+            getDashboardUrl(profile.role)
+          );
+
+          return;
+        }
+
+        finish();
 
         if (typeof callback === "function") {
-          callback(user, data);
+          callback({
+            user,
+            profile
+          });
         }
+      } catch (error) {
+        console.error("ページ認証エラー:", error);
+        finish();
+
+        document.body.innerHTML = `
+          <main style="
+            max-width:640px;
+            margin:60px auto;
+            padding:24px;
+            font-family:sans-serif;
+            line-height:1.8;
+          ">
+            <h1>認証エラー</h1>
+            <p>
+              ユーザー情報を取得できませんでした。
+              通信状態とFirestoreのセキュリティルールを確認してください。
+            </p>
+            <button onclick="location.reload()">
+              再読み込み
+            </button>
+          </main>
+        `;
+      }
+    },
+    error => {
+      console.error("認証状態の確認エラー:", error);
+
+      finish();
+
+      document.body.innerHTML = `
+        <main style="
+          max-width:640px;
+          margin:60px auto;
+          padding:24px;
+          font-family:sans-serif;
+          line-height:1.8;
+        ">
+          <h1>認証を確認できません</h1>
+          <p>通信状態とFirebaseの設定を確認してください。</p>
+          <button onclick="location.reload()">
+            再読み込み
+          </button>
+        </main>
+      `;
+    }
+  );
+
+  return () => finish();
+}
+
+function requireLogin(callback) {
+  return requireRole(null, callback);
+}
+
+function requireAdmin(callback) {
+  return requireRole("admin", callback);
+}
+
+function requireStudent(callback) {
+  return requireRole("student", callback);
+}
+
+/**
+ * ログイン状態の監視とリダイレクト処理。
+ */
+async function initializeAuth() {
+  const isLoginPage =
+    /\/login\.html$/i.test(location.pathname);
+
+  if (isLoginPage) {
+    setupLoginForm();
+
+    try {
+      const redirectResult = await getRedirectResult(auth);
+
+      if (redirectResult?.user) {
+        await redirectUser(redirectResult.user);
+        return;
       }
     } catch (error) {
-      console.error("ログイン確認エラー:", error);
+      console.error("ログインリダイレクト結果エラー:", error);
 
-      if (!finished) {
-        finished = true;
-        unsubscribe();
-        alert("ユーザー情報を取得できません。通信状態と権限設定を確認してください。");
-        location.replace(appUrl("index.html"));
+      showLoginError(getFirebaseErrorMessage(error));
+      setLoginLoading(false);
+    }
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) return;
+
+      try {
+        await redirectUser(user);
+      } catch (error) {
+        console.error("ログイン後の遷移エラー:", error);
       }
-    }
-  });
+    });
+  }
 }
 
-// 管理者専用ページ用
-export function requireAdmin(callback) {
-  return requireLogin(function (user, data) {
-    if (data.role !== "admin") {
-      location.replace(appUrl("dashboard/student.html"));
-      return;
-    }
+initializeAuth();
 
-    if (typeof callback === "function") {
-      callback(user, data);
-    }
-  });
-}
-
-// 生徒専用ページ用
-export function requireStudent(callback) {
-  return requireLogin(function (user, data) {
-    if (data.role !== "student") {
-      location.replace(appUrl("dashboard/admin.html"));
-      return;
-    }
-
-    if (typeof callback === "function") {
-      callback(user, data);
-    }
-  });
-}
+export {
+  getUserData,
+  getUserRole,
+  redirectUser,
+  loginWithEmail,
+  loginWithGoogle,
+  logout,
+  requireLogin,
+  requireAdmin,
+  requireStudent
+};
