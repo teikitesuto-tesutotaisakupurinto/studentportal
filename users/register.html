@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>ユーザー登録 | Student Portal</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    .register-wrapper {
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      padding: 24px 16px;
+    }
+
+    .register-card {
+      width: 100%;
+      max-width: 480px;
+      padding: 30px;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 12px 40px rgb(15 23 42 / 8%);
+    }
+
+    .register-logo {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      margin-bottom: 18px;
+      place-items: center;
+      border-radius: 15px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .register-card h1 {
+      margin: 0 0 8px;
+      font-size: 1.7rem;
+    }
+
+    .register-description {
+      margin: 0 0 24px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    .register-form {
+      display: grid;
+      gap: 17px;
+    }
+
+    .register-form label {
+      display: grid;
+      gap: 7px;
+      font-size: .92rem;
+      font-weight: 600;
+    }
+
+    .register-form input {
+      width: 100%;
+      padding: 12px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+      font-weight: 400;
+    }
+
+    .register-form input:focus {
+      outline: 3px solid #bfdbfe;
+      border-color: #2563eb;
+    }
+
+    .register-hint {
+      margin: -9px 0 0;
+      color: #64748b;
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+
+    .register-button {
+      width: 100%;
+      padding: 13px;
+      border: 0;
+      border-radius: 10px;
+      background: #1d4ed8;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .register-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .register-status {
+      padding: 12px;
+      border-radius: 9px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: .9rem;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .register-status.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .register-status.success {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .register-links {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      font-size: .9rem;
+    }
+
+    .register-links a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    .register-links a:hover {
+      text-decoration: underline;
+    }
+
+    .register-security {
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: .8rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 480px) {
+      .register-card {
+        padding: 23px 19px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="register-wrapper">
+    <section class="register-card">
+      <div class="register-logo" aria-hidden="true">S</div>
+
+      <h1>アカウント登録</h1>
+      <p class="register-description">
+        Student Portal を利用するためのアカウントを作成します。
+      </p>
+
+      <form id="registerForm" class="register-form">
+        <label for="displayName">
+          表示名
+          <input
+            id="displayName"
+            name="displayName"
+            type="text"
+            autocomplete="name"
+            maxlength="100"
+            placeholder="例：山田 太郎"
+            required
+          >
+        </label>
+
+        <label for="email">
+          メールアドレス
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            maxlength="254"
+            placeholder="name@example.com"
+            required
+          >
+        </label>
+
+        <label for="password">
+          パスワード
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            placeholder="8文字以上"
+            required
+          >
+        </label>
+
+        <p class="register-hint">
+          パスワードは8文字以上で入力してください。
+        </p>
+
+        <label for="confirmPassword">
+          パスワード（確認）
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            maxlength="128"
+            placeholder="同じパスワードを再入力"
+            required
+          >
+        </label>
+
+        <div
+          id="registerStatus"
+          class="register-status"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></div>
+
+        <button id="registerButton" class="register-button" type="submit">
+          アカウントを作成
+        </button>
+      </form>
+
+      <div class="register-links">
+        <a href="../login.html">ログイン画面へ戻る</a>
+      </div>
+
+      <div class="register-security">
+        新規登録したアカウントには、生徒権限が設定されます。
+        管理者権限はこの登録画面から付与できません。
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import {
+      auth,
+      db,
+      doc,
+      getDoc,
+      setDoc,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      sendEmailVerification
+    } from "../js/firebase.js";
+
+    const form = document.getElementById("registerForm");
+    const displayNameInput = document.getElementById("displayName");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const registerButton = document.getElementById("registerButton");
+    const statusElement = document.getElementById("registerStatus");
+
+    let submitting = false;
+
+    function showStatus(message, type = "") {
+      statusElement.textContent = message;
+      statusElement.hidden = false;
+      statusElement.classList.remove("error", "success");
+
+      if (type) {
+        statusElement.classList.add(type);
+      }
+    }
+
+    function getErrorMessage(error) {
+      const messages = {
+        "auth/email-already-in-use":
+          "このメールアドレスはすでに登録されています。",
+        "auth/invalid-email":
+          "メールアドレスの形式を確認してください。",
+        "auth/weak-password":
+          "パスワードをより強固なものにしてください。",
+        "auth/network-request-failed":
+          "ネットワークに接続できません。通信状況を確認してください。",
+        "auth/too-many-requests":
+          "試行回数が多すぎます。しばらくしてから再度お試しください。",
+        "permission-denied":
+          "プロフィールを保存できません。Firestore Security Rulesを確認してください。"
+      };
+
+      return messages[error.code] ||
+        "登録に失敗しました。入力内容やFirebaseの設定を確認してください。";
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (submitting) return;
+
+      const displayName = displayNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      if (!displayName || !email || !password || !confirmPassword) {
+        showStatus("すべての項目を入力してください。", "error");
+        return;
+      }
+
+      if (password.length < 8) {
+        showStatus("パスワードは8文字以上にしてください。", "error");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showStatus("2つのパスワードが一致しません。", "error");
+        return;
+      }
+
+      submitting = true;
+      registerButton.disabled = true;
+      showStatus("アカウントを作成しています。");
+
+      let createdUser = null;
+
+      try {
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        createdUser = credential.user;
+
+        await updateProfile(createdUser, {
+          displayName
+        });
+
+        // 新規登録者には必ず生徒権限を設定する。
+        // クライアントから admin を指定できないようにする。
+        const profileRef = doc(db, "users", createdUser.uid);
+        const existingProfile = await getDoc(profileRef);
+
+        if (!existingProfile.exists()) {
+          await setDoc(profileRef, {
+            uid: createdUser.uid,
+            displayName,
+            name: displayName,
+            email: createdUser.email || email,
+            role: "student",
+            createdAt: new Date()
+          });
+        }
+
+        let verificationMessage = "";
+
+        try {
+          await sendEmailVerification(createdUser);
+          verificationMessage = " 確認メールを送信しました。メールをご確認ください。";
+        } catch (verificationError) {
+          console.warn("確認メールの送信に失敗しました:", verificationError);
+          verificationMessage =
+            " 確認メールは送信できませんでした。ログイン後に再送信してください。";
+        }
+
+        showStatus(
+          "アカウントを作成しました。" + verificationMessage +
+          " ログイン画面へ移動します。",
+          "success"
+        );
+
+        form.reset();
+
+        setTimeout(() => {
+          window.location.replace("../login.html");
+        }, 1800);
+
+      } catch (error) {
+        console.error("ユーザー登録に失敗しました:", error);
+
+        showStatus(getErrorMessage(error), "error");
+
+        // Authenticationのアカウント作成後にプロフィール保存が
+        // 失敗した場合、アカウント自体は残る可能性がある。
+        if (createdUser) {
+          showStatus(
+            "アカウントは作成された可能性がありますが、プロフィール保存が完了していません。" +
+            " 何度も登録を繰り返さず、管理者に確認してください。",
+            "error"
+          );
+        }
+      } finally {
+        submitting = false;
+        registerButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
