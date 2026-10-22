@@ -1,49 +1,869 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>カレンダー | 定期テスト対策ポータル</title>
-<link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>学校カレンダー | Student Portal</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .calendar-page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .calendar-header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .calendar-description {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .calendar-controls button,
+    .calendar-controls select {
+      padding: 10px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .calendar-controls .primary {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: white;
+    }
+
+    .calendar-month {
+      min-width: 150px;
+      margin: 0;
+      text-align: center;
+      font-size: 1.3rem;
+    }
+
+    .calendar-panel {
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .calendar-weekdays {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .calendar-weekday {
+      padding: 12px 4px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+
+    .calendar-weekday:first-child {
+      color: #dc2626;
+    }
+
+    .calendar-weekday:last-child {
+      color: #2563eb;
+    }
+
+    .calendar-day {
+      position: relative;
+      box-sizing: border-box;
+      min-width: 0;
+      min-height: 112px;
+      padding: 8px;
+      border: 0;
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .calendar-day:nth-child(7n) {
+      border-right: 0;
+    }
+
+    .calendar-day:hover {
+      background: #f8fafc;
+    }
+
+    .calendar-day.other-month {
+      background: #f8fafc;
+      color: #94a3b8;
+    }
+
+    .calendar-day.today {
+      background: #eff6ff;
+    }
+
+    .calendar-day.selected {
+      outline: 2px solid #2563eb;
+      outline-offset: -2px;
+      background: #dbeafe;
+    }
+
+    .calendar-day-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .calendar-day.today .calendar-day-number {
+      background: #1d4ed8;
+      color: white;
+    }
+
+    .calendar-day-events {
+      display: grid;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .calendar-event-chip {
+      overflow: hidden;
+      padding: 4px 6px;
+      border-radius: 5px;
+      background: #dbeafe;
+      color: #1e40af;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .calendar-event-chip.important {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .calendar-event-chip.activity {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .calendar-more {
+      color: #64748b;
+      font-size: 0.72rem;
+    }
+
+    .calendar-lower {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .calendar-section {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .calendar-section h2 {
+      margin: 0 0 16px;
+      font-size: 1.1rem;
+    }
+
+    .calendar-filter {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      font: inherit;
+    }
+
+    .calendar-event-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .calendar-event-card {
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+
+    .calendar-event-card h3 {
+      margin: 8px 0;
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+
+    .calendar-event-card p {
+      margin: 8px 0 0;
+      color: #475569;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .calendar-event-meta {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .calendar-tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .calendar-status {
+      padding: 18px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .calendar-status.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .calendar-count {
+      margin: 0 0 12px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 800px) {
+      .calendar-lower {
+        grid-template-columns: 1fr;
+      }
+
+      .calendar-day {
+        min-height: 85px;
+        padding: 4px;
+      }
+
+      .calendar-event-chip {
+        font-size: 0.65rem;
+        padding: 3px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .calendar-day {
+        min-height: 64px;
+      }
+
+      .calendar-day-number {
+        width: 23px;
+        height: 23px;
+        font-size: 0.8rem;
+      }
+
+      .calendar-event-chip {
+        font-size: 0.6rem;
+      }
+
+      .calendar-more {
+        font-size: 0.6rem;
+      }
+
+      .calendar-section {
+        padding: 14px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="calendar-page">
+      <header class="calendar-header">
+        <div>
+          <h1>学校カレンダー</h1>
+          <p class="calendar-description">
+            学校行事・試験・連絡事項などの予定を確認できます。
+          </p>
+        </div>
 
-<div class="layout">
+        <div class="calendar-controls">
+          <button id="previousMonth" type="button" aria-label="前の月">
+            ←
+          </button>
+          <h2 id="currentMonth" class="calendar-month"></h2>
+          <button id="nextMonth" type="button" aria-label="次の月">
+            →
+          </button>
+          <button id="todayButton" class="primary" type="button">
+            今日
+          </button>
+        </div>
+      </header>
 
-<aside class="sidebar">
-<div class="logo">定期テスト対策ポータル</div>
+      <section class="calendar-panel" aria-label="月間カレンダー">
+        <div class="calendar-weekdays">
+          <div class="calendar-weekday">日</div>
+          <div class="calendar-weekday">月</div>
+          <div class="calendar-weekday">火</div>
+          <div class="calendar-weekday">水</div>
+          <div class="calendar-weekday">木</div>
+          <div class="calendar-weekday">金</div>
+          <div class="calendar-weekday">土</div>
+        </div>
 
-<nav>
-<a href="../home/index.html">ホーム</a>
-<a href="../information/index.html">お知らせ</a>
-<a href="../messages/index.html">連絡</a>
-<a href="../documents/index.html">配布文書</a>
-<a href="../calendar/index.html">カレンダー</a>
-<a href="../scores/index.html">テスト成績</a>
-<a href="../settings/index.html">各種設定</a>
-<hr>
-<button onclick="logout()">ログアウト</button>
-</nav>
-</aside>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </section>
 
-<main class="content">
+      <div class="calendar-lower">
+        <section class="calendar-section">
+          <h2 id="selectedDateTitle">選択した日の予定</h2>
+          <p id="selectedDateStatus" class="calendar-status">
+            予定を読み込んでいます。
+          </p>
+          <div id="selectedDateEvents" class="calendar-event-list"></div>
+        </section>
 
-<section>
+        <section class="calendar-section">
+          <h2>月間予定一覧</h2>
 
-<h1>カレンダー</h1>
+          <label for="categoryFilter">カテゴリー</label>
+          <select id="categoryFilter" class="calendar-filter">
+            <option value="">すべて</option>
+          </select>
 
-<div id="calendarArea">
-読み込み中...
-</div>
+          <p id="monthEventCount" class="calendar-count"></p>
+          <div id="monthEventList" class="calendar-event-list"></div>
+        </section>
+      </div>
+    </main>
+  </div>
 
-</section>
+  <script type="module">
+    import {
+      auth,
+      db,
+      collection,
+      getDocs,
+      onAuthStateChanged
+    } from "../js/firebase.js";
 
-</main>
-</div>
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
 
-<script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/student.js"></script>
+    const grid = document.getElementById("calendarGrid");
+    const currentMonthElement = document.getElementById("currentMonth");
+    const selectedDateTitle = document.getElementById("selectedDateTitle");
+    const selectedDateStatus = document.getElementById("selectedDateStatus");
+    const selectedDateEvents = document.getElementById("selectedDateEvents");
+    const monthEventList = document.getElementById("monthEventList");
+    const monthEventCount = document.getElementById("monthEventCount");
+    const categoryFilter = document.getElementById("categoryFilter");
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let viewYear = today.getFullYear();
+    let viewMonth = today.getMonth();
+    let selectedDate = new Date(today);
+    let allEvents = [];
+    let initialized = false;
+    let loading = false;
+
+    function dateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDate(value) {
+      if (!value) return null;
+
+      if (typeof value.toDate === "function") {
+        const result = value.toDate();
+        result.setHours(0, 0, 0, 0);
+        return result;
+      }
+
+      if (value instanceof Date) {
+        const result = new Date(value);
+        result.setHours(0, 0, 0, 0);
+        return result;
+      }
+
+      if (typeof value === "string") {
+        const match = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+
+        if (match) {
+          return new Date(
+            Number(match[1]),
+            Number(match[2]) - 1,
+            Number(match[3])
+          );
+        }
+      }
+
+      const result = new Date(value);
+
+      if (Number.isNaN(result.getTime())) {
+        return null;
+      }
+
+      result.setHours(0, 0, 0, 0);
+      return result;
+    }
+
+    function getString(data, keys, fallback = "") {
+      for (const key of keys) {
+        if (typeof data[key] === "string" && data[key].trim()) {
+          return data[key].trim();
+        }
+      }
+
+      return fallback;
+    }
+
+    function formatDate(date) {
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "short"
+      }).format(date);
+    }
+
+    function formatTime(value) {
+      if (!value) return "";
+
+      if (typeof value === "string") {
+        return value;
+      }
+
+      if (value instanceof Date) {
+        return new Intl.DateTimeFormat("ja-JP", {
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(value);
+      }
+
+      return "";
+    }
+
+    function getEventDate(event) {
+      return parseDate(event.date);
+    }
+
+    function getEventsForDate(date) {
+      const key = dateKey(date);
+
+      return allEvents.filter(event => {
+        const start = getEventDate(event);
+        const end = parseDate(event.endDate) || start;
+
+        if (!start) return false;
+
+        return key >= dateKey(start) && key <= dateKey(end);
+      });
+    }
+
+    function getFilteredMonthEvents() {
+      const category = categoryFilter.value;
+
+      return allEvents.filter(event => {
+        const date = getEventDate(event);
+
+        return (
+          date &&
+          date.getFullYear() === viewYear &&
+          date.getMonth() === viewMonth &&
+          (!category || event.category === category)
+        );
+      }).sort((a, b) => {
+        const dateA = getEventDate(a);
+        const dateB = getEventDate(b);
+
+        return dateA - dateB ||
+          (a.startTime || "").localeCompare(b.startTime || "");
+      });
+    }
+
+    function eventClass(event) {
+      const category = event.category.toLowerCase();
+
+      if (category.includes("重要") || category.includes("試験")) {
+        return "important";
+      }
+
+      if (
+        category.includes("行事") ||
+        category.includes("体育") ||
+        category.includes("文化")
+      ) {
+        return "activity";
+      }
+
+      return "";
+    }
+
+    function createEventCard(event) {
+      const article = document.createElement("article");
+      article.className = "calendar-event-card";
+
+      const tag = document.createElement("span");
+      tag.className = "calendar-tag";
+      tag.textContent = event.category || "予定";
+
+      const title = document.createElement("h3");
+      title.textContent = event.title;
+
+      const date = getEventDate(event);
+      const meta = document.createElement("div");
+      meta.className = "calendar-event-meta";
+
+      const times = [event.startTime, event.endTime]
+        .filter(Boolean)
+        .join("〜");
+
+      meta.textContent =
+        `${date ? formatDate(date) : "日付未設定"}` +
+        (times ? `　${times}` : "");
+
+      article.append(tag, title, meta);
+
+      if (event.description) {
+        const description = document.createElement("p");
+        description.textContent = event.description;
+        article.append(description);
+      }
+
+      if (event.location) {
+        const location = document.createElement("p");
+        location.textContent = `場所：${event.location}`;
+        article.append(location);
+      }
+
+      return article;
+    }
+
+    function renderCalendar() {
+      currentMonthElement.textContent =
+        `${viewYear}年${viewMonth + 1}月`;
+
+      grid.replaceChildren();
+
+      const firstDay = new Date(viewYear, viewMonth, 1);
+      const startDate = new Date(
+        viewYear,
+        viewMonth,
+        1 - firstDay.getDay()
+      );
+
+      for (let index = 0; index < 42; index++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + index);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "calendar-day";
+
+        if (date.getMonth() !== viewMonth) {
+          button.classList.add("other-month");
+        }
+
+        if (dateKey(date) === dateKey(today)) {
+          button.classList.add("today");
+        }
+
+        if (dateKey(date) === dateKey(selectedDate)) {
+          button.classList.add("selected");
+        }
+
+        button.setAttribute(
+          "aria-label",
+          `${formatDate(date)}の予定`
+        );
+
+        const number = document.createElement("span");
+        number.className = "calendar-day-number";
+        number.textContent = String(date.getDate());
+        button.append(number);
+
+        const eventsContainer = document.createElement("div");
+        eventsContainer.className = "calendar-day-events";
+
+        const events = getEventsForDate(date);
+
+        for (const event of events.slice(0, 2)) {
+          const chip = document.createElement("div");
+          chip.className =
+            `calendar-event-chip ${eventClass(event)}`.trim();
+          chip.textContent = event.title;
+          eventsContainer.append(chip);
+        }
+
+        if (events.length > 2) {
+          const more = document.createElement("div");
+          more.className = "calendar-more";
+          more.textContent = `ほか${events.length - 2}件`;
+          eventsContainer.append(more);
+        }
+
+        button.append(eventsContainer);
+
+        button.addEventListener("click", () => {
+          selectedDate = new Date(date);
+          viewYear = date.getFullYear();
+          viewMonth = date.getMonth();
+
+          renderCalendar();
+          renderSelectedDate();
+          renderMonthEvents();
+        });
+
+        grid.append(button);
+      }
+    }
+
+    function renderSelectedDate() {
+      selectedDateTitle.textContent = formatDate(selectedDate) + "の予定";
+      selectedDateEvents.replaceChildren();
+
+      const events = getEventsForDate(selectedDate);
+
+      if (events.length === 0) {
+        selectedDateStatus.hidden = false;
+        selectedDateStatus.textContent = "この日の予定はありません。";
+        return;
+      }
+
+      selectedDateStatus.hidden = true;
+
+      for (const event of events) {
+        selectedDateEvents.append(createEventCard(event));
+      }
+    }
+
+    function renderMonthEvents() {
+      const events = getFilteredMonthEvents();
+
+      monthEventCount.textContent = `${events.length}件の予定`;
+      monthEventList.replaceChildren();
+
+      if (events.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "calendar-status";
+        empty.textContent = "この月の予定はありません。";
+        monthEventList.append(empty);
+        return;
+      }
+
+      for (const event of events) {
+        monthEventList.append(createEventCard(event));
+      }
+    }
+
+    function updateCategories() {
+      const previous = categoryFilter.value;
+
+      const categories = [
+        ...new Set(
+          allEvents
+            .map(event => event.category)
+            .filter(Boolean)
+        )
+      ].sort((a, b) => a.localeCompare(b, "ja"));
+
+      categoryFilter.replaceChildren();
+
+      const allOption = document.createElement("option");
+      allOption.value = "";
+      allOption.textContent = "すべて";
+      categoryFilter.append(allOption);
+
+      for (const category of categories) {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.append(option);
+      }
+
+      if (categories.includes(previous)) {
+        categoryFilter.value = previous;
+      }
+    }
+
+    async function loadEvents() {
+      if (loading) return;
+
+      loading = true;
+
+      try {
+        const snapshot = await getDocs(collection(db, "calendar"));
+
+        allEvents = snapshot.docs.map(docSnapshot => {
+          const data = docSnapshot.data();
+
+          return {
+            id: docSnapshot.id,
+            title: getString(data, ["title", "name"], "予定名未設定"),
+            description: getString(
+              data,
+              ["description", "content", "memo"]
+            ),
+            category: getString(
+              data,
+              ["category", "type"],
+              "その他"
+            ),
+            date: data.date || data.startDate || null,
+            endDate: data.endDate || null,
+            startTime: getString(data, ["startTime", "start"]),
+            endTime: getString(data, ["endTime", "end"]),
+            location: getString(data, ["location", "place"])
+          };
+        }).filter(event => getEventDate(event) !== null);
+
+        updateCategories();
+        renderCalendar();
+        renderSelectedDate();
+        renderMonthEvents();
+      } catch (error) {
+        console.error("カレンダーの取得に失敗しました:", error);
+
+        selectedDateStatus.className = "calendar-status error";
+        selectedDateStatus.textContent =
+          error.code === "permission-denied"
+            ? "カレンダーを閲覧する権限がありません。"
+            : "予定を読み込めませんでした。Firestoreの設定を確認してください。";
+      } finally {
+        loading = false;
+      }
+    }
+
+    document.getElementById("previousMonth").addEventListener("click", () => {
+      viewMonth--;
+
+      if (viewMonth < 0) {
+        viewMonth = 11;
+        viewYear--;
+      }
+
+      selectedDate = new Date(viewYear, viewMonth, 1);
+
+      renderCalendar();
+      renderSelectedDate();
+      renderMonthEvents();
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+      viewMonth++;
+
+      if (viewMonth > 11) {
+        viewMonth = 0;
+        viewYear++;
+      }
+
+      selectedDate = new Date(viewYear, viewMonth, 1);
+
+      renderCalendar();
+      renderSelectedDate();
+      renderMonthEvents();
+    });
+
+    document.getElementById("todayButton").addEventListener("click", () => {
+      viewYear = today.getFullYear();
+      viewMonth = today.getMonth();
+      selectedDate = new Date(today);
+
+      renderCalendar();
+      renderSelectedDate();
+      renderMonthEvents();
+    });
+
+    categoryFilter.addEventListener("change", renderMonthEvents);
+
+    async function startPage() {
+      if (initialized) return;
+      initialized = true;
+
+      const user = await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(
+          auth,
+          currentUser => {
+            unsubscribe();
+            resolve(currentUser);
+          },
+          error => {
+            console.error("認証状態の確認に失敗しました:", error);
+            resolve(null);
+          }
+        );
+      });
+
+      if (!user) {
+        window.location.replace("../login.html");
+        return;
+      }
+
+      await protectPage("login");
+
+      renderPortalShell({
+        title: "学校カレンダー",
+        activePage: "calendar"
+      });
+
+      await loadEvents();
+    }
+
+    startPage().catch(error => {
+      console.error("カレンダーの初期化に失敗しました:", error);
+      selectedDateStatus.className = "calendar-status error";
+      selectedDateStatus.textContent = "ページの初期化に失敗しました。";
+    });
+  </script>
 </body>
 </html>
