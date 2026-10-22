@@ -1,65 +1,370 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>定期テスト対策プリント運営事務局|ポータルサイト</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>定期テスト対策プリント運営事務局|ポータルサイト</title>
+  <meta
+    name="description"
+    content="学校のお知らせ、資料、行事予定を確認できるStudent Portal"
+  >
+
+  <link rel="stylesheet" href="./css/style.css">
+
+  <style>
+    .home-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 38px;
+      border-radius: 22px;
+      color: #fff;
+      background: linear-gradient(125deg, #234bd6, #6485ff);
+    }
+
+    .hero::after {
+      position: absolute;
+      right: -55px;
+      bottom: -100px;
+      width: 260px;
+      height: 260px;
+      border: 35px solid rgba(255, 255, 255, .12);
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .hero-label {
+      margin: 0 0 10px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 13px;
+      font-size: clamp(27px, 4vw, 38px);
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .home-section {
+      margin-top: 30px;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .quick-card {
+      display: flex;
+      min-height: 175px;
+      flex-direction: column;
+      padding: 22px;
+      border: 1px solid #e3e9f3;
+      border-radius: 16px;
+      color: #172033;
+      background: #fff;
+      text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(30, 50, 90, .08);
+    }
+
+    .quick-icon {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      margin-bottom: 15px;
+      place-items: center;
+      border-radius: 14px;
+      background: #edf2ff;
+      font-size: 23px;
+    }
+
+    .quick-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .quick-card p {
+      margin: 0;
+      color: #69758b;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .quick-card .link-label {
+      margin-top: auto;
+      padding-top: 15px;
+      color: #315efb;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .account-panel {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px;
+      border: 1px solid #e3e9f3;
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .account-icon {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      place-items: center;
+      border-radius: 50%;
+      background: #edf2ff;
+      font-size: 22px;
+    }
+
+    .account-details {
+      min-width: 0;
+    }
+
+    .account-name {
+      margin: 0 0 5px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .account-email {
+      margin: 0;
+      color: #69758b;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .home-status {
+      margin: 14px 0 0;
+      color: #69758b;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .home-footer {
+      margin-top: 35px;
+      padding: 20px 0;
+      border-top: 1px solid #e5eaf2;
+      color: #8993a5;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 850px) {
+      .quick-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .home-page {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .quick-links {
+        grid-template-columns: 1fr;
+      }
+
+      .home-page {
+        padding: 14px;
+      }
+
+      .hero {
+        padding: 25px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="home-page">
+      <section class="hero">
+        <p class="hero-label">STUDENT PORTAL</p>
 
-<div class="login-container">
+        <h1>学校生活を、ここから。</h1>
 
-  <div class="login-box">
+        <p>
+          学校からのお知らせ、配布資料、行事予定などを
+          まとめて確認できるポータルサイトです。
+          必要な情報へすばやくアクセスできます。
+        </p>
+      </section>
 
-    <h1>定期テスト対策プリント運営事務局</h1>
-    <p>ポータルサイトにログイン</p>
+      <section class="home-section">
+        <h2 class="section-title">クイックアクセス</h2>
 
-    <form id="loginForm">
+        <div class="quick-links">
+          <a class="quick-card" href="./information/index.html">
+            <div class="quick-icon" aria-hidden="true">📢</div>
+            <h3>学校からのお知らせ</h3>
+            <p>学校からの連絡やお知らせを確認します。</p>
+            <span class="link-label">お知らせを見る →</span>
+          </a>
 
-      <label for="email">メールアドレス</label>
-      <input
-        id="email"
-        type="email"
-        autocomplete="username"
-        placeholder="メールアドレス"
-        required
-      >
+          <a class="quick-card" href="./documents/index.html">
+            <div class="quick-icon" aria-hidden="true">📁</div>
+            <h3>配布資料</h3>
+            <p>授業や学校生活に関する資料を確認します。</p>
+            <span class="link-label">資料を見る →</span>
+          </a>
 
-      <label for="password">パスワード</label>
-      <input
-        id="password"
-        type="password"
-        autocomplete="current-password"
-        placeholder="パスワード"
-        required
-      >
+          <a class="quick-card" href="./calendar/index.html">
+            <div class="quick-icon" aria-hidden="true">📅</div>
+            <h3>学校カレンダー</h3>
+            <p>学校行事や予定を確認します。</p>
+            <span class="link-label">予定を見る →</span>
+          </a>
 
-      <button type="submit" class="primary-button">
-        <span class="material-symbols-rounded">login</span>
-        ログイン
-      </button>
+          <a class="quick-card" href="./scores/index.html">
+            <div class="quick-icon" aria-hidden="true">📊</div>
+            <h3>成績・テスト</h3>
+            <p>成績やテストに関するページを開きます。</p>
+            <span class="link-label">ページを開く →</span>
+          </a>
 
-    </form>
+          <a class="quick-card" href="./messages/index.html">
+            <div class="quick-icon" aria-hidden="true">💬</div>
+            <h3>メッセージ</h3>
+            <p>メッセージ機能のページを開きます。</p>
+            <span class="link-label">ページを開く →</span>
+          </a>
 
-    <div class="separator">
-      <span>または</span>
-    </div>
+          <a class="quick-card" href="./dashboard/student.html">
+            <div class="quick-icon" aria-hidden="true">👤</div>
+            <h3>マイダッシュボード</h3>
+            <p>自分のアカウントに対応する画面を開きます。</p>
+            <span class="link-label">ダッシュボードへ →</span>
+          </a>
+        </div>
+      </section>
 
-    <button id="googleLoginButton" type="button" class="google-btn">
-      <span class="google-mark">G</span>
-      Googleでログイン
-    </button>
+      <section class="home-section">
+        <h2 class="section-title">アカウント</h2>
 
-    <p id="loginError" class="error login-error"></p>
+        <div class="account-panel">
+          <div class="account-icon" aria-hidden="true">👤</div>
 
+          <div class="account-details">
+            <p class="account-name" id="accountName">
+              読み込み中……
+            </p>
+
+            <p class="account-email" id="accountEmail"></p>
+          </div>
+        </div>
+
+        <p
+          class="home-status"
+          id="homeStatus"
+          role="status"
+          aria-live="polite"
+        >
+          ログイン状態を確認しています……
+        </p>
+      </section>
+
+      <footer class="home-footer">
+        Student Portal
+      </footer>
+    </main>
   </div>
 
-</div>
+  <script type="module">
+    import {
+      auth,
+      onAuthStateChanged
+    } from "./js/firebase.js";
 
-<script type="module" src="js/auth.js"></script>
+    import {
+      protectPage,
+      renderPortalShell
+    } from "./js/portal.js";
 
+    async function initializeHome() {
+      try {
+        const user = await protectPage("login");
+
+        if (!user) return;
+
+        await renderPortalShell();
+
+        const nameElement =
+          document.getElementById("accountName");
+
+        const emailElement =
+          document.getElementById("accountEmail");
+
+        const statusElement =
+          document.getElementById("homeStatus");
+
+        onAuthStateChanged(auth, currentUser => {
+          if (!currentUser) return;
+
+          if (nameElement) {
+            nameElement.textContent =
+              currentUser.displayName ||
+              currentUser.email ||
+              "Portal User";
+          }
+
+          if (emailElement) {
+            emailElement.textContent =
+              currentUser.email || "メールアドレス未登録";
+          }
+
+          if (statusElement) {
+            statusElement.textContent =
+              "ログイン済みです。メニューから必要な機能を選択してください。";
+          }
+        });
+      } catch (error) {
+        console.error("ホーム画面の初期化エラー:", error);
+
+        const statusElement =
+          document.getElementById("homeStatus");
+
+        if (statusElement) {
+          statusElement.textContent =
+            "画面を初期化できませんでした。設定と通信状態を確認してください。";
+        }
+      }
+    }
+
+    initializeHome();
+  </script>
 </body>
 </html>
