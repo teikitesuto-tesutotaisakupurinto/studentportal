@@ -1,130 +1,313 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta charset="UTF-8">
+  <meta name="theme-color" content="#173b70">
+  <meta
+    name="description"
+    content="定期テスト対策プリント運営事務局のログインページ"
+  >
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
+  <title>ログイン | 定期テスト対策プリント運営事務局</title>
 
-<title>
-定期テスト対策プリント運営事務局|ポータルサイト
-</title>
+  <link rel="stylesheet" href="./css/style.css">
 
-<link
-  rel="stylesheet"
-  href="./css/style.css"
->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  >
 
-<link
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
-  rel="stylesheet"
->
+  <style>
+    [hidden] {
+      display: none !important;
+    }
 
+    .login-error {
+      display: block;
+      margin-bottom: 16px;
+      padding: 12px;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .login-error:empty {
+      display: none;
+    }
+
+    .login-submit:disabled,
+    .google-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .login-forgot {
+      display: block;
+      margin-top: 18px;
+      color: #2563eb;
+      font-size: 13px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .login-forgot:hover {
+      text-decoration: underline;
+    }
+
+    .login-footer {
+      margin-top: 24px;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .login-status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .login-box {
+      width: 440px;
+      max-width: 100%;
+    }
+  </style>
 </head>
 
 <body>
-
-<div class="login-container">
-
-  <main class="login-box">
-
-    <img
-      class="login-logo"
-      src="./assets/logo.svg"
-      alt="定期テスト対策プリント運営事務局"
-    >
-
-    <h1>
-      ログイン
-    </h1>
-
-    <p class="login-site-name">
-      定期テスト対策プリント運営事務局|ポータルサイト
-    </p>
-
-    <div
-      id="loginError"
-      class="login-error"
-    ></div>
-
-    <form id="loginForm">
-
-      <label for="email">
-        メールアドレス
-      </label>
-
-      <input
-        id="email"
-        type="email"
-        autocomplete="email"
-        required
-      >
-
-      <label for="password">
-        パスワード
-      </label>
-
-      <input
-        id="password"
-        type="password"
-        autocomplete="current-password"
-        required
-      >
-
-      <button
-        type="submit"
-        id="loginButton"
-        class="login-submit"
-      >
-        <span class="material-symbols-rounded">
-          login
-        </span>
-
-        <span>
-          ログイン
-        </span>
-      </button>
-
-    </form>
-
-    <div class="login-divider">
-      または
-    </div>
-
-    <button
-      type="button"
-      id="googleLoginButton"
-      class="google-button"
-    >
+  <div class="login-container">
+    <main class="login-box">
 
       <img
-        class="google-logo"
-        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-        alt="Google"
+        class="login-logo"
+        src="./assets/logo.svg"
+        alt=""
+        onerror="this.style.display='none'"
       >
 
-      <span>
-        Googleでログイン
-      </span>
+      <h1>ログイン</h1>
 
-    </button>
+      <p class="login-site-name">
+        定期テスト対策プリント運営事務局
+      </p>
 
-    <a
-      href="#"
-      id="forgotPassword"
-      class="login-forgot"
-    >
-      パスワードを忘れた場合
-    </a>
+      <div
+        id="loginError"
+        class="login-error"
+        role="alert"
+        aria-live="assertive"
+        hidden
+      ></div>
 
-  </main>
+      <div
+        id="loginSuccess"
+        class="status-box success"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></div>
 
-</div>
+      <form id="loginForm">
+        <label for="email">メールアドレス</label>
 
-<script type="module" src="./js/auth.js"></script>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="username"
+          placeholder="example@example.com"
+          required
+        >
 
+        <label for="password">パスワード</label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="パスワードを入力"
+          required
+        >
+
+        <button
+          type="submit"
+          id="loginButton"
+          class="login-submit"
+        >
+          <span
+            class="material-symbols-rounded"
+            aria-hidden="true"
+          >login</span>
+
+          <span id="loginButtonText">ログイン</span>
+        </button>
+      </form>
+
+      <a
+        href="#"
+        id="forgotPassword"
+        class="login-forgot"
+      >
+        パスワードを忘れた場合
+      </a>
+
+      <div class="login-divider">または</div>
+
+      <button
+        type="button"
+        id="googleLoginButton"
+        class="google-button"
+      >
+        <img
+          class="google-logo"
+          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+          alt=""
+        >
+
+        <span>Googleでログイン</span>
+      </button>
+
+      <p
+        id="loginStatus"
+        class="login-status"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+      <footer class="login-footer">
+        このページは定期テスト対策プリント運営事務局の
+        利用者向けポータルサイトです。
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- 既存の認証処理 -->
+  <script type="module" src="./js/auth.js"></script>
+
+  <!-- パスワード再設定と画面メッセージ -->
+  <script type="module">
+    import {
+      auth,
+      sendPasswordResetEmail
+    } from "./js/firebase.js";
+
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginButton = document.getElementById("loginButton");
+    const loginButtonText = document.getElementById("loginButtonText");
+    const googleButton = document.getElementById("googleLoginButton");
+    const forgotPassword = document.getElementById("forgotPassword");
+    const errorBox = document.getElementById("loginError");
+    const successBox = document.getElementById("loginSuccess");
+    const statusBox = document.getElementById("loginStatus");
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+      successBox.hidden = true;
+      statusBox.textContent = "";
+    }
+
+    function showSuccess(message) {
+      successBox.textContent = message;
+      successBox.hidden = false;
+      errorBox.hidden = true;
+      statusBox.textContent = "";
+    }
+
+    function clearMessages() {
+      errorBox.textContent = "";
+      errorBox.hidden = true;
+      successBox.textContent = "";
+      successBox.hidden = true;
+      statusBox.textContent = "";
+    }
+
+    form.addEventListener("submit", () => {
+      clearMessages();
+
+      loginButton.disabled = true;
+      googleButton.disabled = true;
+      loginButtonText.textContent = "ログイン中...";
+      statusBox.textContent = "認証しています...";
+    });
+
+    googleButton.addEventListener("click", () => {
+      clearMessages();
+      loginButton.disabled = true;
+      googleButton.disabled = true;
+      statusBox.textContent = "Googleアカウントを確認しています...";
+    });
+
+    forgotPassword.addEventListener("click", async event => {
+      event.preventDefault();
+      clearMessages();
+
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        showError(
+          "パスワードを再設定するため、先にメールアドレスを入力してください。"
+        );
+        emailInput.focus();
+        return;
+      }
+
+      forgotPassword.style.pointerEvents = "none";
+      forgotPassword.style.opacity = "0.6";
+      statusBox.textContent = "再設定メールを送信しています...";
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+
+        showSuccess(
+          "再設定用のメールを送信しました。メールボックスをご確認ください。"
+        );
+      } catch (error) {
+        console.error("パスワード再設定エラー:", error);
+
+        if (error.code === "auth/invalid-email") {
+          showError("メールアドレスの形式を確認してください。");
+        } else if (error.code === "auth/too-many-requests") {
+          showError(
+            "リクエストが多すぎます。時間をおいてから再度お試しください。"
+          );
+        } else {
+          showError(
+            "再設定メールを送信できませんでした。Firebase Authenticationの設定と通信状態を確認してください。"
+          );
+        }
+      } finally {
+        forgotPassword.style.pointerEvents = "";
+        forgotPassword.style.opacity = "";
+        statusBox.textContent = "";
+      }
+    });
+
+    // 認証処理側でログインボタンを無効化した場合に備え、
+    // ページを離れずエラーになった場合は操作を再開できるようにする。
+    window.addEventListener("pageshow", () => {
+      loginButton.disabled = false;
+      googleButton.disabled = false;
+      loginButtonText.textContent = "ログイン";
+    });
+
+    window.addEventListener("error", event => {
+      console.error("ログインページエラー:", event.error);
+    });
+  </script>
 </body>
 </html>
