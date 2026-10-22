@@ -1,49 +1,534 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>配布文書 | 定期テスト対策ポータル</title>
-<link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>配布文書 | 定期テスト対策プリント運営事務局</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .documents-page {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .documents-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .documents-header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .documents-description {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .documents-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .documents-tools input,
+    .documents-tools select {
+      box-sizing: border-box;
+      padding: 11px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .documents-tools input {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .documents-tools select {
+      width: 190px;
+    }
+
+    .documents-count {
+      margin-bottom: 12px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .documents-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+      gap: 16px;
+    }
+
+    .document-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+      min-width: 0;
+    }
+
+    .document-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      overflow-wrap: anywhere;
+    }
+
+    .document-category {
+      align-self: flex-start;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .document-description {
+      margin: 0;
+      color: #475569;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .document-meta {
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .document-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .document-link,
+    .documents-refresh {
+      display: inline-block;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #1d4ed8;
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .document-link.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .documents-refresh:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .documents-status {
+      padding: 24px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .documents-status.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    @media (max-width: 600px) {
+      .documents-tools {
+        flex-direction: column;
+      }
+
+      .documents-tools select {
+        width: 100%;
+      }
+
+      .document-card {
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="documents-page">
+      <header class="documents-header">
+        <div>
+          <h1>配布資料</h1>
+          <p class="documents-description">
+            学校から配布された資料を確認できます。
+          </p>
+        </div>
 
-<div class="layout">
+        <button id="refreshButton" class="documents-refresh" type="button">
+          再読み込み
+        </button>
+      </header>
 
-<aside class="sidebar">
-<div class="logo">定期テスト対策ポータル</div>
+      <section class="documents-tools" aria-label="資料の検索">
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="資料名・説明を検索"
+          aria-label="資料を検索"
+        >
 
-<nav>
-<a href="../home/index.html">ホーム</a>
-<a href="../information/index.html">お知らせ</a>
-<a href="../messages/index.html">連絡</a>
-<a href="../documents/index.html">配布文書</a>
-<a href="../calendar/index.html">カレンダー</a>
-<a href="../scores/index.html">テスト成績</a>
-<a href="../settings/index.html">各種設定</a>
-<hr>
-<button onclick="logout()">ログアウト</button>
-</nav>
-</aside>
+        <select id="categoryFilter" aria-label="カテゴリー">
+          <option value="">すべてのカテゴリー</option>
+        </select>
+      </section>
 
-<main class="content">
+      <p id="documentsCount" class="documents-count">読み込み中…</p>
 
-<section>
+      <div
+        id="documentsStatus"
+        class="documents-status"
+        role="status"
+        aria-live="polite"
+      >
+        資料を読み込んでいます。
+      </div>
 
-<h1>配布文書</h1>
+      <section
+        id="documentsList"
+        class="documents-list"
+        aria-label="配布資料一覧"
+      ></section>
+    </main>
+  </div>
 
-<div id="documentList">
-読み込み中...
-</div>
+  <script type="module">
+    import {
+      auth,
+      db,
+      collection,
+      getDocs,
+      onAuthStateChanged
+    } from "../js/firebase.js";
 
-</section>
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
 
-</main>
-</div>
+    const listElement = document.getElementById("documentsList");
+    const statusElement = document.getElementById("documentsStatus");
+    const countElement = document.getElementById("documentsCount");
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const refreshButton = document.getElementById("refreshButton");
 
-<script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/student.js"></script>
+    let allDocuments = [];
+    let loading = false;
+    let initialized = false;
 
+    function setStatus(message, isError = false) {
+      statusElement.textContent = message;
+      statusElement.hidden = false;
+      statusElement.classList.toggle("error", isError);
+    }
+
+    function normalizeDate(value) {
+      if (!value) return null;
+
+      if (typeof value.toDate === "function") {
+        return value.toDate();
+      }
+
+      const date = value instanceof Date ? value : new Date(value);
+
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function formatDate(value) {
+      const date = normalizeDate(value);
+
+      if (!date) return "日付未設定";
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      }).format(date);
+    }
+
+    function getString(data, keys, fallback = "") {
+      for (const key of keys) {
+        if (typeof data[key] === "string" && data[key].trim()) {
+          return data[key].trim();
+        }
+      }
+
+      return fallback;
+    }
+
+    function isSafeHttpUrl(value) {
+      try {
+        const url = new URL(value, window.location.href);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch {
+        return false;
+      }
+    }
+
+    function updateCategories() {
+      const previous = categoryFilter.value;
+      const categories = [
+        ...new Set(
+          allDocuments
+            .map(item => item.category)
+            .filter(Boolean)
+        )
+      ].sort((a, b) => a.localeCompare(b, "ja"));
+
+      categoryFilter.replaceChildren();
+
+      const allOption = document.createElement("option");
+      allOption.value = "";
+      allOption.textContent = "すべてのカテゴリー";
+      categoryFilter.append(allOption);
+
+      for (const category of categories) {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.append(option);
+      }
+
+      if (categories.includes(previous)) {
+        categoryFilter.value = previous;
+      }
+    }
+
+    function createDocumentCard(item) {
+      const article = document.createElement("article");
+      article.className = "document-card";
+
+      const category = document.createElement("span");
+      category.className = "document-category";
+      category.textContent = item.category || "資料";
+
+      const title = document.createElement("h2");
+      title.textContent = item.title;
+
+      const description = document.createElement("p");
+      description.className = "document-description";
+      description.textContent = item.description || "説明はありません。";
+
+      const meta = document.createElement("div");
+      meta.className = "document-meta";
+      meta.textContent = `登録日：${formatDate(item.date)}`;
+
+      article.append(category, title, description, meta);
+
+      const actions = document.createElement("div");
+      actions.className = "document-actions";
+
+      if (item.url && isSafeHttpUrl(item.url)) {
+        const openLink = document.createElement("a");
+        openLink.className = "document-link";
+        openLink.href = item.url;
+        openLink.target = "_blank";
+        openLink.rel = "noopener noreferrer";
+        openLink.textContent = "資料を開く";
+        actions.append(openLink);
+
+        const copyLink = document.createElement("button");
+        copyLink.type = "button";
+        copyLink.className = "document-link secondary";
+        copyLink.textContent = "URLをコピー";
+
+        copyLink.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(item.url);
+            copyLink.textContent = "コピーしました";
+          } catch {
+            window.prompt("このURLをコピーしてください。", item.url);
+          }
+        });
+
+        actions.append(copyLink);
+      } else {
+        const unavailable = document.createElement("span");
+        unavailable.className = "document-meta";
+        unavailable.textContent = "資料URLは登録されていません。";
+        actions.append(unavailable);
+      }
+
+      article.append(actions);
+      return article;
+    }
+
+    function renderDocuments() {
+      const keyword = searchInput.value.trim().toLocaleLowerCase("ja");
+      const category = categoryFilter.value;
+
+      const filtered = allDocuments.filter(item => {
+        const text = [
+          item.title,
+          item.description,
+          item.category
+        ].join(" ").toLocaleLowerCase("ja");
+
+        return (
+          (!keyword || text.includes(keyword)) &&
+          (!category || item.category === category)
+        );
+      });
+
+      listElement.replaceChildren();
+      countElement.textContent = `${filtered.length}件の資料`;
+
+      if (filtered.length === 0) {
+        setStatus(
+          allDocuments.length === 0
+            ? "現在、資料は登録されていません。"
+            : "条件に一致する資料はありません。"
+        );
+        return;
+      }
+
+      statusElement.hidden = true;
+
+      for (const item of filtered) {
+        listElement.append(createDocumentCard(item));
+      }
+    }
+
+    async function loadDocuments() {
+      if (loading) return;
+
+      loading = true;
+      refreshButton.disabled = true;
+      setStatus("資料を読み込んでいます。");
+
+      try {
+        const snapshot = await getDocs(collection(db, "documents"));
+
+        allDocuments = snapshot.docs.map(docSnapshot => {
+          const data = docSnapshot.data();
+
+          return {
+            id: docSnapshot.id,
+            title: getString(
+              data,
+              ["title", "name", "fileName"],
+              "タイトル未設定"
+            ),
+            description: getString(
+              data,
+              ["description", "content", "memo"]
+            ),
+            category: getString(
+              data,
+              ["category", "type"],
+              "その他"
+            ),
+            url: getString(
+              data,
+              ["url", "fileUrl", "downloadURL", "downloadUrl"]
+            ),
+            date:
+              data.createdAt ||
+              data.date ||
+              data.updatedAt ||
+              null
+          };
+        });
+
+        allDocuments.sort((a, b) => {
+          const dateA = normalizeDate(a.date)?.getTime() || 0;
+          const dateB = normalizeDate(b.date)?.getTime() || 0;
+          return dateB - dateA;
+        });
+
+        updateCategories();
+        renderDocuments();
+      } catch (error) {
+        console.error("資料の取得に失敗しました:", error);
+
+        allDocuments = [];
+        listElement.replaceChildren();
+        countElement.textContent = "取得できませんでした";
+
+        setStatus(
+          error.code === "permission-denied"
+            ? "資料を閲覧する権限がありません。管理者にお問い合わせください。"
+            : "資料を取得できませんでした。通信状況とFirestoreの設定を確認してください。",
+          true
+        );
+      } finally {
+        loading = false;
+        refreshButton.disabled = false;
+      }
+    }
+
+    searchInput.addEventListener("input", renderDocuments);
+    categoryFilter.addEventListener("change", renderDocuments);
+    refreshButton.addEventListener("click", loadDocuments);
+
+    async function startPage() {
+      if (initialized) return;
+      initialized = true;
+
+      const user = await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(
+          auth,
+          currentUser => {
+            unsubscribe();
+            resolve(currentUser);
+          },
+          error => {
+            console.error("認証状態の取得に失敗しました:", error);
+            resolve(null);
+          }
+        );
+      });
+
+      if (!user) {
+        window.location.replace("../login.html");
+        return;
+      }
+
+      await protectPage("login");
+
+      renderPortalShell({
+        title: "配布資料",
+        activePage: "documents"
+      });
+
+      await loadDocuments();
+    }
+
+    startPage().catch(error => {
+      console.error("資料ページの初期化に失敗しました:", error);
+      setStatus("ページの初期化に失敗しました。", true);
+    });
+  </script>
 </body>
 </html>
