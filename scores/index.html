@@ -1,49 +1,821 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>テスト成績 | 定期テスト対策ポータル</title>
-<link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>テスト成績 | 定期テスト対策プリント運営事務局</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .scores-page {
+      max-width: 1150px;
+      margin: 0 auto;
+    }
+
+    .scores-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .scores-header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .scores-description {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .scores-refresh {
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #1d4ed8;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .scores-refresh:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .scores-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .scores-filters label {
+      display: grid;
+      gap: 6px;
+      flex: 1;
+      min-width: 180px;
+      color: #475569;
+      font-size: 0.9rem;
+    }
+
+    .scores-filters input,
+    .scores-filters select {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .scores-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .scores-summary-card {
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 13px;
+      background: white;
+    }
+
+    .scores-summary-label {
+      margin: 0 0 8px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .scores-summary-value {
+      margin: 0;
+      color: #0f172a;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .scores-section {
+      margin-bottom: 22px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .scores-section h2 {
+      margin: 0 0 16px;
+      font-size: 1.15rem;
+    }
+
+    .scores-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .scores-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .scores-table th,
+    .scores-table td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    .scores-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 0.85rem;
+    }
+
+    .scores-table td {
+      color: #334155;
+    }
+
+    .scores-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .score-value {
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+
+    .score-status {
+      padding: 20px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .score-status.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .score-count {
+      margin: 0 0 12px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .scores-chart {
+      display: grid;
+      gap: 15px;
+    }
+
+    .score-chart-row {
+      display: grid;
+      grid-template-columns: minmax(90px, 150px) minmax(0, 1fr) 60px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-chart-subject {
+      overflow-wrap: anywhere;
+      font-size: 0.9rem;
+    }
+
+    .score-chart-track {
+      height: 13px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+
+    .score-chart-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: #2563eb;
+    }
+
+    .score-chart-number {
+      text-align: right;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .scores-admin-note {
+      margin-bottom: 16px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 700px) {
+      .scores-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .scores-section {
+        padding: 14px;
+      }
+
+      .score-chart-row {
+        grid-template-columns: 75px minmax(0, 1fr) 48px;
+        gap: 8px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="scores-page">
+      <header class="scores-header">
+        <div>
+          <h1>成績確認</h1>
+          <p class="scores-description">
+            テストの結果や科目別の成績を確認できます。
+          </p>
+        </div>
 
-<div class="layout">
+        <button id="refreshButton" class="scores-refresh" type="button">
+          再読み込み
+        </button>
+      </header>
 
-<aside class="sidebar">
-<div class="logo">定期テスト対策ポータル</div>
+      <section id="adminFilters" class="scores-filters" hidden>
+        <label>
+          生徒ID・氏名で検索
+          <input
+            id="studentSearch"
+            type="search"
+            placeholder="生徒IDまたは氏名"
+          >
+        </label>
+      </section>
 
-<nav>
-<a href="../home/index.html">ホーム</a>
-<a href="../information/index.html">お知らせ</a>
-<a href="../messages/index.html">連絡</a>
-<a href="../documents/index.html">配布文書</a>
-<a href="../calendar/index.html">カレンダー</a>
-<a href="../scores/index.html">テスト成績</a>
-<a href="../settings/index.html">各種設定</a>
-<hr>
-<button onclick="logout()">ログアウト</button>
-</nav>
-</aside>
+      <section class="scores-filters" aria-label="成績の絞り込み">
+        <label>
+          テスト
+          <select id="testFilter">
+            <option value="">すべてのテスト</option>
+          </select>
+        </label>
 
-<main class="content">
+        <label>
+          科目
+          <select id="subjectFilter">
+            <option value="">すべての科目</option>
+          </select>
+        </label>
+      </section>
 
-<section>
+      <section class="scores-summary" aria-label="成績の概要">
+        <article class="scores-summary-card">
+          <p class="scores-summary-label">表示件数</p>
+          <p id="summaryCount" class="scores-summary-value">—</p>
+        </article>
 
-<h1>テスト成績</h1>
+        <article class="scores-summary-card">
+          <p class="scores-summary-label">平均点</p>
+          <p id="summaryAverage" class="scores-summary-value">—</p>
+        </article>
 
-<div id="scoreFormList">
-読み込み中...
-</div>
+        <article class="scores-summary-card">
+          <p class="scores-summary-label">最高点</p>
+          <p id="summaryHighest" class="scores-summary-value">—</p>
+        </article>
+      </section>
 
-</section>
+      <section class="scores-section">
+        <h2>科目別スコア</h2>
+        <div id="scoresChart" class="scores-chart"></div>
+      </section>
 
-</main>
-</div>
+      <section class="scores-section">
+        <h2>成績一覧</h2>
+        <p id="scoresCount" class="score-count"></p>
 
-<script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/student.js"></script>
+        <div
+          id="scoresStatus"
+          class="score-status"
+          role="status"
+          aria-live="polite"
+        >
+          成績を読み込んでいます。
+        </div>
 
+        <div class="scores-table-wrap">
+          <table class="scores-table">
+            <thead>
+              <tr id="scoresTableHeader">
+                <th scope="col">テスト</th>
+                <th scope="col">科目</th>
+                <th scope="col">得点</th>
+                <th scope="col">満点</th>
+                <th scope="col">実施日</th>
+              </tr>
+            </thead>
+            <tbody id="scoresTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import {
+      auth,
+      db,
+      doc,
+      getDoc,
+      collection,
+      getDocs,
+      onAuthStateChanged
+    } from "../js/firebase.js";
+
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
+
+    const refreshButton = document.getElementById("refreshButton");
+    const adminFilters = document.getElementById("adminFilters");
+    const studentSearch = document.getElementById("studentSearch");
+    const testFilter = document.getElementById("testFilter");
+    const subjectFilter = document.getElementById("subjectFilter");
+    const scoresStatus = document.getElementById("scoresStatus");
+    const scoresCount = document.getElementById("scoresCount");
+    const scoresTableBody = document.getElementById("scoresTableBody");
+    const scoresTableHeader = document.getElementById("scoresTableHeader");
+    const scoresChart = document.getElementById("scoresChart");
+
+    let currentUser = null;
+    let currentRole = "student";
+    let allScores = [];
+    let loading = false;
+    let initialized = false;
+
+    function getString(data, keys, fallback = "") {
+      for (const key of keys) {
+        if (
+          typeof data[key] === "string" &&
+          data[key].trim()
+        ) {
+          return data[key].trim();
+        }
+      }
+
+      return fallback;
+    }
+
+    function parseDate(value) {
+      if (!value) return null;
+
+      if (typeof value.toDate === "function") {
+        return value.toDate();
+      }
+
+      if (value instanceof Date) {
+        return value;
+      }
+
+      const result = new Date(value);
+
+      return Number.isNaN(result.getTime()) ? null : result;
+    }
+
+    function formatDate(value) {
+      const date = parseDate(value);
+
+      if (!date) return "未設定";
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(date);
+    }
+
+    function setStatus(message, isError = false) {
+      scoresStatus.textContent = message;
+      scoresStatus.hidden = false;
+      scoresStatus.classList.toggle("error", isError);
+    }
+
+    function getScoreNumber(data, keys, fallback = null) {
+      for (const key of keys) {
+        const value = data[key];
+
+        if (
+          typeof value === "number" &&
+          Number.isFinite(value)
+        ) {
+          return value;
+        }
+
+        if (
+          typeof value === "string" &&
+          value.trim() !== "" &&
+          Number.isFinite(Number(value))
+        ) {
+          return Number(value);
+        }
+      }
+
+      return fallback;
+    }
+
+    function normalizeScore(documentSnapshot) {
+      const data = documentSnapshot.data();
+
+      const score = getScoreNumber(
+        data,
+        ["score", "points", "point", "earnedPoints"]
+      );
+
+      const maxScore = getScoreNumber(
+        data,
+        ["maxScore", "fullScore", "totalPoints", "maxPoints"],
+        100
+      );
+
+      return {
+        id: documentSnapshot.id,
+        studentId: getString(
+          data,
+          ["studentId", "uid", "userId"]
+        ),
+        studentName: getString(
+          data,
+          ["studentName", "displayName", "name"],
+          "氏名未登録"
+        ),
+        testName: getString(
+          data,
+          ["testName", "examName", "title", "test"],
+          "テスト名未設定"
+        ),
+        subject: getString(
+          data,
+          ["subject", "subjectName", "course"],
+          "科目未設定"
+        ),
+        score,
+        maxScore,
+        date: data.date || data.testDate || data.createdAt || null
+      };
+    }
+
+    function getVisibleScores() {
+      const test = testFilter.value;
+      const subject = subjectFilter.value;
+      const search = studentSearch.value.trim().toLowerCase();
+
+      return allScores.filter(item => {
+        const matchesTest = !test || item.testName === test;
+        const matchesSubject = !subject || item.subject === subject;
+
+        const matchesStudent =
+          currentRole !== "admin" ||
+          !search ||
+          item.studentId.toLowerCase().includes(search) ||
+          item.studentName.toLowerCase().includes(search);
+
+        return matchesTest && matchesSubject && matchesStudent;
+      });
+    }
+
+    function updateFilterOptions() {
+      const selectedTest = testFilter.value;
+      const selectedSubject = subjectFilter.value;
+
+      const tests = [
+        ...new Set(allScores.map(item => item.testName))
+      ].sort((a, b) => a.localeCompare(b, "ja"));
+
+      const subjects = [
+        ...new Set(allScores.map(item => item.subject))
+      ].sort((a, b) => a.localeCompare(b, "ja"));
+
+      testFilter.replaceChildren();
+      subjectFilter.replaceChildren();
+
+      const allTestsOption = document.createElement("option");
+      allTestsOption.value = "";
+      allTestsOption.textContent = "すべてのテスト";
+      testFilter.append(allTestsOption);
+
+      for (const test of tests) {
+        const option = document.createElement("option");
+        option.value = test;
+        option.textContent = test;
+        testFilter.append(option);
+      }
+
+      const allSubjectsOption = document.createElement("option");
+      allSubjectsOption.value = "";
+      allSubjectsOption.textContent = "すべての科目";
+      subjectFilter.append(allSubjectsOption);
+
+      for (const subject of subjects) {
+        const option = document.createElement("option");
+        option.value = subject;
+        option.textContent = subject;
+        subjectFilter.append(option);
+      }
+
+      if (tests.includes(selectedTest)) {
+        testFilter.value = selectedTest;
+      }
+
+      if (subjects.includes(selectedSubject)) {
+        subjectFilter.value = selectedSubject;
+      }
+    }
+
+    function renderSummary(scores) {
+      const validScores = scores.filter(
+        item =>
+          Number.isFinite(item.score) &&
+          Number.isFinite(item.maxScore) &&
+          item.maxScore > 0
+      );
+
+      const average = validScores.length
+        ? validScores.reduce(
+            (sum, item) => sum + (item.score / item.maxScore) * 100,
+            0
+          ) / validScores.length
+        : null;
+
+      const highest = validScores.length
+        ? Math.max(
+            ...validScores.map(
+              item => (item.score / item.maxScore) * 100
+            )
+          )
+        : null;
+
+      document.getElementById("summaryCount").textContent =
+        `${scores.length}件`;
+
+      document.getElementById("summaryAverage").textContent =
+        average === null ? "—" : `${average.toFixed(1)}%`;
+
+      document.getElementById("summaryHighest").textContent =
+        highest === null ? "—" : `${highest.toFixed(1)}%`;
+    }
+
+    function renderChart(scores) {
+      scoresChart.replaceChildren();
+
+      const grouped = new Map();
+
+      for (const item of scores) {
+        if (
+          !Number.isFinite(item.score) ||
+          !Number.isFinite(item.maxScore) ||
+          item.maxScore <= 0
+        ) {
+          continue;
+        }
+
+        const percentage = Math.max(
+          0,
+          Math.min(100, (item.score / item.maxScore) * 100)
+        );
+
+        if (!grouped.has(item.subject)) {
+          grouped.set(item.subject, []);
+        }
+
+        grouped.get(item.subject).push(percentage);
+      }
+
+      if (grouped.size === 0) {
+        const empty = document.createElement("p");
+        empty.className = "score-status";
+        empty.textContent = "グラフに表示できる成績がありません。";
+        scoresChart.append(empty);
+        return;
+      }
+
+      for (const [subject, values] of grouped) {
+        const average =
+          values.reduce((sum, value) => sum + value, 0) /
+          values.length;
+
+        const row = document.createElement("div");
+        row.className = "score-chart-row";
+
+        const label = document.createElement("div");
+        label.className = "score-chart-subject";
+        label.textContent = subject;
+
+        const track = document.createElement("div");
+        track.className = "score-chart-track";
+        track.setAttribute("role", "progressbar");
+        track.setAttribute("aria-label", `${subject}の平均得点率`);
+        track.setAttribute("aria-valuemin", "0");
+        track.setAttribute("aria-valuemax", "100");
+        track.setAttribute("aria-valuenow", String(average.toFixed(1)));
+
+        const fill = document.createElement("div");
+        fill.className = "score-chart-fill";
+        fill.style.width = `${average}%`;
+        track.append(fill);
+
+        const number = document.createElement("div");
+        number.className = "score-chart-number";
+        number.textContent = `${average.toFixed(1)}%`;
+
+        row.append(label, track, number);
+        scoresChart.append(row);
+      }
+    }
+
+    function renderTable(scores) {
+      scoresTableBody.replaceChildren();
+
+      scoresTableHeader.replaceChildren();
+
+      const headers = currentRole === "admin"
+        ? ["生徒名", "生徒ID", "テスト", "科目", "得点", "満点", "実施日"]
+        : ["テスト", "科目", "得点", "満点", "実施日"];
+
+      for (const headerText of headers) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = headerText;
+        scoresTableHeader.append(th);
+      }
+
+      for (const item of scores) {
+        const row = document.createElement("tr");
+
+        const values = currentRole === "admin"
+          ? [
+              item.studentName,
+              item.studentId || "未設定",
+              item.testName,
+              item.subject,
+              item.score,
+              item.maxScore,
+              formatDate(item.date)
+            ]
+          : [
+              item.testName,
+              item.subject,
+              item.score,
+              item.maxScore,
+              formatDate(item.date)
+            ];
+
+        for (let index = 0; index < values.length; index++) {
+          const cell = document.createElement("td");
+          cell.textContent =
+            values[index] === null || values[index] === undefined
+              ? "未登録"
+              : String(values[index]);
+
+          if (
+            (currentRole === "admin" && index === 4) ||
+            (currentRole !== "admin" && index === 2)
+          ) {
+            cell.classList.add("score-value");
+          }
+
+          row.append(cell);
+        }
+
+        scoresTableBody.append(row);
+      }
+
+      scoresCount.textContent = `${scores.length}件の成績`;
+
+      if (scores.length === 0) {
+        setStatus("表示できる成績がありません。");
+      } else {
+        scoresStatus.hidden = true;
+      }
+    }
+
+    function renderAll() {
+      const visibleScores = getVisibleScores();
+
+      renderSummary(visibleScores);
+      renderChart(visibleScores);
+      renderTable(visibleScores);
+    }
+
+    async function loadScores() {
+      if (loading) return;
+
+      loading = true;
+      refreshButton.disabled = true;
+      setStatus("成績を読み込んでいます。");
+
+      try {
+        let records = [];
+
+        if (currentRole === "admin") {
+          // 管理者は全成績を取得する。
+          const snapshot = await getDocs(collection(db, "scores"));
+          records = snapshot.docs.map(normalizeScore);
+        } else {
+          // 生徒は自分のUIDと一致する成績だけを取得する。
+          // Firestoreルール側でも同じ制限が必要。
+          const snapshot = await getDocs(collection(db, "scores"));
+
+          records = snapshot.docs
+            .map(normalizeScore)
+            .filter(item => item.studentId === currentUser.uid);
+        }
+
+        allScores = records;
+        updateFilterOptions();
+        renderAll();
+      } catch (error) {
+        console.error("成績の取得に失敗しました:", error);
+
+        allScores = [];
+        scoresTableBody.replaceChildren();
+        scoresChart.replaceChildren();
+        scoresCount.textContent = "取得できませんでした";
+
+        renderSummary([]);
+
+        setStatus(
+          error.code === "permission-denied"
+            ? "成績を閲覧する権限がありません。Firestore Security Rulesを確認してください。"
+            : "成績を取得できませんでした。ネットワークとFirestoreの設定を確認してください。",
+          true
+        );
+      } finally {
+        loading = false;
+        refreshButton.disabled = false;
+      }
+    }
+
+    async function startPage() {
+      if (initialized) return;
+      initialized = true;
+
+      currentUser = await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(
+          auth,
+          user => {
+            unsubscribe();
+            resolve(user);
+          },
+          error => {
+            console.error("認証状態の確認に失敗しました:", error);
+            resolve(null);
+          }
+        );
+      });
+
+      if (!currentUser) {
+        window.location.replace("../login.html");
+        return;
+      }
+
+      const profileSnapshot = await getDoc(
+        doc(db, "users", currentUser.uid)
+      );
+
+      currentRole = profileSnapshot.exists() &&
+        profileSnapshot.data().role === "admin"
+          ? "admin"
+          : "student";
+
+      await protectPage("login");
+
+      renderPortalShell({
+        title: "成績確認",
+        activePage: "scores"
+      });
+
+      adminFilters.hidden = currentRole !== "admin";
+
+      await loadScores();
+    }
+
+    testFilter.addEventListener("change", renderAll);
+    subjectFilter.addEventListener("change", renderAll);
+    studentSearch.addEventListener("input", renderAll);
+    refreshButton.addEventListener("click", loadScores);
+
+    startPage().catch(error => {
+      console.error("成績ページの初期化に失敗しました:", error);
+      setStatus("ページの初期化に失敗しました。", true);
+    });
+  </script>
 </body>
 </html>
