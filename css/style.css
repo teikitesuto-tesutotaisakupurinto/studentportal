@@ -1045,3 +1045,214 @@ textarea {
     width: 100%;
   }
 }
+
+/* =========================================
+   ポータル共通：スマートフォン用メニュー
+   ========================================= */
+
+.portal-overlay[hidden] {
+  display: none !important;
+}
+
+.portal-overlay {
+  display: none;
+}
+
+.portal-mobile-header {
+  display: none;
+}
+
+.portal-main {
+  min-width: 0;
+}
+
+.portal-body.mobile-sidebar-open {
+  overflow: hidden;
+}
+
+/* メニューの開閉ボタン */
+#portalMenuToggle,
+#mobileMenuToggle {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+#portalMenuToggle:focus-visible,
+#mobileMenuToggle:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+/* 現在のページ */
+.sidebar nav a[aria-current="page"] {
+  background: #e8f0ff;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+/* PC */
+@media (min-width: 769px) {
+  .portal-mobile-header {
+    display: none !important;
+  }
+
+  .portal-overlay {
+    display: none !important;
+  }
+
+  .sidebar.mobile-open {
+    transform: none;
+  }
+
+  .sidebar-collapsed .sidebar {
+    width: 70px;
+  }
+
+  .sidebar-collapsed .content {
+    width: calc(100% - 70px);
+    margin-left: 70px;
+  }
+}
+
+/* スマートフォン・タブレット */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 2001;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(290px, 85vw);
+    height: 100dvh;
+    max-height: 100%;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+    box-shadow: 8px 0 30px rgb(0 0 0 / 15%);
+  }
+
+  .sidebar-collapsed .sidebar {
+    width: min(290px, 85vw);
+  }
+
+  .sidebar-collapsed .sidebar .site-name,
+  .sidebar-collapsed .sidebar .portal-site-name,
+  .sidebar-collapsed .sidebar .menu-text {
+    display: initial;
+  }
+
+  .sidebar-collapsed .sidebar-header {
+    justify-content: flex-start;
+    padding: 10px 52px 10px 12px;
+  }
+
+  .sidebar-collapsed .sidebar .menu-button,
+  .sidebar-collapsed .sidebar nav a,
+  .sidebar-collapsed .sidebar nav button {
+    justify-content: flex-start;
+    padding: 9px 11px;
+  }
+
+  .sidebar-collapsed .sidebar .menu-icon {
+    margin: 0;
+  }
+
+  .portal-main,
+  .sidebar-collapsed .portal-main {
+    width: 100%;
+    min-height: 100vh;
+    margin-left: 0;
+    padding: 0 16px 24px;
+  }
+
+  .portal-mobile-header {
+    position: sticky;
+    z-index: 1000;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    margin: 0 -16px 22px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fff;
+    color: #173b70;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  #mobileMenuToggle {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #173b70;
+  }
+
+  #mobileMenuToggle:hover {
+    background: #e8f0ff;
+  }
+
+  .portal-overlay:not([hidden]) {
+    position: fixed;
+    z-index: 2000;
+    inset: 0;
+    display: block;
+    background: rgb(15 23 42 / 48%);
+    cursor: pointer;
+  }
+
+  .portal-body .content h1 {
+    font-size: 23px;
+  }
+
+  .portal-body .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 小型スマートフォン */
+@media (max-width: 480px) {
+  .portal-main,
+  .sidebar-collapsed .portal-main {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .portal-mobile-header {
+    margin-right: -12px;
+    margin-left: -12px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .portal-body .student-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .portal-body .student-card {
+    padding: 18px;
+  }
+}
+
+/* 動きを減らす設定 */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .content,
+  .sidebar-collapsed .content {
+    transition: none !important;
+  }
+}
