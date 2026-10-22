@@ -1,37 +1,22 @@
 
-/**
- * Student Portal
- * Firebase 共通設定・認証・Firestore
- *
- * 保存先: js/firebase.js
- * Firebase SDK: 10.12.5
- */
-
-import {
-  initializeApp,
-  getApps,
-  getApp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { initializeApp, getApp, getApps } from
+  "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
 import {
   getAuth,
   GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
-  signOut,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updateProfile,
   updateEmail,
   updatePassword,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-  setPersistence,
-  browserLocalPersistence,
-  browserSessionPersistence
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
@@ -39,30 +24,23 @@ import {
   doc,
   getDoc,
   setDoc,
+  addDoc,
   updateDoc,
   deleteDoc,
   collection,
-  addDoc,
   getDocs,
+  getDocFromCache,
   query,
   where,
   orderBy,
   limit,
   startAfter,
-  onSnapshot,
   serverTimestamp,
   Timestamp,
-  writeBatch,
-  runTransaction,
-  increment,
-  arrayUnion,
-  arrayRemove
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-/* =====================================================
-   1. Firebase 設定
-   ===================================================== */
-
+// Firebaseプロジェクト設定
 const firebaseConfig = {
   apiKey: "AIzaSyDmXjXpibfIfejGsUCMyHK9UzklG4WhEmw",
   authDomain: "aitera-83486.firebaseapp.com",
@@ -72,166 +50,98 @@ const firebaseConfig = {
   appId: "1:79405334766:web:694c02a7abb407b50c73ff"
 };
 
-/* =====================================================
-   2. Firebase 初期化
-   ===================================================== */
-
-// すでに初期化されていれば既存のアプリを再利用する。
-export const app = getApps().length
+// アプリを重複初期化しない
+const app = getApps().length
   ? getApp()
   : initializeApp(firebaseConfig);
 
-// Authentication
-export const auth = getAuth(app);
+// Authentication・Firestore
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Firestore
-export const db = getFirestore(app);
-
-/* =====================================================
-   3. Google 認証
-   ===================================================== */
-
-export const googleProvider = new GoogleAuthProvider();
-
-// Google アカウント選択画面を表示する。
+// Googleログイン
+const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account"
 });
 
-/* =====================================================
-   4. Authentication のエクスポート
-   ===================================================== */
-
-export {
-  onAuthStateChanged,
-
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-
-  signOut,
-  GoogleAuthProvider,
-  sendPasswordResetEmail,
-
-  updateProfile,
-  updateEmail,
-  updatePassword,
-
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-
-  setPersistence,
-  browserLocalPersistence,
-  browserSessionPersistence
-};
-
-/* =====================================================
-   5. Firestore のエクスポート
-   ===================================================== */
-
-export {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-
-  collection,
-  addDoc,
-  getDocs,
-
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-
-  onSnapshot,
-  serverTimestamp,
-  Timestamp,
-
-  writeBatch,
-  runTransaction,
-
-  increment,
-  arrayUnion,
-  arrayRemove
-};
-
-/* =====================================================
-   6. 共通ヘルパー
-   ===================================================== */
-
-/**
- * ログインユーザーのプロフィールを取得する。
- *
- * @param {string} uid Firebase Authentication の UID
- * @returns {Promise<object|null>}
- */
-export async function getUserProfile(uid) {
+// プロフィール取得
+async function getUserProfile(uid) {
   if (!uid) {
-    throw new Error("ユーザーIDが指定されていません。");
+    throw new Error("ユーザーUIDが指定されていません。");
   }
 
-  const userRef = doc(db, "users", uid);
-  const userSnapshot = await getDoc(userRef);
+  const snapshot = await getDoc(doc(db, "users", uid));
 
-  if (!userSnapshot.exists()) {
+  if (!snapshot.exists()) {
     return null;
   }
 
   return {
-    uid,
-    ...userSnapshot.data()
+    uid: snapshot.id,
+    ...snapshot.data()
   };
 }
 
-/**
- * ログインユーザーのプロフィールを保存する。
- *
- * merge: true により、既存の他のフィールドを維持する。
- *
- * @param {string} uid Firebase Authentication の UID
- * @param {object} profile 保存するプロフィール情報
- */
-export async function saveUserProfile(uid, profile) {
+// プロフィール保存
+async function saveUserProfile(uid, profile) {
   if (!uid) {
-    throw new Error("ユーザーIDが指定されていません。");
+    throw new Error("ユーザーUIDが指定されていません。");
   }
 
-  if (
-    !profile ||
-    typeof profile !== "object" ||
-    Array.isArray(profile)
-  ) {
+  if (!profile || typeof profile !== "object") {
     throw new Error("プロフィールの形式が正しくありません。");
   }
 
-  const userRef = doc(db, "users", uid);
+  // この関数自体は管理者権限を付与しない。
+  const profileRef = doc(db, "users", uid);
 
-  await setDoc(
-    userRef,
-    {
-      ...profile,
-      updatedAt: serverTimestamp()
-    },
-    {
-      merge: true
-    }
-  );
+  await setDoc(profileRef, {
+    ...profile,
+    uid
+  }, {
+    merge: true
+  });
 }
 
-/**
- * ログイン状態を確認する Promise。
- *
- * @returns {Promise<import("firebase/auth").User|null>}
- */
-export function waitForAuthUser() {
+// Firebaseエラーを日本語化
+function getFirebaseErrorMessage(error) {
+  const messages = {
+    "auth/invalid-email":
+      "メールアドレスの形式を確認してください。",
+    "auth/user-not-found":
+      "ユーザーが見つかりません。",
+    "auth/wrong-password":
+      "メールアドレスまたはパスワードが違います。",
+    "auth/invalid-credential":
+      "ログイン情報が正しくありません。",
+    "auth/email-already-in-use":
+      "このメールアドレスはすでに登録されています。",
+    "auth/weak-password":
+      "パスワードをより強固なものにしてください。",
+    "auth/network-request-failed":
+      "ネットワーク接続を確認してください。",
+    "auth/popup-blocked":
+      "ログイン画面がブロックされました。ポップアップ設定を確認してください。",
+    "auth/popup-closed-by-user":
+      "ログイン画面が閉じられました。",
+    "auth/too-many-requests":
+      "試行回数が多すぎます。しばらくしてから再試行してください。",
+    "permission-denied":
+      "アクセス権限がありません。Firestore Security Rulesを確認してください。"
+  };
+
+  return messages[error?.code] ||
+    error?.message ||
+    "予期しないエラーが発生しました。";
+}
+
+// 認証状態の確定を待つ
+function waitForAuthUser() {
   return new Promise((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(
+    let unsubscribe = () => {};
+
+    unsubscribe = onAuthStateChanged(
       auth,
       user => {
         unsubscribe();
@@ -245,53 +155,49 @@ export function waitForAuthUser() {
   });
 }
 
-/**
- * Firebase エラーコードを画面表示向けの日本語に変換する。
- *
- * @param {Error & {code?: string}} error
- * @returns {string}
- */
-export function getFirebaseErrorMessage(error) {
-  const messages = {
-    "auth/invalid-email":
-      "メールアドレスの形式を確認してください。",
+// 各ページから使用できるようにエクスポート
+export {
+  app,
+  auth,
+  db,
+  googleProvider,
 
-    "auth/user-not-found":
-      "アカウントが見つかりません。",
+  // Authentication
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  updateProfile,
+  updateEmail,
+  updatePassword,
+  signOut,
+  onAuthStateChanged,
 
-    "auth/wrong-password":
-      "メールアドレスまたはパスワードが正しくありません。",
+  // Firestore
+  doc,
+  getDoc,
+  getDocFromCache,
+  setDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  serverTimestamp,
+  Timestamp,
+  writeBatch,
 
-    "auth/invalid-credential":
-      "メールアドレスまたはパスワードが正しくありません。",
-
-    "auth/email-already-in-use":
-      "このメールアドレスはすでに登録されています。",
-
-    "auth/weak-password":
-      "パスワードをより強固なものにしてください。",
-
-    "auth/too-many-requests":
-      "試行回数が多すぎます。しばらく待ってから再試行してください。",
-
-    "auth/network-request-failed":
-      "通信に失敗しました。ネットワークを確認してください。",
-
-    "auth/popup-closed-by-user":
-      "Googleログインがキャンセルされました。",
-
-    "auth/popup-blocked":
-      "ポップアップがブロックされました。ブラウザの設定を確認してください。",
-
-    "permission-denied":
-      "この操作を行う権限がありません。",
-
-    "unavailable":
-      "サービスに接続できません。しばらくしてから再試行してください。"
-  };
-
-  return messages[error?.code] ||
-    "処理に失敗しました。入力内容と設定を確認してください。";
-}
-
-console.info("Student Portal: Firebase 初期化完了");
+  // 独自ヘルパー
+  getUserProfile,
+  saveUserProfile,
+  getFirebaseErrorMessage,
+  waitForAuthUser
+};
