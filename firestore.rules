@@ -1,0 +1,190 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ================================================
+       共通の認証・権限チェック
+       ================================================ */
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function userDocumentExists(uid) {
+      return exists(
+        /databases/$(database)/documents/users/$(uid)
+      );
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && userDocumentExists(request.auth.uid)
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.role == 'admin';
+    }
+
+    function isStudent() {
+      return isSignedIn() && !isAdmin();
+    }
+
+    function validRole(role) {
+      return role in ['admin', 'student'];
+    }
+
+    /* ================================================
+       ユーザー
+       users/{uid}
+
+       注意：
+       クライアントから role を変更させない。
+       管理者権限の付与は信頼できる管理環境で行う。
+       ================================================ */
+
+    match /users/{uid} {
+
+      // 自分のプロフィール、または管理者が読み取れる。
+      allow read: if isOwner(uid) || isAdmin();
+
+      // 自分のアカウントを作成できるが、
+      // クライアントから管理者権限は付与できない。
+      allow create: if isOwner(uid)
+        && request.resource.data.role == 'student';
+
+      // 自分のプロフィールを変更する場合、
+      // role フィールドの変更は禁止する。
+      allow update: if isAdmin()
+        || (
+          isOwner(uid)
+          && request.resource.data.role
+             == resource.data.role
+          && resource.data.role != 'admin'
+        );
+
+      // アカウント情報の削除は管理者のみ。
+      allow delete: if isAdmin();
+    }
+
+    /* ================================================
+       学校のお知らせ
+       information/{documentId}
+       ================================================ */
+
+    match /information/{documentId} {
+      allow read: if isSignedIn();
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* ================================================
+       メッセージ
+       messages/{messageId}
+
+       想定フィールド：
+       senderId, recipientId, body, createdAt
+       ================================================ */
+
+    match /messages/{messageId} {
+
+      allow read: if isSignedIn()
+        && (
+          resource.data.senderId == request.auth.uid
+          || resource.data.recipientId == request.auth.uid
+          || isAdmin()
+        );
+
+      allow create: if isSignedIn()
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.recipientId is string
+        && request.resource.data.body is string
+        && request.resource.data.body.size() <= 10000;
+
+      // 既存メッセージの送信者・宛先は変更できない。
+      allow update: if isSignedIn()
+        && (
+          isAdmin()
+          || (
+            resource.data.senderId == request.auth.uid
+            && request.resource.data.senderId
+               == resource.data.senderId
+            && request.resource.data.recipientId
+               == resource.data.recipientId
+          )
+        );
+
+      allow delete: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.senderId == request.auth.uid
+        );
+    }
+
+    /* ================================================
+       配布資料
+       documents/{documentId}
+       ================================================ */
+
+    match /documents/{documentId} {
+      allow read: if isSignedIn();
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* ================================================
+       学校カレンダー
+       calendar/{eventId}
+       ================================================ */
+
+    match /calendar/{eventId} {
+      allow read: if isSignedIn();
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* ================================================
+       テスト・成績フォーム
+       scoreForms/{formId}
+       ================================================ */
+
+    match /scoreForms/{formId} {
+      allow read: if isSignedIn();
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* ================================================
+       成績
+       scores/{scoreId}
+
+       想定フィールド：
+       studentId, subject, score, createdAt
+       ================================================ */
+
+    match /scores/{scoreId} {
+
+      allow read: if isAdmin()
+        || (
+          isSignedIn()
+          && resource.data.studentId == request.auth.uid
+        );
+
+      allow create, update, delete: if isAdmin();
+    }
+
+    /* ================================================
+       その他の未定義コレクション
+
+       明示的に許可していないデータへのアクセスは禁止。
+       ================================================ */
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
