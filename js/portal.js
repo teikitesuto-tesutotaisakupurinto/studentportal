@@ -1,52 +1,72 @@
+
+/**
+ * ポータル共通処理
+ * ファイル: js/portal.js
+ * Firebase SDK: 10.12.5
+ */
+
 import {
   auth,
   db,
   doc,
   getDoc,
-  signOut
+  signOut,
+  onAuthStateChanged
 } from "./firebase.js";
 
 const SITE_NAME =
-  "定期テスト対策プリント運営事務局|ポータルサイト";
+  "定期テスト対策プリント運営事務局";
 
 const MENU_KEY = "portal_sidebar_collapsed";
+const MOBILE_BREAKPOINT = 768;
 
+// js/portal.js からアプリのルートを取得
+const APP_BASE_URL = new URL("../", import.meta.url);
+
+function appUrl(path) {
+  return new URL(
+    path.replace(/^\/+/, ""),
+    APP_BASE_URL
+  ).href;
+}
+
+// メニュー設定
 const menus = {
   student: [
     {
       title: "ホーム",
       icon: "home",
-      url: "../dashboard/student.html"
+      url: "dashboard/student.html"
     },
     {
       title: "お知らせ",
       icon: "campaign",
-      url: "../information/student.html"
+      url: "information/student.html"
     },
     {
       title: "連絡",
       icon: "mail",
-      url: "../messages/student.html"
+      url: "messages/student.html"
     },
     {
       title: "配布文書",
       icon: "description",
-      url: "../documents/student.html"
+      url: "documents/student.html"
     },
     {
       title: "カレンダー",
       icon: "calendar_month",
-      url: "../calendar/student.html"
+      url: "calendar/student.html"
     },
     {
       title: "テスト成績",
       icon: "assignment",
-      url: "../scoreForms/student.html"
+      url: "scoreForms/student.html"
     },
     {
       title: "設定",
       icon: "settings",
-      url: "../student.html"
+      url: "student.html"
     }
   ],
 
@@ -54,198 +74,118 @@ const menus = {
     {
       title: "ダッシュボード",
       icon: "dashboard",
-      url: "../dashboard/admin.html"
+      url: "dashboard/admin.html"
     },
     {
       title: "お知らせ管理",
       icon: "campaign",
-      url: "../information/admin.html"
+      url: "information/admin.html"
     },
     {
       title: "連絡管理",
       icon: "mail",
-      url: "../messages/admin.html"
+      url: "messages/admin.html"
     },
     {
       title: "配布文書管理",
       icon: "description",
-      url: "../documents/admin.html"
+      url: "documents/admin.html"
     },
     {
       title: "カレンダー管理",
       icon: "calendar_month",
-      url: "../calendar/admin.html"
+      url: "calendar/admin.html"
     },
     {
       title: "成績フォーム作成",
       icon: "assignment_add",
-      url: "../scoreForms/admin.html"
+      url: "scoreForms/admin.html"
     },
     {
       title: "成績分析",
       icon: "analytics",
-      url: "../scores/admin.html"
+      url: "scores/admin.html"
     },
     {
       title: "生徒管理",
       icon: "group",
-      url: "../users/admin.html"
+      url: "users/admin.html"
     }
   ]
 };
 
+// ページの想定ロールを判定
 function getPageRole() {
-  const path = location.pathname;
+  const path = location.pathname.toLowerCase();
 
-  if (
-    path.includes("/admin.html") ||
-    path.includes("/scores/")
-  ) {
+  const adminPaths = [
+    "/dashboard/admin.html",
+    "/information/admin.html",
+    "/messages/admin.html",
+    "/documents/admin.html",
+    "/calendar/admin.html",
+    "/scoreforms/admin.html",
+    "/scores/",
+    "/users/admin.html"
+  ];
+
+  if (adminPaths.some(item => path.includes(item))) {
     return "admin";
   }
 
   return "student";
 }
 
+// HTML エスケープ
+function escapeHtml(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[character]
+  );
+}
+
+// アイコン生成
 function createIcon(name) {
   return `
-    <span class="material-symbols-rounded menu-icon">
-      ${name}
-    </span>
+    <span
+      class="material-symbols-rounded menu-icon"
+      aria-hidden="true"
+    >${escapeHtml(name)}</span>
   `;
 }
 
-function renderPortalShell() {
-
-  const role = getPageRole();
-
-  document.body.classList.add(
-    "portal-body",
-    `portal-${role}`
-  );
-
-  const old = document.querySelector(".portal-shell");
-
-  if (old) {
-    old.remove();
+// ログアウト
+async function handleLogout(button) {
+  if (button) {
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
   }
 
-  const shell = document.createElement("div");
+  try {
+    await signOut(auth);
+    location.replace(appUrl("index.html"));
+  } catch (error) {
+    console.error("ログアウトエラー:", error);
 
-  shell.className = "portal-shell";
+    alert(
+      "ログアウトに失敗しました。通信状態を確認して再度お試しください。"
+    );
 
-  shell.innerHTML = `
-    <aside class="portal-sidebar">
-
-      <div class="portal-sidebar-top">
-
-        <div class="portal-logo-area">
-
-          <img
-            src="../assets/logo.svg"
-            class="portal-logo"
-            alt="定期テスト対策プリント"
-          >
-
-          <div class="portal-site-name">
-            ${SITE_NAME}
-          </div>
-
-        </div>
-
-        <button
-          type="button"
-          class="portal-menu-toggle"
-          id="portalMenuToggle"
-          aria-label="メニューを開閉"
-          title="メニューを開閉"
-        >
-          <span class="material-symbols-rounded">
-            menu
-          </span>
-        </button>
-
-      </div>
-
-      <nav class="portal-nav">
-
-        ${menus[role].map(item => `
-          <a
-            class="portal-nav-item"
-            href="${item.url}"
-            title="${item.title}"
-          >
-            ${createIcon(item.icon)}
-            <span class="portal-nav-text">
-              ${item.title}
-            </span>
-          </a>
-        `).join("")}
-
-      </nav>
-
-      <div class="portal-sidebar-bottom">
-
-        <button
-          type="button"
-          class="portal-logout-button"
-          id="portalLogout"
-          title="ログアウト"
-        >
-          ${createIcon("logout")}
-          <span class="portal-nav-text">
-            ログアウト
-          </span>
-        </button>
-
-      </div>
-
-    </aside>
-
-    <main class="portal-main">
-
-      <header class="portal-mobile-header">
-
-        <button
-          type="button"
-          id="mobileMenuToggle"
-          class="portal-mobile-menu"
-        >
-          <span class="material-symbols-rounded">
-            menu
-          </span>
-        </button>
-
-        <div>
-          ${SITE_NAME}
-        </div>
-
-      </header>
-
-      <div class="portal-page">
-        <div id="portalContent"></div>
-      </div>
-
-    </main>
-
-    <div
-      id="portalOverlay"
-      class="portal-overlay"
-    ></div>
-  `;
-
-  document.body.prepend(shell);
-
-  setupMenu();
-
-  return document.getElementById("portalContent");
+    if (button) {
+      button.disabled = false;
+      button.removeAttribute("aria-busy");
+    }
+  }
 }
 
+// メニューの開閉処理
 function setupMenu() {
-
-  const sidebar =
-    document.querySelector(".portal-sidebar");
-
   const toggle =
     document.getElementById("portalMenuToggle");
 
@@ -258,194 +198,317 @@ function setupMenu() {
   const logoutButton =
     document.getElementById("portalLogout");
 
-  const saved =
-    localStorage.getItem(MENU_KEY);
+  // PC 用の折りたたみ状態を復元
+  try {
+    const saved = localStorage.getItem(MENU_KEY);
 
-  if (saved === "true") {
-    document.body.classList.add(
-      "sidebar-collapsed"
-    );
+    if (saved === "true") {
+      document.body.classList.add("sidebar-collapsed");
+    }
+  } catch (error) {
+    console.warn("メニュー設定を読み込めません:", error);
   }
 
-  toggle?.addEventListener(
-    "click",
-    () => {
+  toggle?.addEventListener("click", () => {
+    document.body.classList.toggle("sidebar-collapsed");
 
-      document.body.classList.toggle(
-        "sidebar-collapsed"
-      );
-
+    try {
       localStorage.setItem(
         MENU_KEY,
-        document.body.classList.contains(
-          "sidebar-collapsed"
+        String(
+          document.body.classList.contains("sidebar-collapsed")
         )
       );
+    } catch (error) {
+      console.warn("メニュー設定を保存できません:", error);
     }
-  );
+  });
 
-  mobileToggle?.addEventListener(
-    "click",
-    () => {
+  // モバイル・Chromebook の狭い画面
+  mobileToggle?.addEventListener("click", () => {
+    document.body.classList.toggle("mobile-sidebar-open");
+  });
 
-      document.body.classList.toggle(
-        "mobile-sidebar-open"
-      );
+  overlay?.addEventListener("click", () => {
+    document.body.classList.remove("mobile-sidebar-open");
+  });
+
+  logoutButton?.addEventListener("click", () => {
+    handleLogout(logoutButton);
+  });
+
+  // Escape キーでモバイルメニューを閉じる
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      document.body.classList.remove("mobile-sidebar-open");
     }
-  );
+  });
 
-  overlay?.addEventListener(
-    "click",
-    () => {
-
-      document.body.classList.remove(
-        "mobile-sidebar-open"
-      );
+  // PC 幅に戻った場合はモバイルメニューを閉じる
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > MOBILE_BREAKPOINT) {
+      document.body.classList.remove("mobile-sidebar-open");
     }
-  );
-
-  logoutButton?.addEventListener(
-    "click",
-    async () => {
-
-      try {
-
-        await signOut(auth);
-
-        location.href =
-          "../login.html";
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert(
-          "ログアウトに失敗しました。"
-        );
-      }
-    }
-  );
-
-  window.addEventListener(
-    "resize",
-    () => {
-
-      if (window.innerWidth > 768) {
-
-        document.body.classList.remove(
-          "mobile-sidebar-open"
-        );
-      }
-
-    }
-  );
+  });
 }
 
-async function getCurrentUserProfile() {
+// ポータルの共通レイアウトを生成
+function renderPortalShell() {
+  const role = getPageRole();
 
-  const user = auth.currentUser;
+  document.body.classList.add(
+    "portal-body",
+    `portal-${role}`
+  );
 
-  if (!user) {
+  // 既存のシェルがあれば重複生成しない
+  const existing = document.querySelector(".portal-shell");
+
+  if (existing) {
+    return document.getElementById("portalContent");
+  }
+
+  const shell = document.createElement("div");
+  shell.className = "portal-shell";
+
+  const navigation = menus[role]
+    .map(item => {
+      const href = appUrl(item.url);
+      const current =
+        location.pathname === new URL(href).pathname;
+
+      return `
+        <a
+          class="portal-nav-item${current ? " active" : ""}"
+          href="${escapeHtml(href)}"
+          title="${escapeHtml(item.title)}"
+          ${current ? 'aria-current="page"' : ""}
+        >
+          ${createIcon(item.icon)}
+          <span class="portal-nav-text">
+            ${escapeHtml(item.title)}
+          </span>
+        </a>
+      `;
+    })
+    .join("");
+
+  shell.innerHTML = `
+    <aside class="portal-sidebar" aria-label="メインメニュー">
+
+      <div class="portal-sidebar-top">
+        <div class="portal-logo-area">
+          <div class="portal-logo" aria-hidden="true">
+            <span class="material-symbols-rounded">
+              school
+            </span>
+          </div>
+
+          <div class="portal-site-name">
+            ${escapeHtml(SITE_NAME)}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="portal-menu-toggle"
+          id="portalMenuToggle"
+          aria-label="サイドバーを折りたたむ"
+          title="メニューを開閉"
+        >
+          <span class="material-symbols-rounded">menu</span>
+        </button>
+      </div>
+
+      <nav class="portal-nav">
+        ${navigation}
+      </nav>
+
+      <div class="portal-sidebar-bottom">
+        <button
+          type="button"
+          class="portal-logout-button"
+          id="portalLogout"
+          title="ログアウト"
+        >
+          ${createIcon("logout")}
+          <span class="portal-nav-text">ログアウト</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <main class="portal-main">
+
+      <header class="portal-mobile-header">
+        <button
+          type="button"
+          id="mobileMenuToggle"
+          class="portal-mobile-menu"
+          aria-label="メニューを開く"
+          aria-expanded="false"
+        >
+          <span class="material-symbols-rounded">menu</span>
+        </button>
+
+        <div class="portal-mobile-title">
+          ${escapeHtml(SITE_NAME)}
+        </div>
+      </header>
+
+      <div class="portal-page">
+        <div id="portalContent"></div>
+      </div>
+
+    </main>
+
+    <div
+      id="portalOverlay"
+      class="portal-overlay"
+      aria-hidden="true"
+    ></div>
+  `;
+
+  document.body.prepend(shell);
+
+  setupMenu();
+
+  // モバイルメニューの aria-expanded を同期
+  const mobileToggle =
+    document.getElementById("mobileMenuToggle");
+
+  mobileToggle?.addEventListener("click", () => {
+    mobileToggle.setAttribute(
+      "aria-expanded",
+      String(
+        document.body.classList.contains("mobile-sidebar-open")
+      )
+    );
+  });
+
+  return document.getElementById("portalContent");
+}
+
+// Firestore からログインユーザーのプロフィールを取得
+async function getCurrentUserProfile(user = auth.currentUser) {
+  if (!user?.uid) {
     return null;
   }
 
   try {
+    const userRef = doc(db, "users", user.uid);
+    const snapshot = await getDoc(userRef);
 
-    const ref =
-      doc(db, "users", user.uid);
-
-    const snap =
-      await getDoc(ref);
-
-    if (!snap.exists()) {
-
-      return {
-        uid: user.uid,
-        email: user.email || "",
-        displayName:
-          user.displayName || "",
-        role: "student"
-      };
+    // 登録されていないユーザーを生徒扱いにしない
+    if (!snapshot.exists()) {
+      return null;
     }
 
-    return {
-      uid: user.uid,
-      ...snap.data()
-    };
+    const data = snapshot.data();
 
-  } catch (error) {
-
-    console.error(
-      "ユーザー情報取得エラー:",
-      error
-    );
+    // 許可するロールを限定
+    if (!["admin", "student"].includes(data.role)) {
+      console.error("不正または未設定のユーザーロール:", data.role);
+      return null;
+    }
 
     return {
       uid: user.uid,
       email: user.email || "",
-      displayName:
-        user.displayName || "",
-      role: "student"
+      displayName: user.displayName || "",
+      ...data
     };
+  } catch (error) {
+    console.error("ユーザー情報取得エラー:", error);
+    throw error;
   }
 }
 
+// 認証・権限確認
 function protectPage(requiredRole = null) {
-
   return new Promise(resolve => {
+    let completed = false;
+    let unsubscribe = () => {};
 
-    if (!auth) {
-      location.href =
-        "../login.html";
-      return;
-    }
+    const finish = result => {
+      if (completed) return;
 
-    const unsubscribe =
-      auth.onAuthStateChanged(
-        async user => {
+      completed = true;
+      unsubscribe();
+      resolve(result);
+    };
 
-          if (!user) {
+    unsubscribe = onAuthStateChanged(
+      auth,
+      async user => {
+        if (completed) return;
 
-            unsubscribe();
+        if (!user) {
+          finish(null);
+          location.replace(appUrl("index.html"));
+          return;
+        }
 
-            location.href =
-              "../login.html";
+        try {
+          const profile = await getCurrentUserProfile(user);
 
+          if (completed) return;
+
+          if (!profile) {
+            await signOut(auth);
+            finish(null);
+            location.replace(appUrl("index.html"));
             return;
           }
-
-          const profile =
-            await getCurrentUserProfile();
 
           if (
             requiredRole &&
-            profile?.role !== requiredRole
+            profile.role !== requiredRole
           ) {
+            const destination =
+              profile.role === "admin"
+                ? "dashboard/admin.html"
+                : "dashboard/student.html";
 
-            alert(
-              "このページを利用する権限がありません。"
-            );
+            finish(null);
 
-            location.href =
-              requiredRole === "admin"
-                ? "../dashboard/admin.html"
-                : "../dashboard/student.html";
-
+            alert("このページを利用する権限がありません。");
+            location.replace(appUrl(destination));
             return;
           }
 
-          unsubscribe();
-
-          resolve({
+          finish({
             user,
             profile
           });
-        }
-      );
+        } catch (error) {
+          console.error("ページ認証エラー:", error);
 
+          finish(null);
+
+          alert(
+            "ユーザー情報を確認できませんでした。通信状態と Firestore の設定を確認してください。"
+          );
+
+          location.replace(appUrl("index.html"));
+        }
+      },
+      error => {
+        console.error("認証状態の監視エラー:", error);
+
+        finish(null);
+
+        alert(
+          "ログイン状態を確認できませんでした。ページを再読み込みしてください。"
+        );
+
+        location.replace(appUrl("index.html"));
+      }
+    );
   });
 }
 
+// 公開 API
 window.portal = {
   SITE_NAME,
   menus,
@@ -457,6 +520,7 @@ window.portal = {
 
 export {
   SITE_NAME,
+  menus,
   renderPortalShell,
   setupMenu,
   getCurrentUserProfile,
