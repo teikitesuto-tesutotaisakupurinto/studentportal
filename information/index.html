@@ -1,49 +1,476 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>お知らせ | 定期テスト対策ポータル</title>
-<link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>お知らせ | 定期テスト対策プリント運営事務局</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .information-page {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .information-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .information-header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .information-description {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .information-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .information-tools input,
+    .information-tools select {
+      min-width: 0;
+      padding: 11px 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .information-tools input {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .information-tools select {
+      width: 160px;
+    }
+
+    .information-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .information-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+    }
+
+    .information-card h2 {
+      margin: 12px 0;
+      font-size: 1.15rem;
+      overflow-wrap: anywhere;
+    }
+
+    .information-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .information-category {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .information-body {
+      line-height: 1.9;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: #334155;
+    }
+
+    .information-status {
+      padding: 24px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .information-error {
+      color: #b91c1c;
+      background: #fef2f2;
+    }
+
+    .information-count {
+      margin-bottom: 12px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .information-refresh {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 9px;
+      background: #1d4ed8;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .information-refresh:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .information-detail {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    @media (max-width: 600px) {
+      .information-card {
+        padding: 16px;
+      }
+
+      .information-tools {
+        flex-direction: column;
+      }
+
+      .information-tools select {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="information-page">
+      <header class="information-header">
+        <div>
+          <h1>お知らせ</h1>
+          <p class="information-description">
+            学校からのお知らせを確認できます。
+          </p>
+        </div>
 
-<div class="layout">
+        <button
+          id="refreshButton"
+          class="information-refresh"
+          type="button"
+        >
+          再読み込み
+        </button>
+      </header>
 
-<aside class="sidebar">
-<div class="logo">定期テスト対策ポータル</div>
+      <section aria-label="お知らせ検索">
+        <div class="information-tools">
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="タイトル・本文を検索"
+            aria-label="お知らせを検索"
+          >
 
-<nav>
-<a href="../home/index.html">ホーム</a>
-<a href="../information/index.html">お知らせ</a>
-<a href="../messages/index.html">連絡</a>
-<a href="../documents/index.html">配布文書</a>
-<a href="../calendar/index.html">カレンダー</a>
-<a href="../scores/index.html">テスト成績</a>
-<a href="../settings/index.html">各種設定</a>
-<hr>
-<button onclick="logout()">ログアウト</button>
-</nav>
-</aside>
+          <select id="categoryFilter" aria-label="カテゴリーで絞り込み">
+            <option value="">すべてのカテゴリー</option>
+            <option value="重要">重要</option>
+            <option value="行事">行事</option>
+            <option value="学習">学習</option>
+            <option value="連絡">連絡</option>
+          </select>
+        </div>
+      </section>
 
-<main class="content">
+      <p id="informationCount" class="information-count">
+        読み込み中…
+      </p>
 
-<section>
+      <div
+        id="informationStatus"
+        class="information-status"
+        role="status"
+        aria-live="polite"
+      >
+        お知らせを読み込んでいます。
+      </div>
 
-<h1>お知らせ</h1>
+      <section
+        id="informationList"
+        class="information-list"
+        aria-label="お知らせ一覧"
+      ></section>
+    </main>
+  </div>
 
-<div id="noticeList">
-読み込み中...
-</div>
+  <script type="module">
+    import {
+      auth,
+      db,
+      collection,
+      getDocs,
+      onAuthStateChanged,
+      query,
+      orderBy
+    } from "../js/firebase.js";
 
-</section>
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
 
-</main>
-</div>
+    const listElement = document.getElementById("informationList");
+    const statusElement = document.getElementById("informationStatus");
+    const countElement = document.getElementById("informationCount");
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const refreshButton = document.getElementById("refreshButton");
 
-<script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/student.js"></script>
+    let allInformation = [];
+    let loading = false;
+    let initialized = false;
 
+    function setStatus(message, isError = false) {
+      statusElement.textContent = message;
+      statusElement.hidden = false;
+      statusElement.classList.toggle("information-error", isError);
+    }
+
+    function normalizeDate(value) {
+      if (!value) return null;
+
+      if (typeof value.toDate === "function") {
+        return value.toDate();
+      }
+
+      if (value instanceof Date) {
+        return value;
+      }
+
+      if (typeof value === "string" || typeof value === "number") {
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+
+      return null;
+    }
+
+    function formatDate(value) {
+      const date = normalizeDate(value);
+
+      if (!date) return "日付未設定";
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      }).format(date);
+    }
+
+    function getText(data, keys, fallback = "") {
+      for (const key of keys) {
+        if (typeof data[key] === "string" && data[key].trim()) {
+          return data[key].trim();
+        }
+      }
+
+      return fallback;
+    }
+
+    function renderInformation() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const category = categoryFilter.value;
+
+      const filtered = allInformation.filter(item => {
+        const searchableText =
+          `${item.title} ${item.body} ${item.category}`.toLowerCase();
+
+        const matchesKeyword =
+          !keyword || searchableText.includes(keyword);
+
+        const matchesCategory =
+          !category || item.category === category;
+
+        return matchesKeyword && matchesCategory;
+      });
+
+      listElement.replaceChildren();
+      countElement.textContent = `${filtered.length}件のお知らせ`;
+
+      if (filtered.length === 0) {
+        setStatus(
+          allInformation.length === 0
+            ? "現在、公開されているお知らせはありません。"
+            : "条件に一致するお知らせはありません。"
+        );
+        return;
+      }
+
+      statusElement.hidden = true;
+
+      for (const item of filtered) {
+        const article = document.createElement("article");
+        article.className = "information-card";
+
+        const meta = document.createElement("div");
+        meta.className = "information-meta";
+
+        const categoryBadge = document.createElement("span");
+        categoryBadge.className = "information-category";
+        categoryBadge.textContent = item.category;
+
+        const date = document.createElement("span");
+        date.textContent = formatDate(item.date);
+
+        meta.append(categoryBadge, date);
+
+        const title = document.createElement("h2");
+        title.textContent = item.title;
+
+        const body = document.createElement("p");
+        body.className = "information-body";
+        body.textContent = item.body || "本文はありません。";
+
+        article.append(meta, title, body);
+
+        if (item.author) {
+          const detail = document.createElement("div");
+          detail.className = "information-detail";
+
+          const author = document.createElement("small");
+          author.textContent = `発信者：${item.author}`;
+
+          detail.append(author);
+          article.append(detail);
+        }
+
+        listElement.append(article);
+      }
+    }
+
+    async function loadInformation() {
+      if (loading) return;
+
+      loading = true;
+      refreshButton.disabled = true;
+      setStatus("お知らせを読み込んでいます。");
+
+      try {
+        const informationRef = collection(db, "information");
+        let snapshot;
+
+        try {
+          snapshot = await getDocs(
+            query(informationRef, orderBy("createdAt", "desc"))
+          );
+        } catch (firstError) {
+          // createdAt がない既存データにも対応するため、
+          // 並び替えなしで再取得する。
+          console.warn(
+            "createdAt による並び替えに失敗しました。",
+            firstError
+          );
+
+          snapshot = await getDocs(informationRef);
+        }
+
+        allInformation = snapshot.docs.map(documentSnapshot => {
+          const data = documentSnapshot.data();
+
+          return {
+            id: documentSnapshot.id,
+            title: getText(data, ["title", "subject"], "タイトル未設定"),
+            body: getText(data, ["body", "content", "message"]),
+            category: getText(data, ["category", "type"], "連絡"),
+            date: data.createdAt || data.date || data.updatedAt || null,
+            author: getText(data, ["authorName", "author"])
+          };
+        });
+
+        allInformation.sort((a, b) => {
+          const dateA = normalizeDate(a.date)?.getTime() || 0;
+          const dateB = normalizeDate(b.date)?.getTime() || 0;
+          return dateB - dateA;
+        });
+
+        renderInformation();
+      } catch (error) {
+        console.error("お知らせの取得に失敗しました:", error);
+
+        allInformation = [];
+        listElement.replaceChildren();
+        countElement.textContent = "取得できませんでした";
+
+        setStatus(
+          error.code === "permission-denied"
+            ? "お知らせを閲覧する権限がありません。管理者にお問い合わせください。"
+            : "お知らせを取得できませんでした。通信状況やFirestoreの設定を確認してください。",
+          true
+        );
+      } finally {
+        loading = false;
+        refreshButton.disabled = false;
+      }
+    }
+
+    searchInput.addEventListener("input", renderInformation);
+    categoryFilter.addEventListener("change", renderInformation);
+    refreshButton.addEventListener("click", loadInformation);
+
+    async function startPage() {
+      if (initialized) return;
+      initialized = true;
+
+      const user = await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(auth, currentUser => {
+          unsubscribe();
+          resolve(currentUser);
+        }, () => {
+          resolve(null);
+        });
+      });
+
+      if (!user) {
+        window.location.replace("../login.html");
+        return;
+      }
+
+      const allowed = await protectPage("login");
+
+      if (allowed === false) return;
+
+      renderPortalShell({
+        title: "お知らせ",
+        activePage: "information"
+      });
+
+      await loadInformation();
+    }
+
+    startPage().catch(error => {
+      console.error("お知らせページの初期化に失敗しました:", error);
+      setStatus("ページの初期化に失敗しました。", true);
+    });
+  </script>
 </body>
 </html>
