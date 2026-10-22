@@ -1,99 +1,347 @@
+
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+  <meta name="theme-color" content="#173b70">
+  <meta name="description" content="定期テスト対策プリント運営事務局の管理者ダッシュボード">
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0">
+  <title>管理者ダッシュボード | 定期テスト対策プリント運営事務局</title>
 
-<title>
-定期テスト対策プリント運営事務局|ポータルサイト
-</title>
+  <link rel="stylesheet" href="../css/style.css">
 
-<link rel="icon"
-      href="../favicon.svg">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  >
 
-<link
- href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
- rel="stylesheet">
+  <style>
+    [hidden] {
+      display: none !important;
+    }
 
-<link rel="stylesheet"
-      href="../css/style.css">
+    .dashboard-loading {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+      color: #173b70;
+      text-align: center;
+    }
 
+    .dashboard-loading .material-symbols-rounded {
+      font-size: 44px;
+    }
+
+    .dashboard-error {
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 24px;
+      border: 1px solid #f0c5c5;
+      border-radius: 12px;
+      background: #fff7f7;
+      color: #8b2020;
+      line-height: 1.8;
+    }
+
+    .dashboard-error h1 {
+      font-size: 1.35rem;
+      margin-top: 0;
+    }
+
+    .dashboard-error button {
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 8px;
+      background: #173b70;
+      color: white;
+      cursor: pointer;
+    }
+
+    .dashboard-content {
+      padding-bottom: 32px;
+    }
+
+    .dashboard-welcome {
+      margin-bottom: 24px;
+    }
+
+    .dashboard-welcome p {
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .dashboard-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgb(15 23 42 / 4%);
+    }
+
+    .dashboard-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .dashboard-card p {
+      flex: 1;
+      margin: 0;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .dashboard-card-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #edf4ff;
+      color: #173b70;
+    }
+
+    .dashboard-card-icon .material-symbols-rounded {
+      font-size: 28px;
+    }
+
+    .dashboard-link {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #173b70;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .dashboard-link:hover {
+      background: #24549a;
+    }
+
+    .dashboard-link:focus-visible,
+    .dashboard-error button:focus-visible {
+      outline: 3px solid #f4bd50;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .dashboard-card {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<script type="module">
+  <!-- 認証中は管理画面の内容を表示しない -->
+  <section
+    id="dashboardLoading"
+    class="dashboard-loading"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="material-symbols-rounded" aria-hidden="true">
+      progress_activity
+    </span>
 
-import {
-  protectPage,
-  renderPortalShell
-} from "../js/portal.js";
+    <p>管理者権限を確認しています...</p>
+  </section>
 
-const result =
-  await protectPage("admin");
+  <!-- 認証や画面の初期化に失敗した場合 -->
+  <section
+    id="dashboardError"
+    class="dashboard-error"
+    role="alert"
+    hidden
+  >
+    <h1>管理画面を表示できません</h1>
 
-const content =
-  renderPortalShell();
+    <p id="dashboardErrorMessage">
+      認証または画面の初期化に失敗しました。
+    </p>
 
-content.innerHTML = `
+    <button
+      type="button"
+      id="dashboardRetry"
+    >
+      ページを再読み込み
+    </button>
+  </section>
 
-<h1 class="page-title">
-ダッシュボード
-</h1>
+  <!-- 認証に成功した後にだけ生成する -->
+  <div id="dashboardMount" hidden></div>
 
-<div class="grid">
+  <script type="module">
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
 
-<div class="card">
+    const loadingElement =
+      document.getElementById("dashboardLoading");
 
-<h3>管理画面</h3>
+    const errorElement =
+      document.getElementById("dashboardError");
 
-<p>
-定期テスト対策プリント運営事務局の管理画面です。
-</p>
+    const errorMessageElement =
+      document.getElementById("dashboardErrorMessage");
 
-</div>
+    const mountElement =
+      document.getElementById("dashboardMount");
 
-<div class="card">
+    const retryButton =
+      document.getElementById("dashboardRetry");
 
-<h3>お知らせ管理</h3>
+    function showError(message) {
+      loadingElement.hidden = true;
+      mountElement.hidden = true;
 
-<p>
-お知らせの作成・配信を管理できます。
-</p>
+      errorMessageElement.textContent = message;
+      errorElement.hidden = false;
+    }
 
-<a
- href="../information/admin.html"
- class="secondary-button">
-管理する
-</a>
+    retryButton.addEventListener("click", () => {
+      location.reload();
+    });
 
-</div>
+    async function initializeDashboard() {
+      try {
+        // 管理者のログイン状態と権限を確認
+        const result = await protectPage("admin");
 
-<div class="card">
+        // 未認証・権限不一致の場合は表示しない
+        // protectPage 側でログイン画面等への遷移を行う
+        if (!result) {
+          return;
+        }
 
-<h3>成績分析</h3>
+        // 権限確認後にだけポータルを生成
+        const content = renderPortalShell();
 
-<p>
-テストを選択して詳細な成績分析を行えます。
-</p>
+        if (!content) {
+          showError(
+            "ポータルの表示領域を作成できませんでした。js/portal.js を確認してください。"
+          );
+          return;
+        }
 
-<a
- href="../scores/admin.html"
- class="secondary-button">
-分析する
-</a>
+        content.innerHTML = `
+          <section class="dashboard-content">
 
-</div>
+            <header class="dashboard-welcome">
+              <h1 class="page-title">管理者ダッシュボード</h1>
 
-</div>
+              <p>
+                定期テスト対策プリント運営事務局の管理画面です。
+                各機能を選択して管理業務を行えます。
+              </p>
+            </header>
 
-`;
+            <div class="dashboard-grid">
 
-</script>
+              <article class="dashboard-card">
+                <div class="dashboard-card-icon">
+                  <span class="material-symbols-rounded"
+                        aria-hidden="true">admin_panel_settings</span>
+                </div>
+
+                <h2>管理画面</h2>
+
+                <p>
+                  運営事務局の管理機能にアクセスできます。
+                </p>
+              </article>
+
+              <article class="dashboard-card">
+                <div class="dashboard-card-icon">
+                  <span class="material-symbols-rounded"
+                        aria-hidden="true">campaign</span>
+                </div>
+
+                <h2>お知らせ管理</h2>
+
+                <p>
+                  お知らせの作成・編集・配信を管理します。
+                </p>
+
+                <a
+                  href="../information/admin.html"
+                  class="dashboard-link"
+                >
+                  管理する
+                </a>
+              </article>
+
+              <article class="dashboard-card">
+                <div class="dashboard-card-icon">
+                  <span class="material-symbols-rounded"
+                        aria-hidden="true">analytics</span>
+                </div>
+
+                <h2>成績分析</h2>
+
+                <p>
+                  テスト成績の確認や分析を行います。
+                </p>
+
+                <a
+                  href="../scores/admin.html"
+                  class="dashboard-link"
+                >
+                  分析する
+                </a>
+              </article>
+
+            </div>
+          </section>
+        `;
+
+        // 内容の生成が完了してから表示
+        mountElement.hidden = false;
+        loadingElement.hidden = true;
+
+      } catch (error) {
+        console.error(
+          "管理者ダッシュボード初期化エラー:",
+          error
+        );
+
+        showError(
+          "画面の初期化に失敗しました。インターネット接続、Firebase の設定、ブラウザのコンソールを確認してください。"
+        );
+      }
+    }
+
+    initializeDashboard();
+  </script>
 
 </body>
 </html>
