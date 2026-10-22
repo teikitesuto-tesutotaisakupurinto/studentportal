@@ -3,418 +3,336 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="theme-color" content="#173b70">
-  <meta
-    name="description"
-    content="定期テスト対策プリント運営事務局の生徒用ダッシュボード"
-  >
-
-  <title>生徒ダッシュボード | 定期テスト対策プリント運営事務局</title>
+  <title>生徒ダッシュボード |　定期テスト対策プリント運営事務局</title>
 
   <link rel="stylesheet" href="../css/style.css">
 
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
-  >
-
   <style>
-    [hidden] {
-      display: none !important;
-    }
-
-    .student-loading {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 24px;
-      color: #173b70;
-      text-align: center;
-    }
-
-    .student-loading .material-symbols-rounded {
-      font-size: 44px;
-    }
-
-    .student-error {
-      max-width: 640px;
-      margin: 40px auto;
-      padding: 24px;
-      border: 1px solid #f0c5c5;
-      border-radius: 12px;
-      background: #fff7f7;
-      color: #8b2020;
-      line-height: 1.8;
-    }
-
-    .student-error h1 {
-      margin-top: 0;
-      font-size: 1.35rem;
-    }
-
-    .student-error button {
-      padding: 10px 18px;
-      border: 0;
-      border-radius: 8px;
-      background: #173b70;
-      color: white;
-      cursor: pointer;
-    }
-
     .student-dashboard {
-      padding-bottom: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px;
     }
 
-    .student-welcome {
-      margin-bottom: 24px;
+    .welcome-panel {
+      padding: 30px;
+      margin-bottom: 26px;
+      border-radius: 20px;
+      color: white;
+      background: linear-gradient(120deg, #315efb, #718dff);
     }
 
-    .student-welcome p {
-      color: #64748b;
-      line-height: 1.8;
+    .welcome-panel .eyebrow {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      opacity: .9;
+    }
+
+    .welcome-panel h1 {
+      margin: 0 0 12px;
+      font-size: clamp(25px, 4vw, 34px);
+    }
+
+    .welcome-panel p {
+      margin: 0;
+      line-height: 1.9;
+      opacity: .95;
+    }
+
+    .section-heading {
+      margin: 30px 0 16px;
+      font-size: 19px;
+      font-weight: 800;
     }
 
     .student-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .student-card {
       display: flex;
+      min-height: 185px;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 24px;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: 0 3px 12px rgb(15 23 42 / 4%);
-    }
-
-    .student-card h2 {
-      margin: 0;
-      font-size: 1.1rem;
-    }
-
-    .student-card p {
-      flex: 1;
-      margin: 0;
-      color: #64748b;
-      line-height: 1.8;
-    }
-
-    .student-card-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: #edf4ff;
-      color: #173b70;
-    }
-
-    .student-card-icon .material-symbols-rounded {
-      font-size: 28px;
-    }
-
-    .student-link {
-      display: inline-block;
-      padding: 10px 16px;
-      border-radius: 8px;
-      background: #173b70;
-      color: #fff;
+      padding: 22px;
+      border: 1px solid #e4e9f2;
+      border-radius: 16px;
+      color: inherit;
+      background: white;
       text-decoration: none;
-      font-weight: 600;
+      transition: transform .15s, box-shadow .15s;
     }
 
-    .student-link:hover {
-      background: #24549a;
+    .student-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(30, 50, 90, .09);
     }
 
-    .student-link:focus-visible,
-    .student-error button:focus-visible {
-      outline: 3px solid #f4bd50;
+    .student-card:focus-visible {
+      outline: 3px solid #93b4ff;
       outline-offset: 3px;
     }
 
-    @media (max-width: 700px) {
+    .student-card-icon {
+      display: grid;
+      width: 45px;
+      height: 45px;
+      margin-bottom: 16px;
+      place-items: center;
+      border-radius: 13px;
+      background: #edf2ff;
+      font-size: 23px;
+    }
+
+    .student-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .student-card p {
+      margin: 0;
+      color: #69758b;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .student-card .card-link {
+      margin-top: auto;
+      padding-top: 16px;
+      color: #315efb;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .profile-panel {
+      padding: 22px;
+      border: 1px solid #e4e9f2;
+      border-radius: 16px;
+      background: white;
+    }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .profile-avatar {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      place-items: center;
+      border-radius: 50%;
+      color: #315efb;
+      background: #edf2ff;
+      font-size: 22px;
+    }
+
+    .profile-name {
+      margin: 0 0 5px;
+      font-size: 16px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-email {
+      margin: 0;
+      color: #69758b;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .system-status {
+      margin-top: 18px;
+      color: #69758b;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 900px) {
       .student-grid {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .student-card {
+      .student-dashboard {
         padding: 20px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .student-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .student-dashboard {
+        padding: 15px;
+      }
+
+      .welcome-panel {
+        padding: 23px;
       }
     }
   </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="student-dashboard">
+      <section class="welcome-panel">
+        <p class="eyebrow">STUDENT PORTAL</p>
+        <h1>生徒ダッシュボード</h1>
+        <p>
+          学校のお知らせや配布資料、行事予定などを確認できます。
+          必要なメニューを選択してください。
+        </p>
+      </section>
 
-  <!-- 認証中 -->
-  <section
-    id="studentLoading"
-    class="student-loading"
-    role="status"
-    aria-live="polite"
-  >
-    <span class="material-symbols-rounded" aria-hidden="true">
-      progress_activity
-    </span>
+      <h2 class="section-heading">学習・学校情報</h2>
 
-    <p>ログイン状態と生徒権限を確認しています...</p>
-  </section>
+      <section class="student-grid" aria-label="生徒向けメニュー">
+        <a class="student-card" href="../index.html">
+          <div class="student-card-icon" aria-hidden="true">🏠</div>
+          <h3>ポータルホーム</h3>
+          <p>ポータルのトップページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
 
-  <!-- 初期化エラー -->
-  <section
-    id="studentError"
-    class="student-error"
-    role="alert"
-    hidden
-  >
-    <h1>ダッシュボードを表示できません</h1>
+        <a class="student-card" href="../information/index.html">
+          <div class="student-card-icon" aria-hidden="true">📢</div>
+          <h3>学校からのお知らせ</h3>
+          <p>学校からの連絡や最新のお知らせを確認します。</p>
+          <span class="card-link">お知らせを見る →</span>
+        </a>
 
-    <p id="studentErrorMessage">
-      認証または画面の初期化に失敗しました。
-    </p>
+        <a class="student-card" href="../documents/index.html">
+          <div class="student-card-icon" aria-hidden="true">📁</div>
+          <h3>配布資料</h3>
+          <p>授業や学校生活に関する資料を確認します。</p>
+          <span class="card-link">資料を見る →</span>
+        </a>
 
-    <button
-      type="button"
-      id="studentRetry"
-    >
-      ページを再読み込み
-    </button>
-  </section>
+        <a class="student-card" href="../calendar/index.html">
+          <div class="student-card-icon" aria-hidden="true">📅</div>
+          <h3>学校カレンダー</h3>
+          <p>学校行事や予定に関する情報を確認します。</p>
+          <span class="card-link">予定を見る →</span>
+        </a>
 
-  <!-- 認証成功後に表示 -->
-  <div id="studentMount" hidden></div>
+        <a class="student-card" href="../scores/index.html">
+          <div class="student-card-icon" aria-hidden="true">📊</div>
+          <h3>成績・テスト</h3>
+          <p>利用可能な成績やテスト関連のページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
+
+        <a class="student-card" href="../messages/index.html">
+          <div class="student-card-icon" aria-hidden="true">💬</div>
+          <h3>メッセージ</h3>
+          <p>メッセージ機能が用意されている場合に利用します。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
+      </section>
+
+      <h2 class="section-heading">アカウント情報</h2>
+
+      <section class="profile-panel">
+        <div class="profile-row">
+          <div class="profile-avatar" aria-hidden="true">👤</div>
+
+          <div>
+            <p class="profile-name" id="profileName">
+              アカウント情報を読み込み中……
+            </p>
+
+            <p class="profile-email" id="profileEmail"></p>
+          </div>
+        </div>
+
+        <p
+          id="systemStatus"
+          class="system-status"
+          role="status"
+          aria-live="polite"
+        >
+          ログイン状態を確認しています……
+        </p>
+      </section>
+    </main>
+  </div>
 
   <script type="module">
+    import {
+      auth,
+      onAuthStateChanged
+    } from "../js/firebase.js";
+
     import {
       protectPage,
       renderPortalShell
     } from "../js/portal.js";
 
-    const loadingElement =
-      document.getElementById("studentLoading");
-
-    const errorElement =
-      document.getElementById("studentError");
-
-    const errorMessageElement =
-      document.getElementById("studentErrorMessage");
-
-    const mountElement =
-      document.getElementById("studentMount");
-
-    document
-      .getElementById("studentRetry")
-      .addEventListener("click", () => {
-        location.reload();
-      });
-
-    function showError(message) {
-      loadingElement.hidden = true;
-      mountElement.hidden = true;
-
-      errorMessageElement.textContent = message;
-      errorElement.hidden = false;
-    }
-
-    async function initializeDashboard() {
+    async function initializeStudentDashboard() {
       try {
-        // 生徒としてログインしていることを確認
-        const result = await protectPage("student");
+        const user = await protectPage("student");
 
-        // 認証失敗時は画面を表示しない
-        if (!result) {
-          return;
-        }
+        if (!user) return;
 
-        // 認証成功後に共通レイアウトを作成
-        const content = renderPortalShell();
+        await renderPortalShell();
 
-        if (!content) {
-          showError(
-            "ポータルの表示領域を作成できませんでした。js/portal.js を確認してください。"
-          );
-          return;
-        }
+        const nameElement =
+          document.getElementById("profileName");
 
-        const profile = result.profile;
+        const emailElement =
+          document.getElementById("profileEmail");
 
-        // Firestore の氏名フィールドがある場合は表示する
-        const displayName =
-          profile.displayName ||
-          profile.name ||
-          profile.studentName ||
-          result.user.displayName ||
-          "生徒";
+        const statusElement =
+          document.getElementById("systemStatus");
 
-        const safeName = String(displayName).replace(
-          /[&<>"']/g,
-          character => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-          })[character]
-        );
+        onAuthStateChanged(auth, currentUser => {
+          if (!currentUser) return;
 
-        content.innerHTML = `
-          <section class="student-dashboard">
+          const displayName =
+            currentUser.displayName ||
+            currentUser.email ||
+            "生徒ユーザー";
 
-            <header class="student-welcome">
-              <h1 class="page-title">生徒ダッシュボード</h1>
+          if (nameElement) {
+            nameElement.textContent = displayName;
+          }
 
-              <p>
-                ${safeName} さん、こんにちは。
-                必要な機能を選択してください。
-              </p>
-            </header>
+          if (emailElement) {
+            emailElement.textContent =
+              currentUser.email || "メールアドレス未登録";
+          }
 
-            <div class="student-grid">
-
-              <article class="student-card">
-                <div class="student-card-icon">
-                  <span
-                    class="material-symbols-rounded"
-                    aria-hidden="true"
-                  >campaign</span>
-                </div>
-
-                <h2>お知らせ</h2>
-
-                <p>
-                  運営事務局からのお知らせを確認できます。
-                </p>
-
-                <a
-                  class="student-link"
-                  href="../information/student.html"
-                >
-                  お知らせを見る
-                </a>
-              </article>
-
-              <article class="student-card">
-                <div class="student-card-icon">
-                  <span
-                    class="material-symbols-rounded"
-                    aria-hidden="true"
-                  >description</span>
-                </div>
-
-                <h2>配布文書</h2>
-
-                <p>
-                  配布された文書や資料を確認できます。
-                </p>
-
-                <a
-                  class="student-link"
-                  href="../documents/student.html"
-                >
-                  文書を見る
-                </a>
-              </article>
-
-              <article class="student-card">
-                <div class="student-card-icon">
-                  <span
-                    class="material-symbols-rounded"
-                    aria-hidden="true"
-                  >calendar_month</span>
-                </div>
-
-                <h2>カレンダー</h2>
-
-                <p>
-                  登録されている予定を確認できます。
-                </p>
-
-                <a
-                  class="student-link"
-                  href="../calendar/student.html"
-                >
-                  予定を見る
-                </a>
-              </article>
-
-              <article class="student-card">
-                <div class="student-card-icon">
-                  <span
-                    class="material-symbols-rounded"
-                    aria-hidden="true"
-                  >assignment</span>
-                </div>
-
-                <h2>テスト成績</h2>
-
-                <p>
-                  テストに関する成績入力画面を開きます。
-                </p>
-
-                <a
-                  class="student-link"
-                  href="../scoreForms/student.html"
-                >
-                  成績機能を開く
-                </a>
-              </article>
-
-              <article class="student-card">
-                <div class="student-card-icon">
-                  <span
-                    class="material-symbols-rounded"
-                    aria-hidden="true"
-                  >mail</span>
-                </div>
-
-                <h2>連絡</h2>
-
-                <p>
-                  連絡機能を開きます。
-                </p>
-
-                <a
-                  class="student-link"
-                  href="../messages/student.html"
-                >
-                  連絡を開く
-                </a>
-              </article>
-
-            </div>
-          </section>
-        `;
-
-        // 表示内容の生成が完了してから公開
-        mountElement.hidden = false;
-        loadingElement.hidden = true;
-
+          if (statusElement) {
+            statusElement.textContent =
+              "生徒アカウントでログインしています。";
+          }
+        });
       } catch (error) {
         console.error(
-          "生徒ダッシュボード初期化エラー:",
+          "生徒ダッシュボードの初期化に失敗しました:",
           error
         );
 
-        showError(
-          "画面の初期化に失敗しました。Firebase の設定、通信状態、ブラウザのコンソールを確認してください。"
-        );
+        const statusElement =
+          document.getElementById("systemStatus");
+
+        if (statusElement) {
+          statusElement.textContent =
+            "画面の初期化に失敗しました。ページを再読み込みしてください。";
+        }
       }
     }
 
-    initializeDashboard();
+    initializeStudentDashboard();
   </script>
-
 </body>
 </html>
