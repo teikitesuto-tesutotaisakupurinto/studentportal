@@ -1,55 +1,865 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>連絡 | 定期テスト対策ポータル</title>
-<link rel="stylesheet" href="../css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>連絡 | 定期テスト対策プリント運営事務局</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .messages-page {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .messages-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .messages-header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .messages-description {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .messages-button {
+      padding: 10px 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #1d4ed8;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .messages-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .messages-button.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .messages-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .messages-panel {
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+    }
+
+    .messages-panel h2 {
+      margin: 0 0 16px;
+      font-size: 1.15rem;
+    }
+
+    .messages-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .messages-tab {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      color: #334155;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .messages-tab.active {
+      border-color: #1d4ed8;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .messages-list {
+      display: grid;
+      gap: 10px;
+      max-height: 620px;
+      overflow-y: auto;
+    }
+
+    .message-item {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: white;
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .message-item:hover {
+      background: #f8fafc;
+    }
+
+    .message-item.selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .message-item-title {
+      margin: 0 0 7px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .message-item-meta {
+      color: #64748b;
+      font-size: 0.8rem;
+      overflow-wrap: anywhere;
+    }
+
+    .message-item-preview {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message-badge {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .messages-status {
+      padding: 18px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .messages-status.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .message-detail {
+      min-width: 0;
+    }
+
+    .message-detail-title {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      overflow-wrap: anywhere;
+    }
+
+    .message-detail-meta {
+      margin-bottom: 18px;
+      color: #64748b;
+      font-size: 0.88rem;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .message-detail-body {
+      min-height: 120px;
+      padding: 16px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #334155;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .message-compose {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .message-compose label {
+      display: grid;
+      gap: 7px;
+      color: #475569;
+      font-size: 0.9rem;
+    }
+
+    .message-compose input,
+    .message-compose textarea,
+    .message-compose select {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .message-compose textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .message-compose-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .messages-count {
+      margin: 0 0 12px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 800px) {
+      .messages-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .messages-list {
+        max-height: 350px;
+      }
+
+      .messages-panel {
+        padding: 15px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="messages-page">
+      <header class="messages-header">
+        <div>
+          <h1>メッセージ</h1>
+          <p class="messages-description">
+            学校内の連絡を送受信できます。
+          </p>
+        </div>
 
-<div class="layout">
+        <button id="refreshButton" class="messages-button" type="button">
+          再読み込み
+        </button>
+      </header>
 
-<aside class="sidebar">
-<div class="logo">定期テスト対策ポータル</div>
+      <div class="messages-layout">
+        <section class="messages-panel">
+          <h2>メッセージ一覧</h2>
 
-<nav>
-<a href="../home/index.html">ホーム</a>
-<a href="../information/index.html">お知らせ</a>
-<a href="../messages/index.html">連絡</a>
-<a href="../documents/index.html">配布文書</a>
-<a href="../calendar/index.html">カレンダー</a>
-<a href="../scores/index.html">テスト成績</a>
-<a href="../settings/index.html">各種設定</a>
-<hr>
-<button onclick="logout()">ログアウト</button>
-</nav>
-</aside>
+          <div class="messages-tabs" role="group" aria-label="表示するメッセージ">
+            <button
+              id="inboxTab"
+              class="messages-tab active"
+              type="button"
+              aria-pressed="true"
+            >
+              受信
+            </button>
 
-<main class="content">
+            <button
+              id="sentTab"
+              class="messages-tab"
+              type="button"
+              aria-pressed="false"
+            >
+              送信
+            </button>
+          </div>
 
-<section>
+          <p id="messagesCount" class="messages-count"></p>
 
-<h1>連絡</h1>
+          <div
+            id="messagesListStatus"
+            class="messages-status"
+            role="status"
+            aria-live="polite"
+          >
+            読み込み中…
+          </div>
 
-<div class="card">
+          <div id="messagesList" class="messages-list"></div>
+        </section>
 
-<textarea
-id="messageText"
-placeholder="運営への連絡内容"></textarea>
+        <section class="messages-panel">
+          <h2>メッセージ詳細</h2>
 
-<button onclick="sendMessage()">送信</button>
+          <div id="messageDetail" class="message-detail">
+            <div class="messages-status">
+              左側のメッセージを選択してください。
+            </div>
+          </div>
 
-</div>
+          <form id="messageForm" class="message-compose">
+            <h2>新規メッセージ</h2>
 
-</section>
+            <label>
+              宛先
+              <select id="recipientId" required>
+                <option value="">宛先を選択してください</option>
+              </select>
+            </label>
 
-</main>
-</div>
+            <label>
+              件名
+              <input
+                id="messageSubject"
+                type="text"
+                maxlength="200"
+                placeholder="件名を入力"
+                required
+              >
+            </label>
 
-<script type="module" src="../js/auth.js"></script>
-<script type="module" src="../js/student.js"></script>
+            <label>
+              本文
+              <textarea
+                id="messageBody"
+                maxlength="10000"
+                placeholder="メッセージを入力"
+                required
+              ></textarea>
+            </label>
 
+            <p
+              id="composeStatus"
+              class="messages-status"
+              role="status"
+              aria-live="polite"
+              hidden
+            ></p>
+
+            <div class="message-compose-actions">
+              <button id="sendButton" class="messages-button" type="submit">
+                送信する
+              </button>
+
+              <button
+                id="clearFormButton"
+                class="messages-button secondary"
+                type="button"
+              >
+                入力をクリア
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import {
+      auth,
+      db,
+      doc,
+      getDoc,
+      collection,
+      getDocs,
+      addDoc,
+      onAuthStateChanged,
+      serverTimestamp
+    } from "../js/firebase.js";
+
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
+
+    const messagesList = document.getElementById("messagesList");
+    const messagesListStatus = document.getElementById("messagesListStatus");
+    const messagesCount = document.getElementById("messagesCount");
+    const messageDetail = document.getElementById("messageDetail");
+    const messageForm = document.getElementById("messageForm");
+    const recipientSelect = document.getElementById("recipientId");
+    const subjectInput = document.getElementById("messageSubject");
+    const bodyInput = document.getElementById("messageBody");
+    const composeStatus = document.getElementById("composeStatus");
+    const sendButton = document.getElementById("sendButton");
+    const refreshButton = document.getElementById("refreshButton");
+    const inboxTab = document.getElementById("inboxTab");
+    const sentTab = document.getElementById("sentTab");
+    const clearFormButton = document.getElementById("clearFormButton");
+
+    let currentUser = null;
+    let currentProfile = {};
+    let currentRole = "student";
+    let currentView = "inbox";
+    let allMessages = [];
+    let allUsers = [];
+    let selectedMessageId = null;
+    let loading = false;
+    let initialized = false;
+
+    function setStatus(element, message, isError = false) {
+      element.textContent = message;
+      element.hidden = false;
+      element.classList.toggle("error", isError);
+    }
+
+    function getString(data, keys, fallback = "") {
+      for (const key of keys) {
+        if (typeof data[key] === "string" && data[key].trim()) {
+          return data[key].trim();
+        }
+      }
+      return fallback;
+    }
+
+    function formatDate(value) {
+      if (!value) return "日時未設定";
+
+      let date;
+
+      if (typeof value.toDate === "function") {
+        date = value.toDate();
+      } else {
+        date = new Date(value);
+      }
+
+      if (Number.isNaN(date.getTime())) return "日時未設定";
+
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function currentDisplayName() {
+      return currentProfile.displayName ||
+        currentProfile.name ||
+        currentUser?.displayName ||
+        currentUser?.email ||
+        "ユーザー";
+    }
+
+    function getOtherUserName(uid) {
+      const user = allUsers.find(item => item.uid === uid);
+
+      if (user) {
+        return user.displayName || user.name || user.email || uid;
+      }
+
+      return uid || "不明";
+    }
+
+    function isInboxMessage(message) {
+      return message.recipientId === currentUser.uid;
+    }
+
+    function isSentMessage(message) {
+      return message.senderId === currentUser.uid;
+    }
+
+    function getVisibleMessages() {
+      return allMessages.filter(message =>
+        currentView === "inbox"
+          ? isInboxMessage(message)
+          : isSentMessage(message)
+      ).sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() ||
+          new Date(a.createdAt || 0).getTime() || 0;
+        const bTime = b.createdAt?.toMillis?.() ||
+          new Date(b.createdAt || 0).getTime() || 0;
+
+        return bTime - aTime;
+      });
+    }
+
+    function renderMessageList() {
+      const messages = getVisibleMessages();
+
+      messagesList.replaceChildren();
+      messagesCount.textContent = `${messages.length}件`;
+
+      if (messages.length === 0) {
+        setStatus(
+          messagesListStatus,
+          currentView === "inbox"
+            ? "受信メッセージはありません。"
+            : "送信メッセージはありません。"
+        );
+        return;
+      }
+
+      messagesListStatus.hidden = true;
+
+      for (const message of messages) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "message-item";
+
+        if (message.id === selectedMessageId) {
+          button.classList.add("selected");
+        }
+
+        const title = document.createElement("p");
+        title.className = "message-item-title";
+        title.textContent = message.subject || "件名なし";
+
+        const meta = document.createElement("div");
+        meta.className = "message-item-meta";
+
+        const otherName = currentView === "inbox"
+          ? getOtherUserName(message.senderId)
+          : getOtherUserName(message.recipientId);
+
+        meta.textContent =
+          `${currentView === "inbox" ? "差出人" : "宛先"}：${otherName}` +
+          `　${formatDate(message.createdAt)}`;
+
+        const preview = document.createElement("div");
+        preview.className = "message-item-preview";
+        preview.textContent = (message.body || "").slice(0, 90);
+
+        button.append(title, meta, preview);
+
+        button.addEventListener("click", () => {
+          selectedMessageId = message.id;
+          renderMessageList();
+          renderMessageDetail(message);
+        });
+
+        messagesList.append(button);
+      }
+
+      const selected = messages.find(item => item.id === selectedMessageId);
+
+      if (!selected) {
+        selectedMessageId = messages[0].id;
+        renderMessageList();
+        renderMessageDetail(messages[0]);
+      }
+    }
+
+    function renderMessageDetail(message) {
+      messageDetail.replaceChildren();
+
+      const title = document.createElement("h3");
+      title.className = "message-detail-title";
+      title.textContent = message.subject || "件名なし";
+
+      const meta = document.createElement("div");
+      meta.className = "message-detail-meta";
+      meta.textContent =
+        `差出人：${getOtherUserName(message.senderId)}` +
+        `\n宛先：${getOtherUserName(message.recipientId)}` +
+        `\n日時：${formatDate(message.createdAt)}`;
+      meta.style.whiteSpace = "pre-line";
+
+      const body = document.createElement("div");
+      body.className = "message-detail-body";
+      body.textContent = message.body || "本文はありません。";
+
+      messageDetail.append(title, meta, body);
+
+      if (message.senderId !== currentUser.uid) {
+        const replyButton = document.createElement("button");
+        replyButton.type = "button";
+        replyButton.className = "messages-button";
+        replyButton.textContent = "この相手に返信";
+
+        replyButton.addEventListener("click", () => {
+          recipientSelect.value = message.senderId;
+          subjectInput.value = message.subject
+            ? `Re: ${message.subject.replace(/^Re:\s*/i, "")}`
+            : "";
+
+          bodyInput.focus();
+          messageForm.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
+
+        messageDetail.append(replyButton);
+      }
+    }
+
+    async function loadUsers() {
+      const snapshot = await getDocs(collection(db, "users"));
+
+      allUsers = snapshot.docs.map(userDoc => {
+        const data = userDoc.data();
+
+        return {
+          uid: userDoc.id,
+          displayName: getString(data, ["displayName", "name"]),
+          name: getString(data, ["name"]),
+          email: getString(data, ["email"]),
+          role: data.role === "admin" ? "admin" : "student"
+        };
+      }).filter(user => user.uid !== currentUser.uid);
+
+      recipientSelect.replaceChildren();
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "宛先を選択してください";
+      recipientSelect.append(placeholder);
+
+      for (const user of allUsers) {
+        const option = document.createElement("option");
+        option.value = user.uid;
+        option.textContent =
+          `${user.displayName || user.name || user.email || user.uid}` +
+          `（${user.role === "admin" ? "管理者" : "生徒"}）`;
+
+        recipientSelect.append(option);
+      }
+    }
+
+    async function loadMessages() {
+      if (loading) return;
+
+      loading = true;
+      refreshButton.disabled = true;
+
+      setStatus(messagesListStatus, "メッセージを読み込んでいます。");
+
+      try {
+        // Security Rulesにより、ユーザーは関係するメッセージのみ
+        // 読み取れる設定にしてください。
+        const snapshot = await getDocs(collection(db, "messages"));
+
+        allMessages = snapshot.docs.map(messageDoc => {
+          const data = messageDoc.data();
+
+          return {
+            id: messageDoc.id,
+            senderId: getString(data, ["senderId"]),
+            recipientId: getString(data, ["recipientId"]),
+            subject: getString(data, ["subject", "title"], "件名なし"),
+            body: getString(data, ["body", "message", "content"]),
+            createdAt: data.createdAt || data.timestamp || null
+          };
+        }).filter(message =>
+          message.senderId === currentUser.uid ||
+          message.recipientId === currentUser.uid ||
+          currentRole === "admin"
+        );
+
+        selectedMessageId = null;
+        renderMessageList();
+      } catch (error) {
+        console.error("メッセージの取得に失敗しました:", error);
+
+        messagesList.replaceChildren();
+
+        setStatus(
+          messagesListStatus,
+          error.code === "permission-denied"
+            ? "メッセージを取得できません。Firestore Security Rulesと取得クエリを確認してください。"
+            : "メッセージを読み込めませんでした。",
+          true
+        );
+      } finally {
+        loading = false;
+        refreshButton.disabled = false;
+      }
+    }
+
+    async function sendMessage(event) {
+      event.preventDefault();
+
+      const recipientId = recipientSelect.value;
+      const subject = subjectInput.value.trim();
+      const body = bodyInput.value.trim();
+
+      if (!recipientId || !subject || !body) {
+        setStatus(composeStatus, "宛先・件名・本文を入力してください。", true);
+        return;
+      }
+
+      if (recipientId === currentUser.uid) {
+        setStatus(composeStatus, "自分自身には送信できません。", true);
+        return;
+      }
+
+      if (body.length > 10000) {
+        setStatus(composeStatus, "本文は10,000文字以内にしてください。", true);
+        return;
+      }
+
+      sendButton.disabled = true;
+      setStatus(composeStatus, "送信しています。");
+
+      try {
+        await addDoc(collection(db, "messages"), {
+          senderId: currentUser.uid,
+          senderName: currentDisplayName(),
+          recipientId,
+          subject,
+          body,
+          createdAt: serverTimestamp()
+        });
+
+        setStatus(composeStatus, "メッセージを送信しました。");
+
+        subjectInput.value = "";
+        bodyInput.value = "";
+
+        currentView = "sent";
+        updateTabs();
+
+        await loadMessages();
+      } catch (error) {
+        console.error("メッセージの送信に失敗しました:", error);
+
+        setStatus(
+          composeStatus,
+          error.code === "permission-denied"
+            ? "送信できませんでした。Firestore Security Rulesを確認してください。"
+            : "送信に失敗しました。入力内容や通信状況を確認してください。",
+          true
+        );
+      } finally {
+        sendButton.disabled = false;
+      }
+    }
+
+    function updateTabs() {
+      inboxTab.classList.toggle("active", currentView === "inbox");
+      sentTab.classList.toggle("active", currentView === "sent");
+
+      inboxTab.setAttribute(
+        "aria-pressed",
+        String(currentView === "inbox")
+      );
+
+      sentTab.setAttribute(
+        "aria-pressed",
+        String(currentView === "sent")
+      );
+
+      selectedMessageId = null;
+      renderMessageList();
+    }
+
+    inboxTab.addEventListener("click", () => {
+      currentView = "inbox";
+      updateTabs();
+    });
+
+    sentTab.addEventListener("click", () => {
+      currentView = "sent";
+      updateTabs();
+    });
+
+    refreshButton.addEventListener("click", async () => {
+      try {
+        await loadUsers();
+      } catch (error) {
+        console.warn("宛先一覧の再取得に失敗しました:", error);
+      }
+
+      await loadMessages();
+    });
+
+    messageForm.addEventListener("submit", sendMessage);
+
+    clearFormButton.addEventListener("click", () => {
+      messageForm.reset();
+      composeStatus.hidden = true;
+    });
+
+    async function startPage() {
+      if (initialized) return;
+      initialized = true;
+
+      currentUser = await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(
+          auth,
+          user => {
+            unsubscribe();
+            resolve(user);
+          },
+          error => {
+            console.error("認証状態の確認に失敗しました:", error);
+            resolve(null);
+          }
+        );
+      });
+
+      if (!currentUser) {
+        window.location.replace("../login.html");
+        return;
+      }
+
+      const profileSnapshot = await getDoc(
+        doc(db, "users", currentUser.uid)
+      );
+
+      currentProfile = profileSnapshot.exists()
+        ? profileSnapshot.data()
+        : {};
+
+      currentRole = currentProfile.role === "admin"
+        ? "admin"
+        : "student";
+
+      await protectPage("login");
+
+      renderPortalShell({
+        title: "メッセージ",
+        activePage: "messages"
+      });
+
+      try {
+        await loadUsers();
+      } catch (error) {
+        console.error("宛先一覧の取得に失敗しました:", error);
+        setStatus(
+          composeStatus,
+          "宛先一覧を取得できません。usersコレクションの読み取り権限を確認してください。",
+          true
+        );
+      }
+
+      await loadMessages();
+    }
+
+    startPage().catch(error => {
+      console.error("メッセージページの初期化に失敗しました:", error);
+      setStatus(messagesListStatus, "ページの初期化に失敗しました。", true);
+    });
+  </script>
 </body>
 </html>
