@@ -1,0 +1,826 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d4ed8">
+  <title>ユーザー管理 | Student Portal</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <style>
+    .users-page {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .users-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .users-header h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .users-subtitle {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .users-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .users-button {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 9px;
+      background: #1d4ed8;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .users-button.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .users-button.danger {
+      background: #b91c1c;
+    }
+
+    .users-button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .users-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .users-stat {
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+    }
+
+    .users-stat-label {
+      color: #64748b;
+      font-size: .9rem;
+    }
+
+    .users-stat-value {
+      margin-top: 8px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .users-panel {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+    }
+
+    .users-panel h2 {
+      margin: 0 0 16px;
+      font-size: 1.15rem;
+    }
+
+    .users-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 190px;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .users-toolbar input,
+    .users-toolbar select,
+    .user-edit-form input,
+    .user-edit-form select {
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      color: #0f172a;
+      font: inherit;
+    }
+
+    .users-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .92rem;
+    }
+
+    .users-table th,
+    .users-table td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .users-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .users-table td {
+      overflow-wrap: anywhere;
+    }
+
+    .users-role {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: .8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .users-role.admin {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .users-row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .users-row-actions button {
+      padding: 7px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      background: white;
+      color: #334155;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .users-row-actions button:hover {
+      background: #f1f5f9;
+    }
+
+    .users-status {
+      padding: 16px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    .users-status.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .user-edit-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .user-edit-form label {
+      display: grid;
+      gap: 7px;
+      color: #475569;
+      font-size: .9rem;
+    }
+
+    .user-edit-form .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .user-edit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      grid-column: 1 / -1;
+    }
+
+    .users-notice {
+      margin-top: 12px;
+      color: #64748b;
+      font-size: .85rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 720px) {
+      .users-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .users-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .user-edit-form {
+        grid-template-columns: 1fr;
+      }
+
+      .user-edit-form .full-width,
+      .user-edit-actions {
+        grid-column: auto;
+      }
+
+      .users-panel {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="portalRoot">
+    <main class="users-page">
+      <header class="users-header">
+        <div>
+          <h1>ユーザー管理</h1>
+          <p class="users-subtitle">
+            登録ユーザーの情報と権限を管理します。
+          </p>
+        </div>
+
+        <div class="users-actions">
+          <button id="refreshButton" class="users-button" type="button">
+            再読み込み
+          </button>
+          <button id="exportButton" class="users-button secondary" type="button">
+            CSV出力
+          </button>
+        </div>
+      </header>
+
+      <section class="users-stats" aria-label="ユーザー統計">
+        <div class="users-stat">
+          <div class="users-stat-label">登録ユーザー数</div>
+          <div id="totalCount" class="users-stat-value">—</div>
+        </div>
+
+        <div class="users-stat">
+          <div class="users-stat-label">管理者数</div>
+          <div id="adminCount" class="users-stat-value">—</div>
+        </div>
+
+        <div class="users-stat">
+          <div class="users-stat-label">生徒数</div>
+          <div id="studentCount" class="users-stat-value">—</div>
+        </div>
+      </section>
+
+      <section class="users-panel">
+        <h2>ユーザー一覧</h2>
+
+        <div class="users-toolbar">
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="名前・メールアドレス・UIDで検索"
+            aria-label="ユーザー検索"
+          >
+
+          <select id="roleFilter" aria-label="権限で絞り込み">
+            <option value="all">すべての権限</option>
+            <option value="admin">管理者</option>
+            <option value="student">生徒</option>
+          </select>
+        </div>
+
+        <div
+          id="listStatus"
+          class="users-status"
+          role="status"
+          aria-live="polite"
+        >
+          ユーザーを読み込んでいます。
+        </div>
+
+        <div class="users-table-wrap">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>メールアドレス</th>
+                <th>権限</th>
+                <th>UID</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="editPanel" class="users-panel" hidden>
+        <h2>ユーザー情報の編集</h2>
+
+        <form id="editForm" class="user-edit-form">
+          <label>
+            ユーザーUID
+            <input id="editUid" type="text" readonly>
+          </label>
+
+          <label>
+            権限
+            <select id="editRole" required>
+              <option value="student">生徒</option>
+              <option value="admin">管理者</option>
+            </select>
+          </label>
+
+          <label>
+            表示名
+            <input
+              id="editName"
+              type="text"
+              maxlength="100"
+              placeholder="表示名"
+            >
+          </label>
+
+          <label>
+            メールアドレス（表示用）
+            <input id="editEmail" type="email" readonly>
+          </label>
+
+          <div class="user-edit-actions">
+            <button id="saveButton" class="users-button" type="submit">
+              保存する
+            </button>
+
+            <button
+              id="cancelEditButton"
+              class="users-button secondary"
+              type="button"
+            >
+              キャンセル
+            </button>
+          </div>
+
+          <p class="users-notice full-width">
+            ここで変更するのはFirestoreのユーザープロフィールです。
+            Firebase Authenticationのメールアドレスやパスワードを変更する機能ではありません。
+          </p>
+
+          <p
+            id="editStatus"
+            class="users-status full-width"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></p>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import {
+      auth,
+      db,
+      doc,
+      getDoc,
+      collection,
+      getDocs,
+      updateDoc,
+      onAuthStateChanged
+    } from "../js/firebase.js";
+
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
+
+    const totalCount = document.getElementById("totalCount");
+    const adminCount = document.getElementById("adminCount");
+    const studentCount = document.getElementById("studentCount");
+    const usersTableBody = document.getElementById("usersTableBody");
+    const listStatus = document.getElementById("listStatus");
+    const searchInput = document.getElementById("searchInput");
+    const roleFilter = document.getElementById("roleFilter");
+    const refreshButton = document.getElementById("refreshButton");
+    const exportButton = document.getElementById("exportButton");
+
+    const editPanel = document.getElementById("editPanel");
+    const editForm = document.getElementById("editForm");
+    const editUid = document.getElementById("editUid");
+    const editRole = document.getElementById("editRole");
+    const editName = document.getElementById("editName");
+    const editEmail = document.getElementById("editEmail");
+    const saveButton = document.getElementById("saveButton");
+    const cancelEditButton = document.getElementById("cancelEditButton");
+    const editStatus = document.getElementById("editStatus");
+
+    let currentUser = null;
+    let users = [];
+    let editingUid = null;
+    let isLoading = false;
+    let initialized = false;
+
+    function setStatus(element, message, isError = false) {
+      element.textContent = message;
+      element.hidden = false;
+      element.classList.toggle("error", isError);
+    }
+
+    function safeString(value) {
+      return typeof value === "string" ? value : "";
+    }
+
+    function getUserRole(user) {
+      return user.role === "admin" ? "admin" : "student";
+    }
+
+    function getUserName(user) {
+      return user.displayName ||
+        user.name ||
+        user.email ||
+        user.uid ||
+        "名前未設定";
+    }
+
+    function renderStats() {
+      totalCount.textContent = String(users.length);
+      adminCount.textContent = String(
+        users.filter(user => getUserRole(user) === "admin").length
+      );
+      studentCount.textContent = String(
+        users.filter(user => getUserRole(user) === "student").length
+      );
+    }
+
+    function getFilteredUsers() {
+      const search = searchInput.value.trim().toLowerCase();
+      const role = roleFilter.value;
+
+      return users.filter(user => {
+        const matchesRole =
+          role === "all" || getUserRole(user) === role;
+
+        const searchable = [
+          user.uid,
+          user.displayName,
+          user.name,
+          user.email
+        ].join(" ").toLowerCase();
+
+        return matchesRole && searchable.includes(search);
+      }).sort((a, b) =>
+        getUserName(a).localeCompare(getUserName(b), "ja")
+      );
+    }
+
+    function makeCell(text) {
+      const td = document.createElement("td");
+      td.textContent = text;
+      return td;
+    }
+
+    function renderUsers() {
+      usersTableBody.replaceChildren();
+
+      const filteredUsers = getFilteredUsers();
+
+      if (filteredUsers.length === 0) {
+        setStatus(
+          listStatus,
+          users.length === 0
+            ? "ユーザーが登録されていません。"
+            : "検索条件に一致するユーザーはいません。"
+        );
+        return;
+      }
+
+      listStatus.hidden = true;
+
+      for (const user of filteredUsers) {
+        const tr = document.createElement("tr");
+
+        tr.append(makeCell(getUserName(user)));
+        tr.append(makeCell(user.email || "未登録"));
+
+        const roleCell = document.createElement("td");
+        const roleBadge = document.createElement("span");
+
+        roleBadge.className =
+          getUserRole(user) === "admin"
+            ? "users-role admin"
+            : "users-role";
+
+        roleBadge.textContent =
+          getUserRole(user) === "admin" ? "管理者" : "生徒";
+
+        roleCell.append(roleBadge);
+        tr.append(roleCell);
+
+        tr.append(makeCell(user.uid));
+
+        const actionsCell = document.createElement("td");
+        const actions = document.createElement("div");
+        actions.className = "users-row-actions";
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "編集";
+        editButton.addEventListener("click", () => openEditor(user));
+
+        actions.append(editButton);
+
+        if (user.uid === currentUser.uid) {
+          const selfLabel = document.createElement("span");
+          selfLabel.className = "users-role admin";
+          selfLabel.textContent = "ログイン中";
+          actions.append(selfLabel);
+        }
+
+        actionsCell.append(actions);
+        tr.append(actionsCell);
+        usersTableBody.append(tr);
+      }
+    }
+
+    function openEditor(user) {
+      editingUid = user.uid;
+      editUid.value = user.uid;
+      editRole.value = getUserRole(user);
+      editName.value = user.displayName || user.name || "";
+      editEmail.value = user.email || "";
+
+      editStatus.hidden = true;
+      editPanel.hidden = false;
+
+      editPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function closeEditor() {
+      editingUid = null;
+      editForm.reset();
+      editPanel.hidden = true;
+      editStatus.hidden = true;
+    }
+
+    async function loadUsers() {
+      if (isLoading) return;
+
+      isLoading = true;
+      refreshButton.disabled = true;
+
+      setStatus(listStatus, "ユーザーを読み込んでいます。");
+
+      try {
+        const snapshot = await getDocs(collection(db, "users"));
+
+        users = snapshot.docs.map(userDoc => {
+          const data = userDoc.data();
+
+          return {
+            uid: userDoc.id,
+            displayName: safeString(data.displayName),
+            name: safeString(data.name),
+            email: safeString(data.email),
+            role: data.role === "admin" ? "admin" : "student"
+          };
+        });
+
+        renderStats();
+        renderUsers();
+      } catch (error) {
+        console.error("ユーザー一覧の取得に失敗しました:", error);
+
+        usersTableBody.replaceChildren();
+
+        setStatus(
+          listStatus,
+          error.code === "permission-denied"
+            ? "ユーザー一覧を取得できません。管理者権限とFirestore Security Rulesを確認してください。"
+            : "ユーザー一覧の読み込みに失敗しました。",
+          true
+        );
+      } finally {
+        isLoading = false;
+        refreshButton.disabled = false;
+      }
+    }
+
+    async function saveUser(event) {
+      event.preventDefault();
+
+      if (!editingUid) return;
+
+      const target = users.find(user => user.uid === editingUid);
+
+      if (!target) {
+        setStatus(editStatus, "対象ユーザーが見つかりません。", true);
+        return;
+      }
+
+      // 管理者自身の権限変更によるロックアウトを防止する。
+      if (
+        editingUid === currentUser.uid &&
+        editRole.value !== "admin"
+      ) {
+        setStatus(
+          editStatus,
+          "ログイン中の管理者自身の権限は、この画面から変更できません。",
+          true
+        );
+        return;
+      }
+
+      const displayName = editName.value.trim();
+      const role = editRole.value;
+
+      if (!["admin", "student"].includes(role)) {
+        setStatus(editStatus, "権限の値が不正です。", true);
+        return;
+      }
+
+      saveButton.disabled = true;
+      setStatus(editStatus, "保存しています。");
+
+      try {
+        await updateDoc(doc(db, "users", editingUid), {
+          displayName,
+          role,
+          updatedAt: new Date()
+        });
+
+        setStatus(editStatus, "保存しました。");
+
+        await loadUsers();
+
+        const updated = users.find(user => user.uid === editingUid);
+
+        if (updated) {
+          openEditor(updated);
+          setStatus(editStatus, "保存しました。");
+        } else {
+          closeEditor();
+        }
+      } catch (error) {
+        console.error("ユーザー情報の保存に失敗しました:", error);
+
+        setStatus(
+          editStatus,
+          error.code === "permission-denied"
+            ? "保存できません。管理者権限とFirestore Security Rulesを確認してください。"
+            : "保存に失敗しました。通信状況を確認してください。",
+          true
+        );
+      } finally {
+        saveButton.disabled = false;
+      }
+    }
+
+    function csvEscape(value) {
+      const string = String(value ?? "");
+      return '"' + string.replace(/"/g, '""') + '"';
+    }
+
+    function exportCSV() {
+      const rows = [
+        ["UID", "名前", "メールアドレス", "権限"],
+        ...getFilteredUsers().map(user => [
+          user.uid,
+          getUserName(user),
+          user.email,
+          getUserRole(user) === "admin" ? "管理者" : "生徒"
+        ])
+      ];
+
+      const csv = "\uFEFF" + rows
+        .map(row => row.map(csvEscape).join(","))
+        .join("\r\n");
+
+      const blob = new Blob([csv], {
+        type: "text/csv;charset=utf-8;"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "student-portal-users.csv";
+      document.body.append(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    searchInput.addEventListener("input", renderUsers);
+    roleFilter.addEventListener("change", renderUsers);
+    refreshButton.addEventListener("click", loadUsers);
+    exportButton.addEventListener("click", exportCSV);
+    editForm.addEventListener("submit", saveUser);
+    cancelEditButton.addEventListener("click", closeEditor);
+
+    async function startPage() {
+      if (initialized) return;
+      initialized = true;
+
+      const user = await new Promise(resolve => {
+        const unsubscribe = onAuthStateChanged(
+          auth,
+          value => {
+            unsubscribe();
+            resolve(value);
+          },
+          error => {
+            console.error("認証状態の確認に失敗しました:", error);
+            resolve(null);
+          }
+        );
+      });
+
+      if (!user) {
+        window.location.replace("../login.html");
+        return;
+      }
+
+      currentUser = user;
+
+      try {
+        const profileSnapshot = await getDoc(
+          doc(db, "users", user.uid)
+        );
+
+        const profile = profileSnapshot.exists()
+          ? profileSnapshot.data()
+          : {};
+
+        if (profile.role !== "admin") {
+          document.getElementById("portalRoot").innerHTML = "";
+
+          const denied = document.createElement("div");
+          denied.className = "users-page users-panel";
+          denied.textContent =
+            "このページは管理者専用です。管理者アカウントでログインしてください。";
+
+          document.body.append(denied);
+
+          setTimeout(() => {
+            window.location.replace("../index.html");
+          }, 1800);
+
+          return;
+        }
+
+        await protectPage("login");
+
+        renderPortalShell({
+          title: "ユーザー管理",
+          activePage: "users"
+        });
+
+        await loadUsers();
+      } catch (error) {
+        console.error("ページの初期化に失敗しました:", error);
+
+        setStatus(
+          listStatus,
+          error.code === "permission-denied"
+            ? "アクセス権限を確認できません。Firestore Security Rulesを確認してください。"
+            : "ページの初期化に失敗しました。",
+          true
+        );
+      }
+    }
+
+    startPage();
+  </script>
+</body>
+</html>
