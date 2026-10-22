@@ -3,201 +3,205 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <meta name="theme-color" content="#173b70">
-  <meta name="description" content="定期テスト対策プリント運営事務局の管理者ダッシュボード">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>管理者ダッシュボード | 定期テスト対策プリント運営事務局</title>
 
   <link rel="stylesheet" href="../css/style.css">
 
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
-  >
-
   <style>
-    [hidden] {
-      display: none !important;
+    .admin-dashboard {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px;
     }
 
-    .dashboard-loading {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      padding: 24px;
-      color: #173b70;
-      text-align: center;
-    }
-
-    .dashboard-loading .material-symbols-rounded {
-      font-size: 44px;
-    }
-
-    .dashboard-error {
-      max-width: 640px;
-      margin: 40px auto;
-      padding: 24px;
-      border: 1px solid #f0c5c5;
-      border-radius: 12px;
-      background: #fff7f7;
-      color: #8b2020;
-      line-height: 1.8;
-    }
-
-    .dashboard-error h1 {
-      font-size: 1.35rem;
-      margin-top: 0;
-    }
-
-    .dashboard-error button {
-      padding: 10px 18px;
-      border: 0;
-      border-radius: 8px;
-      background: #173b70;
+    .welcome-panel {
+      padding: 30px;
+      margin-bottom: 25px;
+      border-radius: 20px;
       color: white;
-      cursor: pointer;
+      background: linear-gradient(120deg, #244bd6, #6385ff);
     }
 
-    .dashboard-content {
-      padding-bottom: 32px;
+    .welcome-panel h1 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 4vw, 34px);
     }
 
-    .dashboard-welcome {
-      margin-bottom: 24px;
-    }
-
-    .dashboard-welcome p {
-      color: #64748b;
+    .welcome-panel p {
+      margin: 0;
       line-height: 1.8;
+      opacity: .92;
     }
 
-    .dashboard-grid {
+    .section-heading {
+      margin: 28px 0 16px;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .admin-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 20px;
+      gap: 18px;
     }
 
-    .dashboard-card {
+    .admin-card {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 24px;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: 0 3px 12px rgb(15 23 42 / 4%);
+      min-height: 185px;
+      padding: 22px;
+      border: 1px solid #e4e9f2;
+      border-radius: 16px;
+      color: inherit;
+      background: white;
+      text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
     }
 
-    .dashboard-card h2 {
-      margin: 0;
-      font-size: 1.1rem;
+    .admin-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(30, 50, 90, .09);
     }
 
-    .dashboard-card p {
-      flex: 1;
+    .admin-card-icon {
+      display: grid;
+      width: 45px;
+      height: 45px;
+      margin-bottom: 16px;
+      place-items: center;
+      border-radius: 13px;
+      background: #edf2ff;
+      font-size: 23px;
+    }
+
+    .admin-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .admin-card p {
       margin: 0;
-      color: #64748b;
+      color: #69758b;
+      font-size: 13px;
       line-height: 1.8;
     }
 
-    .dashboard-card-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: #edf4ff;
-      color: #173b70;
+    .admin-card .card-link {
+      margin-top: auto;
+      padding-top: 16px;
+      color: #315efb;
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    .dashboard-card-icon .material-symbols-rounded {
-      font-size: 28px;
+    .notice-panel {
+      padding: 20px;
+      border: 1px solid #e4e9f2;
+      border-radius: 15px;
+      background: white;
     }
 
-    .dashboard-link {
-      display: inline-block;
-      padding: 10px 16px;
-      border-radius: 8px;
-      background: #173b70;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .dashboard-link:hover {
-      background: #24549a;
-    }
-
-    .dashboard-link:focus-visible,
-    .dashboard-error button:focus-visible {
-      outline: 3px solid #f4bd50;
-      outline-offset: 3px;
+    .notice-panel p {
+      margin: 0;
+      color: #69758b;
+      font-size: 14px;
+      line-height: 1.8;
     }
 
     @media (max-width: 900px) {
-      .dashboard-grid {
+      .admin-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .admin-dashboard {
+        padding: 20px;
       }
     }
 
-    @media (max-width: 600px) {
-      .dashboard-grid {
-        grid-template-columns: minmax(0, 1fr);
+    @media (max-width: 560px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
       }
 
-      .dashboard-card {
-        padding: 20px;
+      .admin-dashboard {
+        padding: 15px;
+      }
+
+      .welcome-panel {
+        padding: 23px;
       }
     }
   </style>
 </head>
 
 <body>
+  <div id="portalRoot">
+    <main class="admin-dashboard">
+      <section class="welcome-panel">
+        <h1>管理者ダッシュボード</h1>
+        <p>
+          Student Portal の管理画面です。各機能を選択して、
+          学校情報や利用者に関する管理を行ってください。
+        </p>
+      </section>
 
-  <!-- 認証中は管理画面の内容を表示しない -->
-  <section
-    id="dashboardLoading"
-    class="dashboard-loading"
-    role="status"
-    aria-live="polite"
-  >
-    <span class="material-symbols-rounded" aria-hidden="true">
-      progress_activity
-    </span>
+      <h2 class="section-heading">管理メニュー</h2>
 
-    <p>管理者権限を確認しています...</p>
-  </section>
+      <section class="admin-grid" aria-label="管理メニュー">
+        <a class="admin-card" href="../index.html">
+          <div class="admin-card-icon" aria-hidden="true">🏠</div>
+          <h3>ポータルホーム</h3>
+          <p>ポータルのトップページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
 
-  <!-- 認証や画面の初期化に失敗した場合 -->
-  <section
-    id="dashboardError"
-    class="dashboard-error"
-    role="alert"
-    hidden
-  >
-    <h1>管理画面を表示できません</h1>
+        <a class="admin-card" href="../information/index.html">
+          <div class="admin-card-icon" aria-hidden="true">📢</div>
+          <h3>お知らせ管理</h3>
+          <p>学校からのお知らせに関するページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
 
-    <p id="dashboardErrorMessage">
-      認証または画面の初期化に失敗しました。
-    </p>
+        <a class="admin-card" href="../users/index.html">
+          <div class="admin-card-icon" aria-hidden="true">👥</div>
+          <h3>ユーザー管理</h3>
+          <p>利用者に関する管理ページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
 
-    <button
-      type="button"
-      id="dashboardRetry"
-    >
-      ページを再読み込み
-    </button>
-  </section>
+        <a class="admin-card" href="../documents/index.html">
+          <div class="admin-card-icon" aria-hidden="true">📁</div>
+          <h3>資料管理</h3>
+          <p>配布資料や関連ファイルのページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
 
-  <!-- 認証に成功した後にだけ生成する -->
-  <div id="dashboardMount" hidden></div>
+        <a class="admin-card" href="../calendar/index.html">
+          <div class="admin-card-icon" aria-hidden="true">📅</div>
+          <h3>カレンダー</h3>
+          <p>学校行事や日程に関するページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
+
+        <a class="admin-card" href="../scores/index.html">
+          <div class="admin-card-icon" aria-hidden="true">📊</div>
+          <h3>成績・テスト</h3>
+          <p>成績やテスト関連のページを開きます。</p>
+          <span class="card-link">ページを開く →</span>
+        </a>
+      </section>
+
+      <h2 class="section-heading">システム情報</h2>
+
+      <section class="notice-panel">
+        <p id="systemStatus" role="status">
+          ログイン状態を確認しています……
+        </p>
+      </section>
+    </main>
+  </div>
 
   <script type="module">
     import {
@@ -205,143 +209,36 @@
       renderPortalShell
     } from "../js/portal.js";
 
-    const loadingElement =
-      document.getElementById("dashboardLoading");
-
-    const errorElement =
-      document.getElementById("dashboardError");
-
-    const errorMessageElement =
-      document.getElementById("dashboardErrorMessage");
-
-    const mountElement =
-      document.getElementById("dashboardMount");
-
-    const retryButton =
-      document.getElementById("dashboardRetry");
-
-    function showError(message) {
-      loadingElement.hidden = true;
-      mountElement.hidden = true;
-
-      errorMessageElement.textContent = message;
-      errorElement.hidden = false;
-    }
-
-    retryButton.addEventListener("click", () => {
-      location.reload();
-    });
-
-    async function initializeDashboard() {
+    async function initializeAdminDashboard() {
       try {
-        // 管理者のログイン状態と権限を確認
-        const result = await protectPage("admin");
+        const user = await protectPage("admin");
 
-        // 未認証・権限不一致の場合は表示しない
-        // protectPage 側でログイン画面等への遷移を行う
-        if (!result) {
-          return;
+        if (!user) return;
+
+        await renderPortalShell();
+
+        const status = document.getElementById("systemStatus");
+
+        if (status) {
+          status.textContent =
+            "管理者としてログインしています。管理機能を利用できます。";
         }
-
-        // 権限確認後にだけポータルを生成
-        const content = renderPortalShell();
-
-        if (!content) {
-          showError(
-            "ポータルの表示領域を作成できませんでした。js/portal.js を確認してください。"
-          );
-          return;
-        }
-
-        content.innerHTML = `
-          <section class="dashboard-content">
-
-            <header class="dashboard-welcome">
-              <h1 class="page-title">管理者ダッシュボード</h1>
-
-              <p>
-                定期テスト対策プリント運営事務局の管理画面です。
-                各機能を選択して管理業務を行えます。
-              </p>
-            </header>
-
-            <div class="dashboard-grid">
-
-              <article class="dashboard-card">
-                <div class="dashboard-card-icon">
-                  <span class="material-symbols-rounded"
-                        aria-hidden="true">admin_panel_settings</span>
-                </div>
-
-                <h2>管理画面</h2>
-
-                <p>
-                  運営事務局の管理機能にアクセスできます。
-                </p>
-              </article>
-
-              <article class="dashboard-card">
-                <div class="dashboard-card-icon">
-                  <span class="material-symbols-rounded"
-                        aria-hidden="true">campaign</span>
-                </div>
-
-                <h2>お知らせ管理</h2>
-
-                <p>
-                  お知らせの作成・編集・配信を管理します。
-                </p>
-
-                <a
-                  href="../information/admin.html"
-                  class="dashboard-link"
-                >
-                  管理する
-                </a>
-              </article>
-
-              <article class="dashboard-card">
-                <div class="dashboard-card-icon">
-                  <span class="material-symbols-rounded"
-                        aria-hidden="true">analytics</span>
-                </div>
-
-                <h2>成績分析</h2>
-
-                <p>
-                  テスト成績の確認や分析を行います。
-                </p>
-
-                <a
-                  href="../scores/admin.html"
-                  class="dashboard-link"
-                >
-                  分析する
-                </a>
-              </article>
-
-            </div>
-          </section>
-        `;
-
-        // 内容の生成が完了してから表示
-        mountElement.hidden = false;
-        loadingElement.hidden = true;
-
       } catch (error) {
         console.error(
-          "管理者ダッシュボード初期化エラー:",
+          "管理者ダッシュボードの初期化に失敗しました:",
           error
         );
 
-        showError(
-          "画面の初期化に失敗しました。インターネット接続、Firebase の設定、ブラウザのコンソールを確認してください。"
-        );
+        const status = document.getElementById("systemStatus");
+
+        if (status) {
+          status.textContent =
+            "画面の初期化に失敗しました。ページを再読み込みしてください。";
+        }
       }
     }
 
-    initializeDashboard();
+    initializeAdminDashboard();
   </script>
-
 </body>
 </html>
