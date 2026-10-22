@@ -1,117 +1,420 @@
+
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+  <meta name="theme-color" content="#173b70">
+  <meta
+    name="description"
+    content="定期テスト対策プリント運営事務局の生徒用ダッシュボード"
+  >
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0">
+  <title>生徒ダッシュボード | 定期テスト対策プリント運営事務局</title>
 
-<title>
-定期テスト対策プリント運営事務局|ポータルサイト
-</title>
+  <link rel="stylesheet" href="../css/style.css">
 
-<link rel="icon"
-      href="../favicon.svg">
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
+  >
 
-<link
- href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0"
- rel="stylesheet">
+  <style>
+    [hidden] {
+      display: none !important;
+    }
 
-<link rel="stylesheet"
-      href="../css/style.css">
+    .student-loading {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+      color: #173b70;
+      text-align: center;
+    }
 
+    .student-loading .material-symbols-rounded {
+      font-size: 44px;
+    }
+
+    .student-error {
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 24px;
+      border: 1px solid #f0c5c5;
+      border-radius: 12px;
+      background: #fff7f7;
+      color: #8b2020;
+      line-height: 1.8;
+    }
+
+    .student-error h1 {
+      margin-top: 0;
+      font-size: 1.35rem;
+    }
+
+    .student-error button {
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 8px;
+      background: #173b70;
+      color: white;
+      cursor: pointer;
+    }
+
+    .student-dashboard {
+      padding-bottom: 32px;
+    }
+
+    .student-welcome {
+      margin-bottom: 24px;
+    }
+
+    .student-welcome p {
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .student-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 3px 12px rgb(15 23 42 / 4%);
+    }
+
+    .student-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .student-card p {
+      flex: 1;
+      margin: 0;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .student-card-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #edf4ff;
+      color: #173b70;
+    }
+
+    .student-card-icon .material-symbols-rounded {
+      font-size: 28px;
+    }
+
+    .student-link {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: #173b70;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .student-link:hover {
+      background: #24549a;
+    }
+
+    .student-link:focus-visible,
+    .student-error button:focus-visible {
+      outline: 3px solid #f4bd50;
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 700px) {
+      .student-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .student-card {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<script type="module">
+  <!-- 認証中 -->
+  <section
+    id="studentLoading"
+    class="student-loading"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="material-symbols-rounded" aria-hidden="true">
+      progress_activity
+    </span>
 
-import {
-  protectPage,
-  renderPortalShell
-} from "../js/portal.js";
+    <p>ログイン状態と生徒権限を確認しています...</p>
+  </section>
 
-const result =
-  await protectPage("student");
+  <!-- 初期化エラー -->
+  <section
+    id="studentError"
+    class="student-error"
+    role="alert"
+    hidden
+  >
+    <h1>ダッシュボードを表示できません</h1>
 
-const content =
-  renderPortalShell();
+    <p id="studentErrorMessage">
+      認証または画面の初期化に失敗しました。
+    </p>
 
-content.innerHTML = `
+    <button
+      type="button"
+      id="studentRetry"
+    >
+      ページを再読み込み
+    </button>
+  </section>
 
-<h1 class="page-title">
-ホーム
-</h1>
+  <!-- 認証成功後に表示 -->
+  <div id="studentMount" hidden></div>
 
-<div class="card">
+  <script type="module">
+    import {
+      protectPage,
+      renderPortalShell
+    } from "../js/portal.js";
 
-<h2>
-${result.profile?.displayName || "生徒"}さん
-</h2>
+    const loadingElement =
+      document.getElementById("studentLoading");
 
-<p>
-定期テスト対策プリント運営事務局|ポータルサイトへようこそ。
-</p>
+    const errorElement =
+      document.getElementById("studentError");
 
-</div>
+    const errorMessageElement =
+      document.getElementById("studentErrorMessage");
 
-<div class="grid">
+    const mountElement =
+      document.getElementById("studentMount");
 
-<div class="card">
+    document
+      .getElementById("studentRetry")
+      .addEventListener("click", () => {
+        location.reload();
+      });
 
-<h3>お知らせ</h3>
+    function showError(message) {
+      loadingElement.hidden = true;
+      mountElement.hidden = true;
 
-<p>
-最新のお知らせを確認できます。
-</p>
+      errorMessageElement.textContent = message;
+      errorElement.hidden = false;
+    }
 
-<a
- href="../information/student.html"
- class="secondary-button">
-確認する
-</a>
+    async function initializeDashboard() {
+      try {
+        // 生徒としてログインしていることを確認
+        const result = await protectPage("student");
 
-</div>
+        // 認証失敗時は画面を表示しない
+        if (!result) {
+          return;
+        }
 
-<div class="card">
+        // 認証成功後に共通レイアウトを作成
+        const content = renderPortalShell();
 
-<h3>テスト成績</h3>
+        if (!content) {
+          showError(
+            "ポータルの表示領域を作成できませんでした。js/portal.js を確認してください。"
+          );
+          return;
+        }
 
-<p>
-提出すべきテストや過去の成績を確認できます。
-</p>
+        const profile = result.profile;
 
-<a
- href="../scoreForms/student.html"
- class="secondary-button">
-確認する
-</a>
+        // Firestore の氏名フィールドがある場合は表示する
+        const displayName =
+          profile.displayName ||
+          profile.name ||
+          profile.studentName ||
+          result.user.displayName ||
+          "生徒";
 
-</div>
+        const safeName = String(displayName).replace(
+          /[&<>"']/g,
+          character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+          })[character]
+        );
 
-<div class="card">
+        content.innerHTML = `
+          <section class="student-dashboard">
 
-<h3>カレンダー</h3>
+            <header class="student-welcome">
+              <h1 class="page-title">生徒ダッシュボード</h1>
 
-<p>
-予定を確認できます。
-</p>
+              <p>
+                ${safeName} さん、こんにちは。
+                必要な機能を選択してください。
+              </p>
+            </header>
 
-<a
- href="../calendar/student.html"
- class="secondary-button">
-確認する
-</a>
+            <div class="student-grid">
 
-</div>
+              <article class="student-card">
+                <div class="student-card-icon">
+                  <span
+                    class="material-symbols-rounded"
+                    aria-hidden="true"
+                  >campaign</span>
+                </div>
 
-</div>
+                <h2>お知らせ</h2>
 
-`;
+                <p>
+                  運営事務局からのお知らせを確認できます。
+                </p>
 
-</script>
+                <a
+                  class="student-link"
+                  href="../information/student.html"
+                >
+                  お知らせを見る
+                </a>
+              </article>
+
+              <article class="student-card">
+                <div class="student-card-icon">
+                  <span
+                    class="material-symbols-rounded"
+                    aria-hidden="true"
+                  >description</span>
+                </div>
+
+                <h2>配布文書</h2>
+
+                <p>
+                  配布された文書や資料を確認できます。
+                </p>
+
+                <a
+                  class="student-link"
+                  href="../documents/student.html"
+                >
+                  文書を見る
+                </a>
+              </article>
+
+              <article class="student-card">
+                <div class="student-card-icon">
+                  <span
+                    class="material-symbols-rounded"
+                    aria-hidden="true"
+                  >calendar_month</span>
+                </div>
+
+                <h2>カレンダー</h2>
+
+                <p>
+                  登録されている予定を確認できます。
+                </p>
+
+                <a
+                  class="student-link"
+                  href="../calendar/student.html"
+                >
+                  予定を見る
+                </a>
+              </article>
+
+              <article class="student-card">
+                <div class="student-card-icon">
+                  <span
+                    class="material-symbols-rounded"
+                    aria-hidden="true"
+                  >assignment</span>
+                </div>
+
+                <h2>テスト成績</h2>
+
+                <p>
+                  テストに関する成績入力画面を開きます。
+                </p>
+
+                <a
+                  class="student-link"
+                  href="../scoreForms/student.html"
+                >
+                  成績機能を開く
+                </a>
+              </article>
+
+              <article class="student-card">
+                <div class="student-card-icon">
+                  <span
+                    class="material-symbols-rounded"
+                    aria-hidden="true"
+                  >mail</span>
+                </div>
+
+                <h2>連絡</h2>
+
+                <p>
+                  連絡機能を開きます。
+                </p>
+
+                <a
+                  class="student-link"
+                  href="../messages/student.html"
+                >
+                  連絡を開く
+                </a>
+              </article>
+
+            </div>
+          </section>
+        `;
+
+        // 表示内容の生成が完了してから公開
+        mountElement.hidden = false;
+        loadingElement.hidden = true;
+
+      } catch (error) {
+        console.error(
+          "生徒ダッシュボード初期化エラー:",
+          error
+        );
+
+        showError(
+          "画面の初期化に失敗しました。Firebase の設定、通信状態、ブラウザのコンソールを確認してください。"
+        );
+      }
+    }
+
+    initializeDashboard();
+  </script>
 
 </body>
 </html>
